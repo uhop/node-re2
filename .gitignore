@@ -1,0 +1,6 @@
+*.sublime-*
+node_modules/
+build/
+report/
+coverage/
+.AppleDouble

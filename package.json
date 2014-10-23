@@ -1,0 +1,38 @@
+{
+  "name": "re2",
+  "version": "0.9.0",
+  "description": "node.js bindings for RE2: fast, safe alternative to backtracking regular expression engines.",
+  "homepage": "http://github.com/uhop/node-re2",
+  "bugs": "http://github.com/uhop/node-re2/issues",
+  "main": "re2.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "nan": "^1.3.0"
+  },
+  "devDependencies": {
+    "heya-unit": ">=0.1"
+  },
+  "scripts": {
+    "test": "node tests/tests.js"
+  },
+  "github": "http://github.com/uhop/node-re2",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/uhop/node-re2.git"
+  },
+  "keywords": [
+    "RegExp",
+    "RegEx",
+    "text processing",
+    "PCRE alternative"
+  ],
+  "author": "Eugene Lazutkin <eugene.lazutkin@gmail.com> (http://lazutkin.com/)",
+  "licenses": [
+    {
+      "type": "New BSD",
+      "url": "http://github.com/uhop/node-re2/blob/master/LICENSE"
+    }
+  ]
+}
