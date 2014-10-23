@@ -21,6 +21,7 @@ using v8::Object;
 using v8::Array;
 using v8::String;
 using v8::Number;
+using v8::Boolean;
 using v8::Local;
 using v8::Value;
 
@@ -45,11 +46,11 @@ class WrappedRE2 : public node::ObjectWrap {
 				global(g), ignoreCase(i), multiline(m), lastIndex(0) {}
 
 		/*
-		std::array<std::string>	exec(const RE2::StringPiece* str);
-		bool					test(const RE2::StringPiece* str);
-		std::string				replace(const RE2::StringPiece* str, const RE2::StringPiece* newSubStr);
-		std::string				replace(const RE2::StringPiece* str, std::string (*replacer)(const RE2::Arg*));
-		std::array<std::string>	split(const RE2::StringPiece* str);
+		std::vector<std::string>	exec(const RE2::StringPiece* str);
+		bool						test(const RE2::StringPiece* str);
+		std::string					replace(const RE2::StringPiece* str, const RE2::StringPiece* newSubStr);
+		std::string					replace(const RE2::StringPiece* str, std::string (*replacer)(const RE2::Arg*));
+		std::vector<std::string>	split(const RE2::StringPiece* str);
 		*/
 
 		static NAN_METHOD(New);
@@ -57,6 +58,12 @@ class WrappedRE2 : public node::ObjectWrap {
 		static NAN_METHOD(Test);
 		static NAN_METHOD(Replace);
 		static NAN_METHOD(Split);
+
+		static NAN_GETTER(GetGlobal);
+		static NAN_GETTER(GetIgnoreCase);
+		static NAN_GETTER(GetMultiline);
+		static NAN_GETTER(GetLastIndex);
+		static NAN_SETTER(SetLastIndex);
 
 		static Persistent<Function>	constructor;
 
@@ -193,6 +200,51 @@ NAN_METHOD(WrappedRE2::Split) {
 }
 
 
+// getters/setters
+
+
+NAN_GETTER(WrappedRE2::GetGlobal) {
+	NanScope();
+	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.Holder());
+	NanReturnValue(NanNew<Boolean>(re2->global));
+}
+
+
+NAN_GETTER(WrappedRE2::GetIgnoreCase) {
+	NanScope();
+	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.Holder());
+	NanReturnValue(NanNew<Boolean>(re2->ignoreCase));
+}
+
+
+NAN_GETTER(WrappedRE2::GetMultiline) {
+	NanScope();
+	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.Holder());
+	NanReturnValue(NanNew<Boolean>(re2->multiline));
+}
+
+
+NAN_GETTER(WrappedRE2::GetLastIndex) {
+	NanScope();
+	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.Holder());
+	NanReturnValue(NanNew<Number>(re2->lastIndex));
+}
+
+
+NAN_SETTER(WrappedRE2::SetLastIndex) {
+	//NanScope();
+	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.Holder());
+	if (value->IsNumber()) {
+		int n = value->NumberValue();
+		re2->lastIndex = n <= 0 ? 0 : n;
+	}
+	//NanReturnUndefined();
+}
+
+
+// module initialization
+
+
 Persistent<Function> WrappedRE2::constructor;
 
 void WrappedRE2::Initialize(Handle<Object> exports, Handle<Object> module) {
@@ -203,14 +255,17 @@ void WrappedRE2::Initialize(Handle<Object> exports, Handle<Object> module) {
 	tpl->SetClassName(NanNew<String>("RE2"));
 
 	// prototype
-	tpl->PrototypeTemplate()->Set(NanNew<String>("exec"),
-		FunctionTemplate::New(Exec)->GetFunction());
-	tpl->PrototypeTemplate()->Set(NanNew<String>("test"),
-		FunctionTemplate::New(Test)->GetFunction());
-	tpl->PrototypeTemplate()->Set(NanNew<String>("replace"),
-		FunctionTemplate::New(Replace)->GetFunction());
-	tpl->PrototypeTemplate()->Set(NanNew<String>("split"),
-		FunctionTemplate::New(Split)->GetFunction());
+
+	NODE_SET_PROTOTYPE_METHOD(tpl, "exec",    Exec);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "test",    Test);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "replace", Replace);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "split",   Split);
+
+	tpl->PrototypeTemplate()->SetAccessor(NanNew<String>("global"),     GetGlobal,     NULL);
+	tpl->PrototypeTemplate()->SetAccessor(NanNew<String>("ignoreCase"), GetIgnoreCase, NULL);
+	tpl->PrototypeTemplate()->SetAccessor(NanNew<String>("multiline"),  GetMultiline,  NULL);
+	tpl->PrototypeTemplate()->SetAccessor(NanNew<String>("lastIndex"),  GetLastIndex,  NULL);
+
 	constructor = Persistent<Function>::New(tpl->GetFunction());
 
 	// return constructor as module's export
