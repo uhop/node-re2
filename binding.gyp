@@ -44,6 +44,14 @@
         "<!(node -e \"require('nan')\")",
         "vendor/re2"
       ],
+      "xcode_settings": {
+        "OTHER_CFLAGS": [
+          "-Wall",
+          "-Wno-sign-compare",
+          "-O3",
+          "-g"
+        ]
+      },
       "conditions": [
         ["OS==\"linux\"", {
           "cflags": [
