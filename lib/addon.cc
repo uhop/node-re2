@@ -23,7 +23,7 @@ using v8::Handle;
 using v8::Object;
 using v8::Array;
 using v8::String;
-using v8::Number;
+using v8::Integer;
 using v8::Boolean;
 using v8::Local;
 using v8::Value;
@@ -88,7 +88,7 @@ NAN_METHOD(WrappedRE2::New) {
 		bool global = false;
 
 		RE2::Options options;
-		options.set_case_sensitive(false);
+		options.set_case_sensitive(true);
 		options.set_one_line(true);
 
 		if (args.Length() > 1) {
@@ -98,7 +98,7 @@ NAN_METHOD(WrappedRE2::New) {
 				switch (p[i]) {
 					case 'i':
 						ignoreCase = true;
-						options.set_case_sensitive(true);
+						options.set_case_sensitive(false);
 						break;
 					case 'm':
 						multiline = true;
@@ -175,9 +175,9 @@ NAN_METHOD(WrappedRE2::Exec) {
 	Local<Array> result = NanNew<Array>();
 	for (size_t i = 0, n = groups.size(); i < n; ++i) {
 		const StringPiece& item = groups[i];
-		result->Set(NanNew<Number>(i), NanNew<String>(item.data(), item.size()));
+		result->Set(NanNew<Integer>(i), NanNew<String>(item.data(), item.size()));
 	}
-	result->Set(NanNew<String>("index"), NanNew<Number>(re2->lastIndex));
+	result->Set(NanNew<String>("index"), NanNew<Integer>(groups[0].data() - data));
 	result->Set(NanNew<String>("input"), args[0]);
 
 	if (re2->global) {
@@ -233,7 +233,7 @@ NAN_GETTER(WrappedRE2::GetMultiline) {
 NAN_GETTER(WrappedRE2::GetLastIndex) {
 	NanScope();
 	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
-	NanReturnValue(NanNew<Number>(re2->lastIndex));
+	NanReturnValue(NanNew<Integer>(re2->lastIndex));
 }
 
 
@@ -256,8 +256,8 @@ void WrappedRE2::Initialize(Handle<Object> exports, Handle<Object> module) {
 
 	// prepare constructor template
 	Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
-	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 	tpl->SetClassName(NanNew<String>("RE2"));
+	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
 	// prototype
 
