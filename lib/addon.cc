@@ -2,6 +2,8 @@
 #include <string>
 #include <memory>
 
+#include <iostream>
+
 #include <node.h>
 #include <node_buffer.h>
 #include <nan.h>
@@ -14,6 +16,7 @@ using std::string;
 using std::auto_ptr;
 
 using v8::FunctionTemplate;
+using v8::ObjectTemplate;
 using v8::Persistent;
 using v8::Function;
 using v8::Handle;
@@ -91,7 +94,7 @@ NAN_METHOD(WrappedRE2::New) {
 		if (args.Length() > 1) {
 			NanUtf8String flags(args[1]);
 			const char* p = *flags;
-			for (size_t i = 0, n = flags.Size(); i < n; ++i) {
+			for (size_t i = 0, n = flags.Size() - 1; i < n; ++i) {
 				switch (p[i]) {
 					case 'i':
 						ignoreCase = true;
@@ -110,7 +113,7 @@ NAN_METHOD(WrappedRE2::New) {
 
 		// create and return an object
 
-		WrappedRE2* re2 = new WrappedRE2(StringPiece(*pattern, pattern.Size()),
+		WrappedRE2* re2 = new WrappedRE2(StringPiece(*pattern, pattern.Size() - 1),
 			options, global, ignoreCase, multiline);
 		re2->Wrap(args.This());
 		return args.This();
@@ -143,11 +146,12 @@ NAN_METHOD(WrappedRE2::Exec) {
 	if (args[0]->IsString()){
 		buffer.reset(new NanUtf8String(args[0]));
 		data = **buffer;
-		size = buffer->Size();
+		size = buffer->Size() - 1;
 	} else if (Buffer::HasInstance(args[0])) {
 		data = Buffer::Data(args[0]);
 		size = Buffer::Length(args[0]);
 	} else {
+		std::cout << "No args" << std::endl;
 		NanReturnNull();
 	}
 
@@ -155,12 +159,14 @@ NAN_METHOD(WrappedRE2::Exec) {
 
 	if (re2->lastIndex > size) {
 		re2->lastIndex = 0;
+		std::cout << "bad lastIndex" << std::endl;
 		NanReturnNull();
 	}
 
 	vector<StringPiece> groups(re2->regexp.NumberOfCapturingGroups() + 1);
 
 	if (!re2->regexp.Match(StringPiece(data, size), re2->lastIndex, size, RE2::UNANCHORED, &groups[0], groups.size())) {
+		std::cout << "No match for " << size << " bytes: " << data << std::endl;
 		NanReturnNull();
 	}
 
@@ -205,40 +211,39 @@ NAN_METHOD(WrappedRE2::Split) {
 
 NAN_GETTER(WrappedRE2::GetGlobal) {
 	NanScope();
-	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.Holder());
+	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
 	NanReturnValue(NanNew<Boolean>(re2->global));
 }
 
 
 NAN_GETTER(WrappedRE2::GetIgnoreCase) {
 	NanScope();
-	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.Holder());
+	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
 	NanReturnValue(NanNew<Boolean>(re2->ignoreCase));
 }
 
 
 NAN_GETTER(WrappedRE2::GetMultiline) {
 	NanScope();
-	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.Holder());
+	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
 	NanReturnValue(NanNew<Boolean>(re2->multiline));
 }
 
 
 NAN_GETTER(WrappedRE2::GetLastIndex) {
 	NanScope();
-	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.Holder());
+	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
 	NanReturnValue(NanNew<Number>(re2->lastIndex));
 }
 
 
 NAN_SETTER(WrappedRE2::SetLastIndex) {
-	//NanScope();
-	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.Holder());
+	NanScope();
+	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
 	if (value->IsNumber()) {
 		int n = value->NumberValue();
 		re2->lastIndex = n <= 0 ? 0 : n;
 	}
-	//NanReturnUndefined();
 }
 
 
@@ -261,10 +266,11 @@ void WrappedRE2::Initialize(Handle<Object> exports, Handle<Object> module) {
 	NODE_SET_PROTOTYPE_METHOD(tpl, "replace", Replace);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "split",   Split);
 
-	tpl->PrototypeTemplate()->SetAccessor(NanNew<String>("global"),     GetGlobal,     NULL);
-	tpl->PrototypeTemplate()->SetAccessor(NanNew<String>("ignoreCase"), GetIgnoreCase, NULL);
-	tpl->PrototypeTemplate()->SetAccessor(NanNew<String>("multiline"),  GetMultiline,  NULL);
-	tpl->PrototypeTemplate()->SetAccessor(NanNew<String>("lastIndex"),  GetLastIndex,  NULL);
+	Local<ObjectTemplate> proto = tpl->PrototypeTemplate();
+	proto->SetAccessor(NanNew<String>("global"),     GetGlobal);
+	proto->SetAccessor(NanNew<String>("ignoreCase"), GetIgnoreCase);
+	proto->SetAccessor(NanNew<String>("multiline"),  GetMultiline);
+	proto->SetAccessor(NanNew<String>("lastIndex"),  GetLastIndex, SetLastIndex);
 
 	constructor = Persistent<Function>::New(tpl->GetFunction());
 
