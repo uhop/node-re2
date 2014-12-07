@@ -73,8 +73,8 @@ class WrappedRE2 : public node::ObjectWrap {
 		static void Initialize(Handle<Object> exports, Handle<Object> module);
 };
 
-inline size_t len(NanUtf8String& s) {
-	size_t n = s.Size();
+inline size_t len(const NanUtf8String& s) {
+	size_t n = s.length();
 	return n && !(*s)[n - 1] ? n - 1 : n;
 }
 
