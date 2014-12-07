@@ -62,6 +62,7 @@ class WrappedRE2 : public node::ObjectWrap {
 		static NAN_METHOD(Replace);
 		static NAN_METHOD(Split);
 
+		static NAN_GETTER(GetSource);
 		static NAN_GETTER(GetGlobal);
 		static NAN_GETTER(GetIgnoreCase);
 		static NAN_GETTER(GetMultiline);
@@ -151,7 +152,6 @@ NAN_METHOD(WrappedRE2::Exec) {
 		data = Buffer::Data(args[0]);
 		size = Buffer::Length(args[0]);
 	} else {
-		std::cout << "No args" << std::endl;
 		NanReturnNull();
 	}
 
@@ -159,14 +159,12 @@ NAN_METHOD(WrappedRE2::Exec) {
 
 	if (re2->lastIndex > size) {
 		re2->lastIndex = 0;
-		std::cout << "bad lastIndex" << std::endl;
 		NanReturnNull();
 	}
 
 	vector<StringPiece> groups(re2->regexp.NumberOfCapturingGroups() + 1);
 
 	if (!re2->regexp.Match(StringPiece(data, size), re2->lastIndex, size, RE2::UNANCHORED, &groups[0], groups.size())) {
-		std::cout << "No match for " << size << " bytes: " << data << std::endl;
 		NanReturnNull();
 	}
 
@@ -207,6 +205,13 @@ NAN_METHOD(WrappedRE2::Split) {
 
 
 // getters/setters
+
+
+NAN_GETTER(WrappedRE2::GetSource) {
+	NanScope();
+	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
+	NanReturnValue(NanNew<String>(re2->regexp.pattern()));
+}
 
 
 NAN_GETTER(WrappedRE2::GetGlobal) {
@@ -267,6 +272,7 @@ void WrappedRE2::Initialize(Handle<Object> exports, Handle<Object> module) {
 	NODE_SET_PROTOTYPE_METHOD(tpl, "split",   Split);
 
 	Local<ObjectTemplate> proto = tpl->PrototypeTemplate();
+	proto->SetAccessor(NanNew<String>("source"),     GetSource);
 	proto->SetAccessor(NanNew<String>("global"),     GetGlobal);
 	proto->SetAccessor(NanNew<String>("ignoreCase"), GetIgnoreCase);
 	proto->SetAccessor(NanNew<String>("multiline"),  GetMultiline);

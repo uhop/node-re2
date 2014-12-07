@@ -1,11 +1,11 @@
 var RE2 = require("./build/Release/re2.node");
 
 console.log(RE2);
+console.log(!!RE2.prototype);
 
 var regex = new RE2("quick\\s(brown).+?(jumps)", "ig");
 
 console.log(regex);
-console.log(regex.prototype);
 console.log(regex instanceof RE2);
 
 console.log(regex.exec);
@@ -21,6 +21,7 @@ console.log("lastIndex" in regex);
 var result = regex.exec("The Quick Brown Fox Jumps Over The Lazy Dog");
 console.log("result:", result, regex.lastIndex);
 
+console.log(regex.source);
 console.log(regex.global);
 console.log(regex.ignoreCase);
 console.log(regex.multiline);
