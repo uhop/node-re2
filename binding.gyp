@@ -34,6 +34,8 @@
       "cflags": [
         "-Wall",
         "-Wno-sign-compare",
+        "-Wunused-local-typedefs",
+        "-Wmissing-field-initializers",
         "-O3",
         "-g"
       ],
@@ -48,6 +50,8 @@
         "OTHER_CFLAGS": [
           "-Wall",
           "-Wno-sign-compare",
+          "-Wunused-local-typedefs",
+          "-Wmissing-field-initializers",
           "-O3",
           "-g"
         ]
