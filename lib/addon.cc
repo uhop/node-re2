@@ -48,19 +48,7 @@ class WrappedRE2 : public node::ObjectWrap {
 			const bool& g, const bool& i, const bool& m) : regexp(pattern, options),
 				global(g), ignoreCase(i), multiline(m), lastIndex(0) {}
 
-		/*
-		std::vector<std::string>	exec(const RE2::StringPiece* str);
-		bool						test(const RE2::StringPiece* str);
-		std::string					replace(const RE2::StringPiece* str, const RE2::StringPiece* newSubStr);
-		std::string					replace(const RE2::StringPiece* str, std::string (*replacer)(const RE2::Arg*));
-		std::vector<std::string>	split(const RE2::StringPiece* str);
-		*/
-
 		static NAN_METHOD(New);
-		static NAN_METHOD(Exec);
-		static NAN_METHOD(Test);
-		static NAN_METHOD(Replace);
-		static NAN_METHOD(Split);
 
 		static NAN_GETTER(GetSource);
 		static NAN_GETTER(GetGlobal);
@@ -68,6 +56,16 @@ class WrappedRE2 : public node::ObjectWrap {
 		static NAN_GETTER(GetMultiline);
 		static NAN_GETTER(GetLastIndex);
 		static NAN_SETTER(SetLastIndex);
+
+		// RegExp methods
+		static NAN_METHOD(Exec);
+		static NAN_METHOD(Test);
+
+		// String methods
+		static NAN_METHOD(Match);
+		static NAN_METHOD(Replace);
+		static NAN_METHOD(Search);
+		static NAN_METHOD(Split);
 
 		static Persistent<Function>	constructor;
 
@@ -188,11 +186,54 @@ NAN_METHOD(WrappedRE2::Exec) {
 
 NAN_METHOD(WrappedRE2::Test) {
 	NanScope();
+
+	// unpack arguments
+
+	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
+	if (!re2) {
+		NanReturnValue(NanNew(false));
+	}
+
+	auto_ptr<NanUtf8String> buffer;
+
+	char*  data;
+	size_t size;
+	if (args[0]->IsString()){
+		buffer.reset(new NanUtf8String(args[0]));
+		data = **buffer;
+		size = buffer->Size() - 1;
+	} else if (Buffer::HasInstance(args[0])) {
+		data = Buffer::Data(args[0]);
+		size = Buffer::Length(args[0]);
+	} else {
+		NanReturnValue(NanNew(false));
+	}
+
+	// actual work
+
+	if (re2->lastIndex > size) {
+		re2->lastIndex = 0;
+		NanReturnValue(NanNew(false));
+	}
+
+	NanReturnValue(NanNew(
+		re2->regexp.Match(StringPiece(data, size), re2->lastIndex, size, RE2::UNANCHORED, NULL, 0)));
+}
+
+
+NAN_METHOD(WrappedRE2::Match) {
+	NanScope();
 	NanReturnUndefined();
 }
 
 
 NAN_METHOD(WrappedRE2::Replace) {
+	NanScope();
+	NanReturnUndefined();
+}
+
+
+NAN_METHOD(WrappedRE2::Search) {
 	NanScope();
 	NanReturnUndefined();
 }
@@ -217,21 +258,21 @@ NAN_GETTER(WrappedRE2::GetSource) {
 NAN_GETTER(WrappedRE2::GetGlobal) {
 	NanScope();
 	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
-	NanReturnValue(NanNew<Boolean>(re2->global));
+	NanReturnValue(NanNew(re2->global));
 }
 
 
 NAN_GETTER(WrappedRE2::GetIgnoreCase) {
 	NanScope();
 	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
-	NanReturnValue(NanNew<Boolean>(re2->ignoreCase));
+	NanReturnValue(NanNew(re2->ignoreCase));
 }
 
 
 NAN_GETTER(WrappedRE2::GetMultiline) {
 	NanScope();
 	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
-	NanReturnValue(NanNew<Boolean>(re2->multiline));
+	NanReturnValue(NanNew(re2->multiline));
 }
 
 
@@ -268,7 +309,10 @@ void WrappedRE2::Initialize(Handle<Object> exports, Handle<Object> module) {
 
 	NODE_SET_PROTOTYPE_METHOD(tpl, "exec",    Exec);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "test",    Test);
+
+	NODE_SET_PROTOTYPE_METHOD(tpl, "match",   Match);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "replace", Replace);
+	NODE_SET_PROTOTYPE_METHOD(tpl, "search",  Search);
 	NODE_SET_PROTOTYPE_METHOD(tpl, "split",   Split);
 
 	Local<ObjectTemplate> proto = tpl->PrototypeTemplate();
