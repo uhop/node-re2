@@ -87,8 +87,6 @@ NAN_METHOD(WrappedRE2::New) {
 		bool global = false;
 
 		RE2::Options options;
-		options.set_case_sensitive(true);
-		options.set_one_line(true);
 
 		if (args.Length() > 1) {
 			NanUtf8String flags(args[1]);
@@ -97,11 +95,9 @@ NAN_METHOD(WrappedRE2::New) {
 				switch (p[i]) {
 					case 'i':
 						ignoreCase = true;
-						options.set_case_sensitive(false);
 						break;
 					case 'm':
 						multiline = true;
-						options.set_one_line(false);
 						break;
 					case 'g':
 						global = true;
@@ -109,6 +105,9 @@ NAN_METHOD(WrappedRE2::New) {
 				}
 			}
 		}
+
+		options.set_case_sensitive(!ignoreCase);
+		options.set_one_line(!multiline);
 
 		// create and return an object
 
