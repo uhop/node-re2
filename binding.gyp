@@ -34,7 +34,6 @@
       "cflags": [
         "-Wall",
         "-Wno-sign-compare",
-        "-Wunused-local-typedefs",
         "-Wmissing-field-initializers",
         "-O3",
         "-g"
