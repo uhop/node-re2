@@ -73,6 +73,11 @@ class WrappedRE2 : public node::ObjectWrap {
 		static void Initialize(Handle<Object> exports, Handle<Object> module);
 };
 
+inline size_t len(NanUtf8String& s) {
+	size_t n = s.Size();
+	return n && !(*s)[n - 1] ? n - 1 : n;
+}
+
 
 NAN_METHOD(WrappedRE2::New) {
 	NanScope();
@@ -91,7 +96,7 @@ NAN_METHOD(WrappedRE2::New) {
 		if (args.Length() > 1) {
 			NanUtf8String flags(args[1]);
 			const char* p = *flags;
-			for (size_t i = 0, n = flags.Size() - 1; i < n; ++i) {
+			for (size_t i = 0, n = len(flags); i < n; ++i) {
 				switch (p[i]) {
 					case 'i':
 						ignoreCase = true;
@@ -111,7 +116,7 @@ NAN_METHOD(WrappedRE2::New) {
 
 		// create and return an object
 
-		WrappedRE2* re2 = new WrappedRE2(StringPiece(*pattern, pattern.Size() - 1),
+		WrappedRE2* re2 = new WrappedRE2(StringPiece(*pattern, len(pattern)),
 			options, global, ignoreCase, multiline);
 		re2->Wrap(args.This());
 		return args.This();
@@ -144,7 +149,7 @@ NAN_METHOD(WrappedRE2::Exec) {
 	if (args[0]->IsString()){
 		buffer.reset(new NanUtf8String(args[0]));
 		data = **buffer;
-		size = buffer->Size() - 1;
+		size = len(*buffer);
 	} else if (Buffer::HasInstance(args[0])) {
 		data = Buffer::Data(args[0]);
 		size = Buffer::Length(args[0]);
@@ -200,7 +205,7 @@ NAN_METHOD(WrappedRE2::Test) {
 	if (args[0]->IsString()){
 		buffer.reset(new NanUtf8String(args[0]));
 		data = **buffer;
-		size = buffer->Size() - 1;
+		size = len(*buffer);
 	} else if (Buffer::HasInstance(args[0])) {
 		data = Buffer::Data(args[0]);
 		size = Buffer::Length(args[0]);
