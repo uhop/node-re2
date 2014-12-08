@@ -16,9 +16,20 @@ unit.add(module, [
 	},
 	function test_generalInst(t) {
 		"use strict";
-		var re = new RE2("\\d+");
-		eval(t.TEST("!!re"));
-		eval(t.TEST("re instanceof RE2"));
+		var re1 = new RE2("\\d+");
+		eval(t.TEST("!!re1"));
+		eval(t.TEST("re1 instanceof RE2"));
+		var re2 = RE2("\\d+");
+		eval(t.TEST("!!re2"));
+		eval(t.TEST("re2 instanceof RE2"));
+		compare(re1, re2, t);
+		re1 = new RE2("\\d+", "m");
+		eval(t.TEST("!!re1"));
+		eval(t.TEST("re1 instanceof RE2"));
+		re2 = RE2("\\d+", "m");
+		eval(t.TEST("!!re2"));
+		eval(t.TEST("re2 instanceof RE2"));
+		compare(re1, re2, t);
 	},
 	function test_generalIn(t) {
 		"use strict";
