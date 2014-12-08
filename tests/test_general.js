@@ -2,7 +2,7 @@
 
 
 var unit = require("heya-unit");
-var RE2  = require("../build/Release/re2.node");
+var RE2  = require("../re2");
 
 
 // tests
