@@ -11,7 +11,7 @@ var RE2  = require("../re2");
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test
 
 unit.add(module, [
-	function test_fromExec(t) {
+	function test_testFromExec(t) {
 		"use strict";
 		var re = new RE2("quick\\s(brown).+?(jumps)", "ig");
 		eval(t.TEST("re.test('The Quick Brown Fox Jumps Over The Lazy Dog')"));
@@ -26,7 +26,7 @@ unit.add(module, [
 		eval(t.TEST("re.test('This is a hello world!')"));
 		eval(t.TEST("!re.test('This is a Hello world!')"));
 	},
-	function test_execSucc(t) {
+	function test_testSimple(t) {
 		"use strict";
 		var str = "abbcdefabh";
 		var re1 = new RE2("ab*", "g");
