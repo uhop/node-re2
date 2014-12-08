@@ -14,24 +14,24 @@ NAN_METHOD(WrappedRE2::ToString) {
 
 	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
 	if (!re2) {
-		NanReturnValue(NanNew(""));
+		NanReturnEmptyString();
 	}
 
 	// actual work
 
-	string buf("/");
-	buf += re2->regexp.pattern();
-	buf += "/";
+	string buffer("/");
+	buffer += re2->regexp.pattern();
+	buffer += "/";
 
 	if (re2->ignoreCase) {
-		buf += "i";
+		buffer += "i";
 	}
 	if (re2->global) {
-		buf += "g";
+		buffer += "g";
 	}
 	if (re2->multiline) {
-		buf += "m";
+		buffer += "m";
 	}
 
-	NanReturnValue(NanNew(buf));
+	NanReturnValue(NanNew(buffer));
 }
