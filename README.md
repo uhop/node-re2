@@ -1,9 +1,9 @@
 # node-re2
 
 [![Build status][travis-image]][travis-url]
-[![NPM version][npm-image]][npm-url]
 [![Dependencies][deps-image]][deps-url]
 [![devDependencies][dev-deps-image]][dev-deps-url]
+[![NPM version][npm-image]][npm-url]
 
 node.js bindings for [RE2](https://code.google.com/p/re2/):
 fast, safe alternative to backtracking regular expression engines. The trade-offs for speed: lack of backreferences
@@ -60,7 +60,7 @@ If this kind of matching is essential for your application, you should use `RegE
 - 0.9.0 *the initial public release*
 
 
-[npm-image]:      https://img.shields.io/npm/v/re2.svg?style=flat-square
+[npm-image]:      https://img.shields.io/npm/v/re2.svg
 [npm-url]:        https://npmjs.org/package/re2
 [deps-image]:     https://img.shields.io/david/uhop/node-re2.svg
 [deps-url]:       https://david-dm.org/uhop/node-re2
