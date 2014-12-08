@@ -1,5 +1,6 @@
 #include "./wrapped_re2.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
@@ -8,6 +9,7 @@
 
 
 using std::auto_ptr;
+using std::min;
 using std::string;
 using std::vector;
 
@@ -19,6 +21,49 @@ using v8::String;
 using v8::Value;
 
 using node::Buffer;
+
+
+inline int getMaxSubmatch(const NanUtf8String& replacer) {
+	int maxSubmatch = -1, index, index2;
+	for (size_t i = 0, n = len(replacer); i < n; ++i) {
+		char ch = (*replacer)[i];
+		if (ch == '$') {
+			if (i + 1 < n) {
+				ch = (*replacer)[++i];
+				switch (ch) {
+					case '&':
+					case '`':
+					case '\'':
+						if (maxSubmatch < 0) maxSubmatch = 0;
+						continue;
+					case '0':
+					case '1':
+					case '2':
+					case '3':
+					case '4':
+					case '5':
+					case '6':
+					case '7':
+					case '8':
+					case '9':
+						index = ch - '0';
+						if (i + 1 < n) {
+							ch = (*replacer)[i + 1];
+							if ('0' <= ch && ch <= '9') {
+								++i;
+								index2 = index * 10 + (ch - '0');
+								if (maxSubmatch < index2) maxSubmatch = index2;
+								continue;
+							}
+						}
+						if (maxSubmatch < index) maxSubmatch = index;
+						continue;
+				}
+			}
+		}
+	}
+	return maxSubmatch;
+}
 
 
 inline string replace(const NanUtf8String& replacer, const vector<StringPiece>& groups, const StringPiece& str) {
@@ -96,13 +141,19 @@ static string replace(WrappedRE2* re2, const StringPiece& str, const NanUtf8Stri
 	const char* data = str.data();
 	size_t      size = str.size();
 
-	vector<StringPiece> groups(re2->regexp.NumberOfCapturingGroups() + 1);
+	int maxSubmatch = getMaxSubmatch(replacer);
+
+	vector<StringPiece> groups(1);
+	if (maxSubmatch > 0) {
+		groups.resize(min(re2->regexp.NumberOfCapturingGroups(), maxSubmatch) + 1);
+	}
 	const StringPiece& match = groups[0];
 
 	size_t lastIndex = 0;
 	string result;
 
-	while (lastIndex <= size && re2->regexp.Match(str, lastIndex, size, RE2::UNANCHORED, &groups[0], groups.size())) {
+	while (lastIndex <= size && re2->regexp.Match(str, lastIndex, size,
+				RE2::UNANCHORED, &groups[0], groups.size())) {
 		if (match.size()) {
 			if (match.data() == data || match.data() - data > lastIndex) {
 				result += string(data + lastIndex, match.data() - data - lastIndex);
