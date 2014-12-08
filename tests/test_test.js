@@ -11,6 +11,21 @@ var RE2  = require("../build/Release/re2.node");
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test
 
 unit.add(module, [
+	function test_fromExec(t) {
+		"use strict";
+		var re = new RE2("quick\\s(brown).+?(jumps)", "ig");
+		eval(t.TEST("re.test('The Quick Brown Fox Jumps Over The Lazy Dog')"));
+		eval(t.TEST("re.test('tHE qUICK bROWN fOX jUMPS oVER tHE lAZY dOG')"));
+		eval(t.TEST("re.test('the quick brown fox jumps over the lazy dog')"));
+		eval(t.TEST("re.test('THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG')"));
+		eval(t.TEST("!re.test('THE KWIK BROWN FOX JUMPS OVER THE LAZY DOG')"));
+		re = new RE2("ab*", "g");
+		eval(t.TEST("re.test('abbcdefabh')"));
+		eval(t.TEST("!re.test('qwerty')"));
+		re = new RE2("(hello \\S+)");
+		eval(t.TEST("re.test('This is a hello world!')"));
+		eval(t.TEST("!re.test('This is a Hello world!')"));
+	},
 	function test_execSucc(t) {
 		"use strict";
 		var str = "abbcdefabh";
