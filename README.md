@@ -80,6 +80,12 @@ var rex = new RE2(re);
 result = rex.exec("aBbC");
 console.log(result[0]); // "aBb"
 console.log(result[1]); // "Bb"
+
+// shortcut
+result = new RE2("ab*").exec("abba");
+
+// factory
+result = RE2("ab*").exec("abba");
 ```
 
 ## Backreferences
