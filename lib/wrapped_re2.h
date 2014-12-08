@@ -22,12 +22,6 @@ using re2::StringPiece;
 class WrappedRE2 : public ObjectWrap {
 
 	private:
-		RE2		regexp;
-		bool	global;
-		bool	ignoreCase;
-		bool	multiline;
-		size_t	lastIndex;
-
 		WrappedRE2(const StringPiece& pattern, const RE2::Options& options,
 			const bool& g, const bool& i, const bool& m) : regexp(pattern, options),
 				global(g), ignoreCase(i), multiline(m), lastIndex(0) {}
@@ -56,6 +50,12 @@ class WrappedRE2 : public ObjectWrap {
 
 	public:
 		static void Initialize(Handle<Object> exports, Handle<Object> module);
+
+		RE2		regexp;
+		bool	global;
+		bool	ignoreCase;
+		bool	multiline;
+		size_t	lastIndex;
 };
 
 
