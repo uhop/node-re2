@@ -16,11 +16,12 @@ using v8::Function;
 using v8::Integer;
 using v8::Local;
 using v8::String;
+using v8::Value;
 
 using node::Buffer;
 
 
-static string replace(const NanUtf8String& replacer, const vector<StringPiece>& groups, const StringPiece& input) {
+inline string replace(const NanUtf8String& replacer, const vector<StringPiece>& groups, const StringPiece& str) {
 	string result;
 	size_t index, index2;
 	for (size_t i = 0, n = len(replacer); i < n; ++i) {
@@ -36,11 +37,11 @@ static string replace(const NanUtf8String& replacer, const vector<StringPiece>& 
 						result += groups[0].as_string();
 						continue;
 					case '`':
-						result += string(input.data(), groups[0].data() - input.data());
+						result += string(str.data(), groups[0].data() - str.data());
 						continue;
 					case '\'':
 						result += string(groups[0].data() + groups[0].size(),
-							input.data() + input.size() - groups[0].data() - groups[0].size());
+							str.data() + str.size() - groups[0].data() - groups[0].size());
 						continue;
 					case '0':
 					case '1':
@@ -90,7 +91,8 @@ static string replace(const NanUtf8String& replacer, const vector<StringPiece>& 
 }
 
 
-static string replaceWithString(WrappedRE2* re2, const StringPiece& str, const NanUtf8String& replacer) {
+static string replace(WrappedRE2* re2, const StringPiece& str, const NanUtf8String& replacer) {
+
 	const char* data = str.data();
 	size_t      size = str.size();
 
@@ -125,8 +127,58 @@ static string replaceWithString(WrappedRE2* re2, const StringPiece& str, const N
 	return result;
 }
 
-static string replaceWithFunction(WrappedRE2* re2, const StringPiece& str, const NanCallback& replacer) {
-	return "";
+
+inline string replace(const NanCallback& replacer, const vector<StringPiece>& groups,
+						const StringPiece& str, const Local<Value>& input) {
+	vector< Local<Value> >	argv;
+	for (size_t i = 0, n = groups.size(); i < n; ++i) {
+		const StringPiece& item = groups[i];
+		argv.push_back(NanNew<String>(item.data(), item.size()));
+	}
+	argv.push_back(NanNew<Integer>(groups[0].data() - str.data()));
+	argv.push_back(input);
+
+	NanUtf8String result(replacer.Call(argv.size(), &argv[0])->ToString());
+
+	return string(*result, len(result));
+}
+
+
+static string replace(WrappedRE2* re2, const StringPiece& str,
+						const NanCallback& replacer, const Local<Value>& input) {
+
+	const char* data = str.data();
+	size_t      size = str.size();
+
+	vector<StringPiece> groups(re2->regexp.NumberOfCapturingGroups() + 1);
+	const StringPiece& match = groups[0];
+
+	size_t lastIndex = 0;
+	string result;
+
+	while (lastIndex <= size && re2->regexp.Match(str, lastIndex, size, RE2::UNANCHORED, &groups[0], groups.size())) {
+		if (match.size()) {
+			if (match.data() == data || match.data() - data > lastIndex) {
+				result += string(data + lastIndex, match.data() - data - lastIndex);
+			}
+			result += replace(replacer, groups, str, input);
+			lastIndex = match.data() - data + match.size();
+		} else {
+			result += replace(replacer, groups, str, input);
+			if (lastIndex < size) {
+				result += data[lastIndex];
+			}
+			++lastIndex;
+		}
+		if (!re2->global) {
+			break;
+		}
+	}
+	if (lastIndex < size) {
+		result += string(data + lastIndex, size - lastIndex);
+	}
+
+	return result;
 }
 
 
@@ -158,11 +210,11 @@ NAN_METHOD(WrappedRE2::Replace) {
 	StringPiece str(data, size);
 
 	if (args[1]->IsString()) {
-		NanReturnValue(NanNew(replaceWithString(re2, str, NanUtf8String(args[1]))));
+		NanReturnValue(NanNew(replace(re2, str, NanUtf8String(args[1]))));
 	}
 
 	if (args[1]->IsFunction()) {
-		NanReturnValue(NanNew(replaceWithFunction(re2, str, NanCallback(args[1].As<Function>()))));
+		NanReturnValue(NanNew(replace(re2, str, NanCallback(args[1].As<Function>()), args[0])));
 	}
 
 	NanReturnValue(args[0]);
