@@ -11,6 +11,7 @@
         "lib/replace.cc",
         "lib/search.cc",
         "lib/split.cc",
+        "lib/toString.cc",
         "lib/accessors.cc",
         "vendor/re2/re2/bitstate.cc",
         "vendor/re2/re2/compile.cc",

@@ -62,8 +62,8 @@ NAN_METHOD(WrappedRE2::Exec) {
 		const StringPiece& item = groups[i];
 		result->Set(NanNew<Integer>(i), NanNew<String>(item.data(), item.size()));
 	}
-	result->Set(NanNew<String>("index"), NanNew<Integer>(groups[0].data() - data));
-	result->Set(NanNew<String>("input"), args[0]);
+	result->Set(NanNew("index"), NanNew<Integer>(groups[0].data() - data));
+	result->Set(NanNew("input"), args[0]);
 
 	if (re2->global) {
 		re2->lastIndex = groups[0].data() - data + groups[0].size();

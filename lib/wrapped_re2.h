@@ -33,6 +33,7 @@ class WrappedRE2 : public ObjectWrap {
 				global(g), ignoreCase(i), multiline(m), lastIndex(0) {}
 
 		static NAN_METHOD(New);
+		static NAN_METHOD(ToString);
 
 		static NAN_GETTER(GetSource);
 		static NAN_GETTER(GetGlobal);

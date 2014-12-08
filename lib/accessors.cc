@@ -2,13 +2,12 @@
 
 
 using v8::Integer;
-using v8::String;
 
 
 NAN_GETTER(WrappedRE2::GetSource) {
 	NanScope();
 	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
-	NanReturnValue(NanNew<String>(re2->regexp.pattern()));
+	NanReturnValue(NanNew(re2->regexp.pattern()));
 }
 
 
