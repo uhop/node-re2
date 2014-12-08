@@ -5,33 +5,57 @@
 [![devDependencies][dev-deps-image]][dev-deps-url]
 [![NPM version][npm-image]][npm-url]
 
-node.js bindings for [RE2](https://code.google.com/p/re2/):
-fast, safe alternative to backtracking regular expression engines. The trade-offs for speed: lack of backreferences
-and zero-width assertions. See below for more details.
+This project is node.js bindings for [RE2](https://code.google.com/p/re2/):
+fast, safe alternative to backtracking regular expression engines.
+Its regular expression language is almost a superset of what is provided by `RegExp`,
+but it lacks one feature: backreferences. See below for more details.
 
-`RE2` object emulates standard `RegExp`, and supports folowing properties:
+`RE2` object emulates standard `RegExp` making it a practical drop-in replacement in most cases.
+`RE2` is extended to provide `String`-based regular expression methods as well. To help converting
+`RegExp` objects to `RE2` its constructor can take `RegExp` directly honoring all properties.
 
-* [`lastIndex`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex)
-* [`global`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global)
-* [`ignoreCase`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/ignoreCase)
-* [`multiline`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/multiline)
-* [`source`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/source)
+## Standard features
 
-And following methods:
-
-* [`exec(str)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec)
-* [`test(str)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test)
-
-It can be created like `RegExp`:
+It can be created just like `RegExp`:
 
 * [`new RE2(pattern[, flags])`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp)
 
-Additionally it can be created from a regular expression `new RE2(regexp)`:
+Supported properties:
+
+* [`re2.lastIndex`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex)
+* [`re2.global`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global)
+* [`re2.ignoreCase`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/ignoreCase)
+* [`re2.multiline`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/multiline)
+* [`re2.source`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/source)
+
+Supported methods:
+
+* [`re2.exec(str)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec)
+* [`re2.test(str)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test)
+* [`re2.toString()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/toString)
+
+## Extensions
+
+The following is the list of extensions.
+
+`RE2` object can be created from a regular expression:
 
 ```js
 var re1 = new RE2(/ab*/ig); // from RegExp object
 var re2 = new RE2(re1);     // from RE2 object
 ```
+
+Standard `String` defines four more methods that can use regular expressions. `RE2` provides as methods
+exchanging positions of a string, and a regular expression:
+
+* `re2.match(str)` vs.
+  [`str.match(regexp)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match)
+* `re2.replace(str, newSubStr|function)` vs.
+  [`str.replace(regexp, newSubStr|function)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace)
+* `re2.search(str)` vs.
+  [`str.search(regexp)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/search)
+* `re2.split(str[, limit])` vs.
+  [`str.split(regexp[, limit]])`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split)
 
 ## How to install
 
@@ -90,7 +114,7 @@ result = RE2("ab*").exec("abba");
 
 ## Backreferences
 
-Unlike the standard `RegExp`, `RE2` doesn't support backreferences, which are numbered references to previously
+Unlike `RegExp`, `RE2` doesn't support backreferences, which are numbered references to previously
 matched groups, like so: `\1`, `\2`, and so on. Example of backrefrences:
 
 ```js
@@ -100,10 +124,11 @@ matched groups, like so: `\1`, `\2`, and so on. Example of backrefrences:
 /(cat|dog)\1/.test("dogcat"); // false
 ```
 
-If this kind of matching is essential for your application, you should use `RegExp`.
+If your application uses this kind of matching, you should use `RegExp`.
 
 ## Release history
 
+- 1.0.0 *implemeted all `RegExp` methods, and all relevant `String` methods*
 - 0.9.0 *the initial public release*
 
 
