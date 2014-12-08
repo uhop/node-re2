@@ -58,5 +58,34 @@ unit.add(module, [
 		eval(t.TEST("re.lastIndex === 5"));
 		re.lastIndex = 0;
 		eval(t.TEST("re.lastIndex === 0"));
+	},
+	function test_generalRegExp(t) {
+		"use strict";
+		var re1 = new RegExp("\\d+");
+		var re2 = new RE2("\\d+");
+		compare(re1, re2, t);
+		re2 = new RE2(re1);
+		compare(re1, re2, t);
+		re1 = new RegExp("a", "ig");
+		re2 = new RE2("a", "ig");
+		compare(re1, re2, t);
+		re2 = new RE2(re1);
+		compare(re1, re2, t);
+		re1 = /\s/gm;
+		re2 = new RE2("\\s", "mg");
+		compare(re1, re2, t);
+		re2 = new RE2(re1);
+		compare(re1, re2, t);
 	}
 ]);
+
+
+// utilitites
+
+function compare(re1, re2, t) {
+	// compares regular expression objects
+	eval(t.TEST("re1.source === re2.source"));
+	eval(t.TEST("re1.global === re2.global"));
+	eval(t.TEST("re1.ignoreCase === re2.ignoreCase"));
+	eval(t.TEST("re1.multiline  === re2.multiline"));
+}

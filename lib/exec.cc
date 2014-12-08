@@ -1,7 +1,7 @@
 #include "./wrapped_re2.h"
 
-#include <vector>
 #include <memory>
+#include <vector>
 
 #include <node_buffer.h>
 
