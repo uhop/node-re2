@@ -10,6 +10,7 @@ var RE2  = require("../re2");
 unit.add(module, [
 	function test_toString(t) {
 		"use strict";
+
 		eval(t.TEST("RE2('a').toString() === '/a/'"));
 		eval(t.TEST("RE2('b', 'i').toString() === '/b/i'"));
 		eval(t.TEST("RE2('c', 'g').toString() === '/c/g'"));

@@ -10,30 +10,41 @@ var RE2  = require("../re2");
 unit.add(module, [
 	function test_generalCtr(t) {
 		"use strict";
+
 		eval(t.TEST("!!RE2"));
 		eval(t.TEST("RE2.toString() === 'function RE2() { [native code] }'"));
 		eval(t.TEST("!!RE2.prototype"));
 	},
 	function test_generalInst(t) {
 		"use strict";
+
 		var re1 = new RE2("\\d+");
+
 		eval(t.TEST("!!re1"));
 		eval(t.TEST("re1 instanceof RE2"));
+
 		var re2 = RE2("\\d+");
+
 		eval(t.TEST("!!re2"));
 		eval(t.TEST("re2 instanceof RE2"));
 		compare(re1, re2, t);
+
 		re1 = new RE2("\\d+", "m");
+
 		eval(t.TEST("!!re1"));
 		eval(t.TEST("re1 instanceof RE2"));
+
 		re2 = RE2("\\d+", "m");
+
 		eval(t.TEST("!!re2"));
 		eval(t.TEST("re2 instanceof RE2"));
 		compare(re1, re2, t);
 	},
 	function test_generalIn(t) {
 		"use strict";
+
 		var re = new RE2("\\d+");
+
 		eval(t.TEST("'exec' in re"));
 		eval(t.TEST("'test' in re"));
 		eval(t.TEST("'match' in re"));
@@ -48,7 +59,9 @@ unit.add(module, [
 	},
 	function test_generalPresent(t) {
 		"use strict";
+
 		var re = new RE2("\\d+");
+
 		eval(t.TEST("typeof re.exec == 'function'"));
 		eval(t.TEST("typeof re.test == 'function'"));
 		eval(t.TEST("typeof re.match == 'function'"));
@@ -63,34 +76,56 @@ unit.add(module, [
 	},
 	function test_generalLastIndex(t) {
 		"use strict";
+
 		var re = new RE2("\\d+");
+
 		eval(t.TEST("re.lastIndex === 0"));
+
 		re.lastIndex = 5;
+
 		eval(t.TEST("re.lastIndex === 5"));
+
 		re.lastIndex = 0;
+
 		eval(t.TEST("re.lastIndex === 0"));
 	},
 	function test_generalRegExp(t) {
 		"use strict";
+
 		var re1 = new RegExp("\\d+");
 		var re2 = new RE2("\\d+");
+
 		compare(re1, re2, t);
+
 		re2 = new RE2(re1);
+
 		compare(re1, re2, t);
+
 		re1 = new RegExp("a", "ig");
 		re2 = new RE2("a", "ig");
+
 		compare(re1, re2, t);
+
 		re2 = new RE2(re1);
+
 		compare(re1, re2, t);
+
 		re1 = /\s/gm;
 		re2 = new RE2("\\s", "mg");
+
 		compare(re1, re2, t);
+
 		re2 = new RE2(re1);
+
 		compare(re1, re2, t);
+
 		re2 = new RE2(/\s/gm);
+
 		compare(/\s/gm, re2, t);
+
 		re1 = new RE2("b", "gm");
 		re2 = new RE2(re1);
+
 		compare(re1, re2, t);
 	}
 ]);
