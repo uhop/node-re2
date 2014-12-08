@@ -65,7 +65,7 @@ NAN_METHOD(WrappedRE2::Match) {
 		// non-global: just like exec()
 
 		groups.resize(re2->regexp.NumberOfCapturingGroups() + 1);
-		if (!re2->regexp.Match(str, re2->lastIndex, size, RE2::UNANCHORED, &groups[0], groups.size())) {
+		if (!re2->regexp.Match(str, 0, size, RE2::UNANCHORED, &groups[0], groups.size())) {
 			NanReturnNull();
 		}
 	}
