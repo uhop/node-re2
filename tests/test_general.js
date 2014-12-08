@@ -78,6 +78,9 @@ unit.add(module, [
 		compare(re1, re2, t);
 		re2 = new RE2(/\s/gm);
 		compare(/\s/gm, re2, t);
+		re1 = new RE2("b", "gm");
+		re2 = new RE2(re1);
+		compare(re1, re2, t);
 	}
 ]);
 

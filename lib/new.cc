@@ -24,14 +24,7 @@ NAN_METHOD(WrappedRE2::New) {
 		bool multiline = false;
 		bool global = false;
 
-		if (args[0]->IsRegExp()) {
-			const RegExp* re = RegExp::Cast(*args[0]);
-			buffer.reset(new NanUtf8String(re->GetSource()));
-			RegExp::Flags flags = re->GetFlags();
-			ignoreCase = bool(flags & RegExp::kIgnoreCase);
-			multiline  = bool(flags & RegExp::kMultiline);
-			global     = bool(flags & RegExp::kGlobal);
-		} else {
+		if (args[0]->IsString()) {
 			buffer.reset(new NanUtf8String(args[0]));
 			if (args.Length() > 1) {
 				NanUtf8String flags(args[1]);
@@ -50,6 +43,25 @@ NAN_METHOD(WrappedRE2::New) {
 					}
 				}
 			}
+		} else if (args[0]->IsRegExp()) {
+			const RegExp* re = RegExp::Cast(*args[0]);
+			buffer.reset(new NanUtf8String(re->GetSource()));
+			RegExp::Flags flags = re->GetFlags();
+			ignoreCase = bool(flags & RegExp::kIgnoreCase);
+			multiline  = bool(flags & RegExp::kMultiline);
+			global     = bool(flags & RegExp::kGlobal);
+		} else if (args[0]->IsObject()) {
+			WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args[0]->ToObject());
+			if (re2) {
+				buffer.reset(new NanUtf8String(NanNew(re2->regexp.pattern())));
+				ignoreCase = re2->ignoreCase;
+				multiline  = re2->multiline;
+				global     = re2->global;
+			}
+		}
+
+		if (!buffer.get()) {
+			buffer.reset(new NanUtf8String(NanNew("")));
 		}
 
 		RE2::Options options;
