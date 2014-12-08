@@ -41,6 +41,47 @@ Installation:
 npm install re2
 ```
 
+## How to use
+
+```js
+var RE2 = require("re2");
+
+// with default flags
+var re = new RE2("a(b*)");
+var result = re.exec("abbc");
+console.log(result[0]); // "abb"
+console.log(result[1]); // "bb"
+
+result = re.exec("aBbC");
+console.log(result[0]); // "a"
+console.log(result[1]); // ""
+
+// with explicit flags
+re = new RE2("a(b*)", "i");
+result = re.exec("aBbC");
+console.log(result[0]); // "aBb"
+console.log(result[1]); // "Bb"
+
+// from regular expression object
+var regexp = new RegExp("a(b*)", "i");
+re = new RE2(regexp);
+result = re.exec("aBbC");
+console.log(result[0]); // "aBb"
+console.log(result[1]); // "Bb"
+
+// from regular expression literal
+re = new RE2(/a(b*)/i);
+result = re.exec("aBbC");
+console.log(result[0]); // "aBb"
+console.log(result[1]); // "Bb"
+
+// from another RE2 object
+var rex = new RE2(re);
+result = rex.exec("aBbC");
+console.log(result[0]); // "aBb"
+console.log(result[1]); // "Bb"
+```
+
 ## Backreferences
 
 Unlike the standard `RegExp`, `RE2` doesn't support backreferences, which are numbered references to previously
