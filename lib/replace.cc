@@ -24,7 +24,7 @@ using node::Buffer;
 
 
 inline int getMaxSubmatch(const NanUtf8String& replacer) {
-	int maxSubmatch = -1, index, index2;
+	int maxSubmatch = 0, index, index2;
 	for (size_t i = 0, n = len(replacer); i < n; ++i) {
 		char ch = (*replacer)[i];
 		if (ch == '$') {
@@ -34,7 +34,6 @@ inline int getMaxSubmatch(const NanUtf8String& replacer) {
 					case '&':
 					case '`':
 					case '\'':
-						if (maxSubmatch < 0) maxSubmatch = 0;
 						continue;
 					case '0':
 					case '1':
@@ -143,10 +142,7 @@ static string replace(WrappedRE2* re2, const StringPiece& str, const NanUtf8Stri
 
 	int maxSubmatch = getMaxSubmatch(replacer);
 
-	vector<StringPiece> groups(1);
-	if (maxSubmatch > 0) {
-		groups.resize(min(re2->regexp.NumberOfCapturingGroups(), maxSubmatch) + 1);
-	}
+	vector<StringPiece> groups(min(re2->regexp.NumberOfCapturingGroups(), maxSubmatch) + 1);
 	const StringPiece& match = groups[0];
 
 	size_t lastIndex = 0;
