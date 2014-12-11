@@ -31,7 +31,7 @@ NAN_METHOD(WrappedRE2::Match) {
 
 	char*  data;
 	size_t size;
-	if (args[0]->IsString()){
+	if (args[0]->IsString()) {
 		buffer.reset(new NanUtf8String(args[0]));
 		data = **buffer;
 		size = len(*buffer);
@@ -79,8 +79,9 @@ NAN_METHOD(WrappedRE2::Match) {
 	}
 
 	if (!re2->global) {
-		result->Set(NanNew("index"), NanNew<Integer>(groups[0].data() - data));
-		result->Set(NanNew("input"), args[0]);
+		result->Set(NanNew("index"),   NanNew<Integer>(groups[0].data() - data));
+		result->Set(NanNew("input"),   args[0]);
+		result->Set(NanNew("length0"), NanNew<Integer>(groups[0].size()));
 	}
 
 	NanReturnValue(result);
