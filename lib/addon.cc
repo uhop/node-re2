@@ -4,13 +4,34 @@
 using v8::Function;
 using v8::FunctionTemplate;
 using v8::Handle;
+using v8::Integer;
 using v8::Local;
 using v8::Object;
 using v8::ObjectTemplate;
 using v8::Persistent;
+using v8::String;
 
 
 Persistent<Function> WrappedRE2::constructor;
+
+
+static NAN_METHOD(GetUtf8Length) {
+	NanScope();
+
+	String::Value s(args[0]->ToString());
+
+	size_t n = 0;
+	for (size_t i = 0, l = s.length(); i < l; ++i) {
+		uint16_t ch = (*s)[i];
+		if (ch <= 0x7F) ++n;
+		else if (ch <= 0x7FF) n += 2;
+		else if (0xD800 <= ch && ch <= 0xDFFF) n += 4;
+		else if (ch < 0xFFFF) n += 3;
+		else n += 4;
+	}
+
+	NanReturnValue(NanNew<Integer>(n));
+}
 
 
 void WrappedRE2::Initialize(Handle<Object> exports, Handle<Object> module) {
@@ -40,6 +61,7 @@ void WrappedRE2::Initialize(Handle<Object> exports, Handle<Object> module) {
 	proto->SetAccessor(NanNew("lastIndex"),  GetLastIndex, SetLastIndex);
 
 	constructor = Persistent<Function>::New(tpl->GetFunction());
+	constructor->Set(NanNew("getUtf8Length"), NanNew<FunctionTemplate>(GetUtf8Length)->GetFunction());
 
 	// return constructor as module's export
 	module->Set(NanNew("exports"), constructor);

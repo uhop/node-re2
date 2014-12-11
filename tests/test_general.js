@@ -127,6 +127,14 @@ unit.add(module, [
 		re2 = new RE2(re1);
 
 		compare(re1, re2, t);
+	},
+	function test_utf8(t) {
+		"use strict";
+
+		var s = "Привет!";
+
+		eval(t.TEST("s.length === 7"));
+		eval(t.TEST("RE2.getUtf8Length(s) === 13"));
 	}
 ]);
 
