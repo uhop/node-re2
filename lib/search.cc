@@ -26,7 +26,7 @@ NAN_METHOD(WrappedRE2::Search) {
 
 	char*  data;
 	size_t size;
-	if (args[0]->IsString()){
+	if (args[0]->IsString()) {
 		buffer.reset(new NanUtf8String(args[0]));
 		data = **buffer;
 		size = len(*buffer);
