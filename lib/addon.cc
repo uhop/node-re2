@@ -17,20 +17,8 @@ Persistent<Function> WrappedRE2::constructor;
 
 static NAN_METHOD(GetUtf8Length) {
 	NanScope();
-
 	String::Value s(args[0]->ToString());
-
-	size_t n = 0;
-	for (size_t i = 0, l = s.length(); i < l; ++i) {
-		uint16_t ch = (*s)[i];
-		if (ch <= 0x7F) ++n;
-		else if (ch <= 0x7FF) n += 2;
-		else if (0xD800 <= ch && ch <= 0xDFFF) n += 4;
-		else if (ch < 0xFFFF) n += 3;
-		else n += 4;
-	}
-
-	NanReturnValue(NanNew<Integer>(n));
+	NanReturnValue(NanNew<Integer>(getUtf8Length(*s, *s + s.length())));
 }
 
 
