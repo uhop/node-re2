@@ -28,5 +28,47 @@ unit.add(module, [
 		re = new RE2("z", "gm");
 		result = re.search(str);
 		eval(t.TEST("result === -1"));
+	},
+	function test_searchUnicode(t) {
+		"use strict";
+
+		var str = "Всего 42 штуки.";
+
+		var re = new RE2(/\d+/i);
+		var result = re.search(str);
+		eval(t.TEST("result === 6"));
+
+		re = new RE2("\\s[а-я]+");
+		result = re.search(str);
+		eval(t.TEST("result === 8"));
+
+		re = new RE2("[а-яА-Я]+");
+		result = re.search(str);
+		eval(t.TEST("result === 0"));
+
+		re = new RE2("z", "gm");
+		result = re.search(str);
+		eval(t.TEST("result === -1"));
+	},
+	function test_searchBuffer(t) {
+		"use strict";
+
+		var buf = new Buffer("Всего 42 штуки.");
+
+		var re = new RE2(/\d+/i);
+		var result = re.search(buf);
+		eval(t.TEST("result === 11"));
+
+		re = new RE2("\\s[а-я]+");
+		result = re.search(buf);
+		eval(t.TEST("result === 13"));
+
+		re = new RE2("[а-яА-Я]+");
+		result = re.search(buf);
+		eval(t.TEST("result === 0"));
+
+		re = new RE2("z", "gm");
+		result = re.search(buf);
+		eval(t.TEST("result === -1"));
 	}
 ]);

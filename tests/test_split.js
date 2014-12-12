@@ -7,10 +7,11 @@ var RE2  = require("../re2");
 
 // tests
 
-// This tests are copied from MDN:
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split
-
 unit.add(module, [
+
+	// These tests are copied from MDN:
+	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split
+
 	function test_split(t) {
 		"use strict";
 

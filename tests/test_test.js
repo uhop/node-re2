@@ -7,10 +7,11 @@ var RE2  = require("../re2");
 
 // tests
 
-// This tests are copied from MDN:
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test
-
 unit.add(module, [
+
+	// These tests are copied from MDN:
+	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test
+
 	function test_testFromExec(t) {
 		"use strict";
 
