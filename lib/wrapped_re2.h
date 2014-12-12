@@ -82,7 +82,7 @@ inline size_t getUtf8Length(const uint16_t* from, const uint16_t* to) {
 inline size_t getUtf16Length(const char* from, const char* to) {
 	size_t n = 0;
 	while (from != to) {
-		unsigned ch = *from;
+		unsigned ch = *from & 0xFF;
 		if (ch < 0xF0) {
 			if (ch < 0x80) {
 				++from;
