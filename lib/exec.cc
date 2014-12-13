@@ -69,6 +69,9 @@ NAN_METHOD(WrappedRE2::Exec) {
 	vector<StringPiece> groups(re2->regexp.NumberOfCapturingGroups() + 1);
 
 	if (!re2->regexp.Match(StringPiece(data, size), lastIndex, size, RE2::UNANCHORED, &groups[0], groups.size())) {
+		if (re2->global) {
+			re2->lastIndex = 0;
+		}
 		NanReturnNull();
 	}
 
