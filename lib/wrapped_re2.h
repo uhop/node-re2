@@ -102,6 +102,9 @@ inline size_t getUtf16Length(const char* from, const char* to) {
 	return n;
 }
 
+inline size_t getUtf8CharSize(char ch) {
+	return ((0xE5000000 >> ((ch >> 3) & 0x1E)) & 3) + 1;
+}
 
 
 #endif

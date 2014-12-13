@@ -2,13 +2,11 @@
 
 #include <algorithm>
 #include <limits>
-#include <memory>
 #include <vector>
 
 #include <node_buffer.h>
 
 
-using std::auto_ptr;
 using std::min;
 using std::numeric_limits;
 using std::vector;
@@ -34,17 +32,22 @@ NAN_METHOD(WrappedRE2::Split) {
 		NanReturnValue(result);
 	}
 
-	auto_ptr<NanUtf8String> buffer;
+	vector<char> buffer;
 
 	char*  data;
 	size_t size;
+	bool   isBuffer = false;
+
 	if (args[0]->IsString()) {
-		buffer.reset(new NanUtf8String(args[0]));
-		data = **buffer;
-		size = len(*buffer);
+		Local<String> t(args[0]->ToString());
+		buffer.resize(t->Utf8Length() + 1);
+		t->WriteUtf8(&buffer[0]);
+		size = buffer.size() - 1;
+		data = &buffer[0];
 	} else if (Buffer::HasInstance(args[0])) {
-		data = Buffer::Data(args[0]);
+		isBuffer = true;
 		size = Buffer::Length(args[0]);
+		data = Buffer::Data(args[0]);
 	} else {
 		result->Set(NanNew(0), args[0]);
 		NanReturnValue(result);
@@ -75,8 +78,9 @@ NAN_METHOD(WrappedRE2::Split) {
 			lastIndex = match.data() - data + match.size();
 			pieces.insert(pieces.end(), groups.begin() + 1, groups.end());
 		} else {
-			pieces.push_back(StringPiece(data + lastIndex, 1));
-			++lastIndex;
+			size_t sym_size = getUtf8CharSize(data[lastIndex]);
+			pieces.push_back(StringPiece(data + lastIndex, sym_size));
+			lastIndex += sym_size;
 		}
 		if (pieces.size() >= limit) {
 			break;
@@ -93,9 +97,16 @@ NAN_METHOD(WrappedRE2::Split) {
 
 	// form a result
 
-	for (size_t i = 0, n = min(pieces.size(), limit); i < n; ++i) {
-		const StringPiece& item = pieces[i];
-		result->Set(NanNew<Integer>(i), NanNew<String>(item.data(), item.size()));
+	if (isBuffer) {
+		for (size_t i = 0, n = min(pieces.size(), limit); i < n; ++i) {
+			const StringPiece& item = pieces[i];
+			result->Set(NanNew<Integer>(i), NanNewBufferHandle(item.data(), item.size()));
+		}
+	} else {
+		for (size_t i = 0, n = min(pieces.size(), limit); i < n; ++i) {
+			const StringPiece& item = pieces[i];
+			result->Set(NanNew<Integer>(i), NanNew<String>(item.data(), item.size()));
+		}
 	}
 
 	NanReturnValue(result);

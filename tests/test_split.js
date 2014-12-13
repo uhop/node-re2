@@ -36,5 +36,69 @@ unit.add(module, [
 		eval(t.TEST("t.unify(result, ['Hello ', '1', ' word. Sentence number ', '2', '.'])"));
 
 		eval(t.TEST("RE2(/[x-z]*/).split('asdfghjkl').reverse().join('') === 'lkjhgfdsa'"));
+	},
+
+	// Unicode tests
+
+	function test_splitUnicode(t) {
+		"use strict";
+
+		var re = new RE2(/\s+/);
+		var result = re.split("Она не понимает, что этим убивает меня.");
+		eval(t.TEST("t.unify(result, ['Она', 'не', 'понимает,', 'что', 'этим', 'убивает', 'меня.'])"));
+
+		re = new RE2(",");
+		result = re.split("Пн,Вт,Ср,Чт,Пт,Сб,Вс");
+		eval(t.TEST("t.unify(result, ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'])"));
+
+		re = new RE2(/\s*;\s*/);
+		result = re.split("Ваня Иванов ;Петро Петренко; Саша Машин ; Маша Сашина");
+		eval(t.TEST("t.unify(result, ['Ваня Иванов', 'Петро Петренко', 'Саша Машин', 'Маша Сашина'])"));
+
+		re = new RE2(/\s+/);
+		result = re.split("Привет мир. Как дела?", 3);
+		eval(t.TEST("t.unify(result, ['Привет', 'мир.', 'Как'])"));
+
+		re = new RE2(/(\d)/);
+		result = re.split("Привет 1 слово. Предложение номер 2.");
+		eval(t.TEST("t.unify(result, ['Привет ', '1', ' слово. Предложение номер ', '2', '.'])"));
+
+		eval(t.TEST("RE2(/[э-я]*/).split('фывапролд').reverse().join('') === 'длорпавыф'"));
+	},
+
+	// Buffer tests
+
+	function test_splitBuffer(t) {
+		"use strict";
+
+		var re = new RE2(/\s+/);
+		var result = re.split(new Buffer("Она не понимает, что этим убивает меня."));
+		eval(t.TEST("t.unify(verifyBuffer(result, t), ['Она', 'не', 'понимает,', 'что', 'этим', 'убивает', 'меня.'])"));
+
+		re = new RE2(",");
+		result = re.split(new Buffer("Пн,Вт,Ср,Чт,Пт,Сб,Вс"));
+		eval(t.TEST("t.unify(verifyBuffer(result, t), ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'])"));
+
+		re = new RE2(/\s*;\s*/);
+		result = re.split(new Buffer("Ваня Иванов ;Петро Петренко; Саша Машин ; Маша Сашина"));
+		eval(t.TEST("t.unify(verifyBuffer(result, t), ['Ваня Иванов', 'Петро Петренко', 'Саша Машин', 'Маша Сашина'])"));
+
+		re = new RE2(/\s+/);
+		result = re.split(new Buffer("Привет мир. Как дела?"), 3);
+		eval(t.TEST("t.unify(verifyBuffer(result, t), ['Привет', 'мир.', 'Как'])"));
+
+		re = new RE2(/(\d)/);
+		result = re.split(new Buffer("Привет 1 слово. Предложение номер 2."));
+		eval(t.TEST("t.unify(verifyBuffer(result, t), ['Привет ', '1', ' слово. Предложение номер ', '2', '.'])"));
+
+		eval(t.TEST("RE2(/[э-я]*/).split(new Buffer('фывапролд')).map(function(x) { return x.toString(); }).reverse().join('') === 'длорпавыф'"));
 	}
 ]);
+
+
+function verifyBuffer(buf, t) {
+	return buf.map(function(x) {
+				t.test(x instanceof Buffer);
+				return x.toString();
+			});
+}
