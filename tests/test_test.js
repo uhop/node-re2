@@ -15,7 +15,7 @@ unit.add(module, [
 	function test_testFromExec(t) {
 		"use strict";
 
-		var re = new RE2("quick\\s(brown).+?(jumps)", "ig");
+		var re = new RE2("quick\\s(brown).+?(jumps)", "i");
 
 		eval(t.TEST("re.test('The Quick Brown Fox Jumps Over The Lazy Dog')"));
 		eval(t.TEST("re.test('tHE qUICK bROWN fOX jUMPS oVER tHE lAZY dOG')"));
@@ -49,5 +49,53 @@ unit.add(module, [
 		var re3 = new RE2("abc");
 
 		eval(t.TEST("!re3.test(str)"));
+	},
+
+	// Unicode tests
+
+	function test_testUnicode(t) {
+		"use strict";
+
+		var re = new RE2("охотник\\s(желает).+?(где)", "i");
+
+		eval(t.TEST("re.test('Каждый Охотник Желает Знать Где Сидит Фазан')"));
+		eval(t.TEST("re.test('кАЖДЫЙ оХОТНИК жЕЛАЕТ зНАТЬ гДЕ сИДИТ фАЗАН')"));
+		eval(t.TEST("re.test('каждый охотник желает знать где сидит фазан')"));
+		eval(t.TEST("re.test('КАЖДЫЙ ОХОТНИК ЖЕЛАЕТ ЗНАТЬ ГДЕ СИДИТ ФАЗАН')"));
+		eval(t.TEST("!re.test('Кажный Стрелок Хочет Найти Иде Прячется Птица')"));
+
+		re = new RE2("аб*", "g");
+
+		eval(t.TEST("re.test('аббвгдеабё')"));
+		eval(t.TEST("!re.test('йцукен')"));
+
+		re = new RE2("(привет \\S+)");
+
+		eval(t.TEST("re.test('Это просто привет всем.')"));
+		eval(t.TEST("!re.test('Это просто Привет всем.')"));
+	},
+
+	// Buffer tests
+
+	function test_testBuffer(t) {
+		"use strict";
+
+		var re = new RE2("охотник\\s(желает).+?(где)", "i");
+
+		eval(t.TEST("re.test(new Buffer('Каждый Охотник Желает Знать Где Сидит Фазан'))"));
+		eval(t.TEST("re.test(new Buffer('кАЖДЫЙ оХОТНИК жЕЛАЕТ зНАТЬ гДЕ сИДИТ фАЗАН'))"));
+		eval(t.TEST("re.test(new Buffer('каждый охотник желает знать где сидит фазан'))"));
+		eval(t.TEST("re.test(new Buffer('КАЖДЫЙ ОХОТНИК ЖЕЛАЕТ ЗНАТЬ ГДЕ СИДИТ ФАЗАН'))"));
+		eval(t.TEST("!re.test(new Buffer('Кажный Стрелок Хочет Найти Иде Прячется Птица'))"));
+
+		re = new RE2("аб*", "g");
+
+		eval(t.TEST("re.test(new Buffer('аббвгдеабё'))"));
+		eval(t.TEST("!re.test(new Buffer('йцукен'))"));
+
+		re = new RE2("(привет \\S+)");
+
+		eval(t.TEST("re.test(new Buffer('Это просто привет всем.'))"));
+		eval(t.TEST("!re.test(new Buffer('Это просто Привет всем.'))"));
 	}
 ]);
