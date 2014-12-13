@@ -85,5 +85,42 @@ unit.add(module, [
 			{text: "off: 1"},
 			{text: "on:  2"}
 		]
+	},
+
+	// Unicode tests
+
+	function test_replaceStrUnicode(t) {
+		"use strict";
+
+		var re = new RE2(/яблоки/gi);
+		var result = re.replace("Яблоки красны, яблоки сочны.", "апельсины");
+		eval(t.TEST("result === 'апельсины красны, апельсины сочны.'"));
+
+		re = new RE2(/иван/i);
+		result = re.replace("Могуч Иван Иванов...", "Сидор");
+		eval(t.TEST("result === 'Могуч Сидор Иванов...'"));
+
+		re = new RE2(/иван/ig);
+		result = re.replace("Могуч Иван Иванов...", "Сидор");
+		eval(t.TEST("result === 'Могуч Сидор Сидоров...'"));
+
+		re = new RE2(/([а-яё]+)\s+([а-яё]+)/i);
+		result = re.replace("Пётр Петров", "$2, $1");
+		eval(t.TEST("result === 'Петров, Пётр'"));
+	},
+	function test_replaceFunUnicode(t) {
+		"use strict";
+
+		function replacer(match, offset, string) {
+			t.test(typeof offset == "number");
+			t.test(typeof string == "string");
+			t.test(offset === 0 || offset === 7);
+			t.test(string === "ИВАН и пЁтр");
+			return match.charAt(0).toUpperCase() + match.substr(1).toLowerCase();
+		}
+
+		var re = new RE2(/(?:иван|пётр|сидор)/ig);
+		var result = re.replace("ИВАН и пЁтр", replacer);
+		eval(t.TEST("result === 'Иван и Пётр'"));
 	}
 ]);
