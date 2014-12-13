@@ -96,7 +96,7 @@ NAN_METHOD(WrappedRE2::Exec) {
 	result->Set(NanNew("input"), args[0]);
 
 	if (re2->global) {
-		re2->lastIndex += isBuffer ? groups[0].data() - data + groups[0].size() :
+		re2->lastIndex += isBuffer ? groups[0].data() - data + groups[0].size() - lastIndex :
 			getUtf16Length(data, groups[0].data() + groups[0].size());
 	}
 
