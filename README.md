@@ -5,11 +5,11 @@
 [![devDependencies][dev-deps-image]][dev-deps-url]
 [![NPM version][npm-image]][npm-url]
 
-This project is node.js bindings for [RE2](https://code.google.com/p/re2/):
-fast, safe alternative to backtracking regular expression engines. It is written by [Russ Cox](http://swtch.com/~rsc/).
+This project provides bindings for [RE2](https://code.google.com/p/re2/):
+fast, safe alternative to backtracking regular expression engines written by [Russ Cox](http://swtch.com/~rsc/).
 To learn more about RE2, start with an overview
 [Regular Expression Matching in the Wild](http://swtch.com/~rsc/regexp/regexp3.html). More resources can be found
-at [Implementing Regular Expressions](http://swtch.com/~rsc/regexp/) page.
+at his [Implementing Regular Expressions](http://swtch.com/~rsc/regexp/) page.
 
 RE2's regular expression language is almost a superset of what is provided by `RegExp`
 (see [Syntax](https://code.google.com/p/re2/wiki/Syntax)),
@@ -187,6 +187,7 @@ If your application uses this kind of matching, you should continue to use `RegE
 
 ## Release history
 
+- 1.1.1 *Minor corrections in README.*
 - 1.1.0 *Buffer-based API is public. Unicode is fully supported.*
 - 1.0.0 *implemeted all `RegExp` methods, and all relevant `String` methods*
 - 0.9.0 *the initial public release*
