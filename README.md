@@ -6,17 +6,25 @@
 [![NPM version][npm-image]][npm-url]
 
 This project is node.js bindings for [RE2](https://code.google.com/p/re2/):
-fast, safe alternative to backtracking regular expression engines.
-Its regular expression language is almost a superset of what is provided by `RegExp`,
+fast, safe alternative to backtracking regular expression engines. It is written by [Russ Cox](http://swtch.com/~rsc/).
+To learn more about RE2, start with an overview
+[Regular Expression Matching in the Wild](http://swtch.com/~rsc/regexp/regexp3.html). More resources can be found
+at [Implementing Regular Expressions](http://swtch.com/~rsc/regexp/) page.
+
+RE2's regular expression language is almost a superset of what is provided by `RegExp`
+(see [Syntax](https://code.google.com/p/re2/wiki/Syntax)),
 but it lacks one feature: backreferences. See below for more details.
 
 `RE2` object emulates standard `RegExp` making it a practical drop-in replacement in most cases.
 `RE2` is extended to provide `String`-based regular expression methods as well. To help converting
 `RegExp` objects to `RE2` its constructor can take `RegExp` directly honoring all properties.
 
+It can work with [node.js buffers](http://nodejs.org/api/buffer.html) directly reducing overhead
+on recoding and copying characters, and making processing/parsing long files fast.
+
 ## Standard features
 
-It can be created just like `RegExp`:
+`RE2` object can be created just like `RegExp`:
 
 * [`new RE2(pattern[, flags])`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp)
 
@@ -36,26 +44,75 @@ Supported methods:
 
 ## Extensions
 
-The following is the list of extensions.
+### Shortcut construction
 
 `RE2` object can be created from a regular expression:
 
 ```js
-var re1 = new RE2(/ab*/ig); // from RegExp object
-var re2 = new RE2(re1);     // from RE2 object
+var re1 = new RE2(/ab*/ig); // from a RegExp object
+var re2 = new RE2(re1);     // from another RE2 object
 ```
 
-Standard `String` defines four more methods that can use regular expressions. `RE2` provides as methods
+### `String` methods
+
+Standard `String` defines four more methods that can use regular expressions. `RE2` provides them as methods
 exchanging positions of a string, and a regular expression:
 
-* `re2.match(str)` vs.
-  [`str.match(regexp)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match)
-* `re2.replace(str, newSubStr|function)` vs.
-  [`str.replace(regexp, newSubStr|function)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace)
-* `re2.search(str)` vs.
-  [`str.search(regexp)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/search)
-* `re2.split(str[, limit])` vs.
-  [`str.split(regexp[, limit]])`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split)
+* `re2.match(str)`
+  * See [`str.match(regexp)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match)
+* `re2.replace(str, newSubStr|function)`
+  * See [`str.replace(regexp, newSubStr|function)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace)
+* `re2.search(str)`
+  * See [`str.search(regexp)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/search)
+* `re2.split(str[, limit])`
+  * See [`str.split(regexp[, limit]])`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split)
+
+### `Buffer` support
+
+In order to support `Buffer` directly, most methods can accept buffers instead of strings. It speeds up all operations.
+Following signatures are supported:
+
+* `re2.exec(buf)`
+* `re2.test(buf)`
+* `re2.match(buf)`
+* `re2.search(buf)`
+* `re2.split(buf[, limit])`
+* `re2.replace(buf, replacer)`
+
+Differences with their string-based versions:
+
+* All buffers are assumed to be encoded as [UTF-8](http://en.wikipedia.org/wiki/UTF-8)
+  (ASCII is a proper subset of UTF-8).
+* Instead of strings they return `Buffer` objects, even in composite objects. A buffer can be converted to a string with
+  [`buf.toString()`](http://nodejs.org/api/buffer.html#buffer_buf_tostring_encoding_start_end).
+* All offsets and lengths are in bytes, rather than characters (each UTF-8 character can occupy from 1 to 4 bytes).
+  This way users can properly slice buffers without costly recalculations from characters to bytes.
+
+When `re2.replace()` is used with a replacer function, the replacer can return a buffer, or a string. But all arguments
+(except for an input object) will be strings, and an offset will be in characters. If you prefer to deal
+with buffers and byte offsets in a replacer function, set a property `useBuffers` to `true` on the function:
+
+```js
+function strReplacer(match, offset, input) {
+	// typeof match == "string"
+	return "<= " + offset + " characters|";
+}
+
+RE2("б").replace("абв", strReplacer);
+// "а<= 1 characters|в"
+
+function bufReplacer(match, offset, input) {
+	// typeof match == "string"
+	return "<= " + offset + " bytes|";
+}
+bufReplacer.useBuffers = true;
+
+RE2("б").replace("абв", bufReplacer);
+// "а<= 2 bytes|в"
+```
+
+This feature works for string and buffer inputs. If a buffer was used as an input, its output will be returned as
+a buffer too, otherwise a string will be returned.
 
 ## How to install
 
@@ -66,6 +123,8 @@ npm install re2
 ```
 
 ## How to use
+
+It is used just like a `RegExp` object.
 
 ```js
 var RE2 = require("re2");
@@ -124,10 +183,11 @@ matched groups, like so: `\1`, `\2`, and so on. Example of backrefrences:
 /(cat|dog)\1/.test("dogcat"); // false
 ```
 
-If your application uses this kind of matching, you should use `RegExp`.
+If your application uses this kind of matching, you should continue to use `RegExp`.
 
 ## Release history
 
+- 1.1.0 *Buffer-based API is public. Unicode is fully supported.*
 - 1.0.0 *implemeted all `RegExp` methods, and all relevant `String` methods*
 - 0.9.0 *the initial public release*
 
