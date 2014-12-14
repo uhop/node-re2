@@ -81,7 +81,7 @@ NAN_METHOD(WrappedRE2::Match) {
 	if (isBuffer) {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
 			const StringPiece& item = groups[i];
-			result->Set(NanNew<Integer>(i), NanNewBufferHandle(item.data(), item.size()));
+			result->Set(i, NanNewBufferHandle(item.data(), item.size()));
 		}
 		if (!re2->global) {
 			result->Set(NanNew("index"), NanNew<Integer>(groups[0].data() - data));
@@ -90,7 +90,7 @@ NAN_METHOD(WrappedRE2::Match) {
 	} else {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
 			const StringPiece& item = groups[i];
-			result->Set(NanNew<Integer>(i), NanNew<String>(item.data(), item.size()));
+			result->Set(i, NanNew<String>(item.data(), item.size()));
 		}
 		if (!re2->global) {
 			result->Set(NanNew("index"), NanNew<Integer>(getUtf16Length(data, groups[0].data())));
