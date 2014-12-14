@@ -61,11 +61,6 @@ class WrappedRE2 : public ObjectWrap {
 
 // utilities
 
-inline size_t len(const NanUtf8String& s) {
-	size_t n = s.length();
-	return n && !(*s)[n - 1] ? n - 1 : n;
-}
-
 inline size_t getUtf8Length(const uint16_t* from, const uint16_t* to) {
 	size_t n = 0;
 	while (from != to) {

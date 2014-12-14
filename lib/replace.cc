@@ -211,7 +211,7 @@ inline string replace(const NanCallback& replacer, const vector<StringPiece>& gr
 
 	if (result->IsString()) {
 		NanUtf8String val(result);
-		return string(*val, len(val));
+		return string(*val, val.length());
 	}
 
 	if (Buffer::HasInstance(result)) {
