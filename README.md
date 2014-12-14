@@ -65,7 +65,7 @@ exchanging positions of a string, and a regular expression:
 * `re2.search(str)`
   * See [`str.search(regexp)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/search)
 * `re2.split(str[, limit])`
-  * See [`str.split(regexp[, limit]])`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split)
+  * See [`str.split(regexp[, limit])`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split)
 
 ### `Buffer` support
 
