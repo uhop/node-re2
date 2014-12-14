@@ -1,15 +1,18 @@
 #include "./wrapped_re2.h"
 
-#include <memory>
+#include <string>
 #include <vector>
 
 
-using std::auto_ptr;
+using std::string;
 using std::vector;
 
 using v8::Local;
 using v8::RegExp;
+using v8::String;
 using v8::Value;
+
+using node::Buffer;
 
 
 NAN_METHOD(WrappedRE2::New) {
@@ -18,34 +21,60 @@ NAN_METHOD(WrappedRE2::New) {
 	if (args.IsConstructCall()) {
 		// process arguments
 
-		auto_ptr<NanUtf8String>	buffer;
+		vector<char> buffer;
+
+		char*  data = NULL;
+		size_t size = 0;
 
 		bool ignoreCase = false;
 		bool multiline = false;
 		bool global = false;
 
-		if (args[0]->IsString()) {
-			buffer.reset(new NanUtf8String(args[0]));
-			if (args.Length() > 1) {
-				NanUtf8String flags(args[1]);
-				const char* p = *flags;
-				for (size_t i = 0, n = len(flags); i < n; ++i) {
-					switch (p[i]) {
-						case 'i':
-							ignoreCase = true;
-							break;
-						case 'm':
-							multiline = true;
-							break;
-						case 'g':
-							global = true;
-							break;
-					}
+		if (args.Length() > 1) {
+			if (args[1]->IsString()) {
+				Local<String> t(args[1]->ToString());
+				buffer.resize(t->Utf8Length() + 1);
+				t->WriteUtf8(&buffer[0]);
+				size = buffer.size() - 1;
+				data = &buffer[0];
+			} else if (Buffer::HasInstance(args[1])) {
+				size = Buffer::Length(args[1]);
+				data = Buffer::Data(args[1]);
+			}
+			for (size_t i = 0; i < size; ++i) {
+				switch (data[i]) {
+					case 'i':
+						ignoreCase = true;
+						break;
+					case 'm':
+						multiline = true;
+						break;
+					case 'g':
+						global = true;
+						break;
 				}
 			}
+			size = 0;
+		}
+
+		if (args[0]->IsString()) {
+			Local<String> t(args[0]->ToString());
+			buffer.resize(t->Utf8Length() + 1);
+			t->WriteUtf8(&buffer[0]);
+			size = buffer.size() - 1;
+			data = &buffer[0];
+		} else if (Buffer::HasInstance(args[0])) {
+			size = Buffer::Length(args[0]);
+			data = Buffer::Data(args[0]);
 		} else if (args[0]->IsRegExp()) {
 			const RegExp* re = RegExp::Cast(*args[0]);
-			buffer.reset(new NanUtf8String(re->GetSource()));
+
+			Local<String> t(re->GetSource());
+			buffer.resize(t->Utf8Length() + 1);
+			t->WriteUtf8(&buffer[0]);
+			size = buffer.size() - 1;
+			data = &buffer[0];
+
 			RegExp::Flags flags = re->GetFlags();
 			ignoreCase = bool(flags & RegExp::kIgnoreCase);
 			multiline  = bool(flags & RegExp::kMultiline);
@@ -53,15 +82,16 @@ NAN_METHOD(WrappedRE2::New) {
 		} else if (args[0]->IsObject()) {
 			WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args[0]->ToObject());
 			if (re2) {
-				buffer.reset(new NanUtf8String(NanNew(re2->regexp.pattern())));
+				const string& pattern = re2->regexp.pattern();
+				size = pattern.size();
+				buffer.resize(size);
+				data = &buffer[0];
+				memcpy(data, pattern.data(), size);
+
 				ignoreCase = re2->ignoreCase;
 				multiline  = re2->multiline;
 				global     = re2->global;
 			}
-		}
-
-		if (!buffer.get()) {
-			buffer.reset(new NanUtf8String(NanNew("")));
 		}
 
 		RE2::Options options;
@@ -70,9 +100,7 @@ NAN_METHOD(WrappedRE2::New) {
 
 		// create and return an object
 
-		WrappedRE2* re2 = new WrappedRE2(
-			StringPiece(**buffer, len(*buffer)),
-			options, global, ignoreCase, multiline);
+		WrappedRE2* re2 = new WrappedRE2(StringPiece(data, size), options, global, ignoreCase, multiline);
 		re2->Wrap(args.This());
 		return args.This();
 	}
