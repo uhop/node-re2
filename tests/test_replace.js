@@ -149,7 +149,7 @@ unit.add(module, [
 			eval(t.TEST("match instanceof Buffer"));
 			eval(t.TEST("typeof offset == 'number'"));
 			eval(t.TEST("typeof string == 'string'"));
-			eval(t.TEST("offset === 0 || offset === 7"));
+			eval(t.TEST("offset === 0 || offset === 12"));
 			eval(t.TEST("string === 'ИВАН и пЁтр'"));
 			var s = match.toString();
 			return s.charAt(0).toUpperCase() + s.substr(1).toLowerCase();
