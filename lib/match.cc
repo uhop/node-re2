@@ -32,18 +32,16 @@ NAN_METHOD(WrappedRE2::Match) {
 	size_t size;
 	bool   isBuffer = false;
 
-	if (args[0]->IsString()) {
+	if (Buffer::HasInstance(args[0])) {
+		isBuffer = true;
+		size = Buffer::Length(args[0]);
+		data = Buffer::Data(args[0]);
+	} else {
 		Local<String> t(args[0]->ToString());
 		buffer.resize(t->Utf8Length() + 1);
 		t->WriteUtf8(&buffer[0]);
 		size = buffer.size() - 1;
 		data = &buffer[0];
-	} else if (Buffer::HasInstance(args[0])) {
-		isBuffer = true;
-		size = Buffer::Length(args[0]);
-		data = Buffer::Data(args[0]);
-	} else {
-		NanReturnNull();
 	}
 
 	vector<StringPiece> groups;

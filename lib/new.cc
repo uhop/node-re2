@@ -57,13 +57,7 @@ NAN_METHOD(WrappedRE2::New) {
 			size = 0;
 		}
 
-		if (args[0]->IsString()) {
-			Local<String> t(args[0]->ToString());
-			buffer.resize(t->Utf8Length() + 1);
-			t->WriteUtf8(&buffer[0]);
-			size = buffer.size() - 1;
-			data = &buffer[0];
-		} else if (Buffer::HasInstance(args[0])) {
+		if (Buffer::HasInstance(args[0])) {
 			size = Buffer::Length(args[0]);
 			data = Buffer::Data(args[0]);
 		} else if (args[0]->IsRegExp()) {
@@ -79,7 +73,7 @@ NAN_METHOD(WrappedRE2::New) {
 			ignoreCase = bool(flags & RegExp::kIgnoreCase);
 			multiline  = bool(flags & RegExp::kMultiline);
 			global     = bool(flags & RegExp::kGlobal);
-		} else if (args[0]->IsObject()) {
+		} else if (args[0]->IsObject() && !args[0]->IsString()) {
 			WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args[0]->ToObject());
 			if (re2) {
 				const string& pattern = re2->regexp.pattern();
@@ -92,6 +86,12 @@ NAN_METHOD(WrappedRE2::New) {
 				multiline  = re2->multiline;
 				global     = re2->global;
 			}
+		} else {
+			Local<String> t(args[0]->ToString());
+			buffer.resize(t->Utf8Length() + 1);
+			t->WriteUtf8(&buffer[0]);
+			size = buffer.size() - 1;
+			data = &buffer[0];
 		}
 
 		RE2::Options options;

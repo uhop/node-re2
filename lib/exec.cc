@@ -32,9 +32,20 @@ NAN_METHOD(WrappedRE2::Exec) {
 	size_t size, lastIndex = 0;
 	bool   isBuffer = false;
 
-	if (args[0]->IsString()) {
+	if (Buffer::HasInstance(args[0])) {
+		isBuffer = true;
+		size = Buffer::Length(args[0]);
 		if (re2->global) {
-			String::Value s(args[0]);
+			if (re2->lastIndex > size) {
+				re2->lastIndex = 0;
+				NanReturnNull();
+			}
+			lastIndex = re2->lastIndex;
+		}
+		data = Buffer::Data(args[0]);
+	} else {
+		if (re2->global && re2->lastIndex) {
+			String::Value s(args[0]->ToString());
 			if (re2->lastIndex > s.length()) {
 				re2->lastIndex = 0;
 				NanReturnNull();
@@ -49,19 +60,6 @@ NAN_METHOD(WrappedRE2::Exec) {
 		}
 		size = buffer.size() - 1;
 		data = &buffer[0];
-	} else if (Buffer::HasInstance(args[0])) {
-		isBuffer = true;
-		size = Buffer::Length(args[0]);
-		if (re2->global) {
-			if (re2->lastIndex > size) {
-				re2->lastIndex = 0;
-				NanReturnNull();
-			}
-			lastIndex = re2->lastIndex;
-		}
-		data = Buffer::Data(args[0]);
-	} else {
-		NanReturnNull();
 	}
 
 	// actual work
