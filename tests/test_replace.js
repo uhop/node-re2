@@ -122,5 +122,43 @@ unit.add(module, [
 		var re = new RE2(/(?:иван|пётр|сидор)/ig);
 		var result = re.replace("ИВАН и пЁтр", replacer);
 		eval(t.TEST("result === 'Иван и Пётр'"));
+	},
+
+	// Buffer tests
+
+	function test_replaceStrBuffer(t) {
+		"use strict";
+
+		var re = new RE2(/яблоки/gi);
+		var result = re.replace(new Buffer("Яблоки красны, яблоки сочны."), "апельсины");
+		eval(t.TEST("result instanceof Buffer"));
+		eval(t.TEST("result.toString() === 'апельсины красны, апельсины сочны.'"));
+
+		result = re.replace(new Buffer("Яблоки красны, яблоки сочны."), new Buffer("апельсины"));
+		eval(t.TEST("result instanceof Buffer"));
+		eval(t.TEST("result.toString() === 'апельсины красны, апельсины сочны.'"));
+
+		result = re.replace("Яблоки красны, яблоки сочны.", new Buffer("апельсины"));
+		eval(t.TEST("typeof result == 'string'"));
+		eval(t.TEST("result === 'апельсины красны, апельсины сочны.'"));
+	},
+	function test_replaceFunBuffer(t) {
+		"use strict";
+
+		function replacer(match, offset, string) {
+			eval(t.TEST("match instanceof Buffer"));
+			eval(t.TEST("typeof offset == 'number'"));
+			eval(t.TEST("typeof string == 'string'"));
+			eval(t.TEST("offset === 0 || offset === 7"));
+			eval(t.TEST("string === 'ИВАН и пЁтр'"));
+			var s = match.toString();
+			return s.charAt(0).toUpperCase() + s.substr(1).toLowerCase();
+		}
+		replacer.useBuffers = true;
+
+		var re = new RE2(/(?:иван|пётр|сидор)/ig);
+		var result = re.replace("ИВАН и пЁтр", replacer);
+		eval(t.TEST("typeof result == 'string'"));
+		eval(t.TEST("result === 'Иван и Пётр'"));
 	}
 ]);
