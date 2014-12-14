@@ -194,9 +194,18 @@ inline string replace(const NanCallback& replacer, const vector<StringPiece>& gr
 	argv.push_back(NanNew<Integer>(getUtf16Length(str.data(), groups[0].data())));
 	argv.push_back(input);
 
-	NanUtf8String result(replacer.Call(argv.size(), &argv[0])->ToString());
+	Local<Value> result(Local<Value>::New(replacer.Call(argv.size(), &argv[0])));
 
-	return string(*result, len(result));
+	if (result->IsString()) {
+		NanUtf8String val(result);
+		return string(*val, len(val));
+	}
+
+	if (Buffer::HasInstance(result)) {
+		return string(Buffer::Data(result), Buffer::Length(result));
+	}
+
+	return string();
 }
 
 
@@ -252,7 +261,7 @@ NAN_METHOD(WrappedRE2::Replace) {
 
 	char*  data;
 	size_t size;
-	//bool   isBuffer = false;
+	bool   isBuffer = false;
 
 	if (args[0]->IsString()) {
 		Local<String> t(args[0]->ToString());
@@ -261,7 +270,7 @@ NAN_METHOD(WrappedRE2::Replace) {
 		size = buffer.size() - 1;
 		data = &buffer[0];
 	} else if (Buffer::HasInstance(args[0])) {
-		//isBuffer = true;
+		isBuffer = true;
 		size = Buffer::Length(args[0]);
 		data = Buffer::Data(args[0]);
 	} else {
@@ -271,9 +280,19 @@ NAN_METHOD(WrappedRE2::Replace) {
 	StringPiece str(data, size);
 
 	if (args[1]->IsString()) {
-		NanReturnValue(NanNew(replace(re2, str, NanUtf8String(args[1]))));
-	} else if (args[1]->IsFunction()) {
-		NanReturnValue(NanNew(replace(re2, str, NanCallback(args[1].As<Function>()), args[0])));
+		string result = replace(re2, str, NanUtf8String(args[1]));
+		if (isBuffer) {
+			NanReturnValue(NanNewBufferHandle(result.data(), result.size()));
+		}
+		NanReturnValue(NanNew(result));
+	}
+
+	if (args[1]->IsFunction()) {
+		string result = replace(re2, str, NanCallback(args[1].As<Function>()), args[0]);
+		if (isBuffer) {
+			NanReturnValue(NanNewBufferHandle(result.data(), result.size()));
+		}
+		NanReturnValue(NanNew(result));
 	}
 
 	NanReturnValue(args[0]);
