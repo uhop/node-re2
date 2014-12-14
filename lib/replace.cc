@@ -209,16 +209,12 @@ inline string replace(const NanCallback& replacer, const vector<StringPiece>& gr
 
 	Local<Value> result(Local<Value>::New(replacer.Call(argv.size(), &argv[0])));
 
-	if (result->IsString()) {
-		NanUtf8String val(result);
-		return string(*val, val.length());
-	}
-
 	if (Buffer::HasInstance(result)) {
 		return string(Buffer::Data(result), Buffer::Length(result));
 	}
 
-	return string();
+	NanUtf8String val(result->ToString());
+	return string(*val, val.length());
 }
 
 
