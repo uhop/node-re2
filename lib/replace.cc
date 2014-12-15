@@ -278,27 +278,18 @@ NAN_METHOD(WrappedRE2::Replace) {
 
 	StrVal a(args[0]);
 	StringPiece str(a);
+	string result;
 
 	if (args[1]->IsFunction()) {
 		Local<Function> cb(args[1].As<Function>());
-		string result = replace(re2, str, NanCallback(cb),
-			args[0], requiresBuffers(cb));
-		if (a.isBuffer) {
-			NanReturnValue(NanNewBufferHandle(result.data(), result.size()));
-		}
-		NanReturnValue(NanNew(result));
+		result = replace(re2, str, NanCallback(cb), args[0], requiresBuffers(cb));
+	} else if (Buffer::HasInstance(args[1])) {
+		result = replace(re2, str, Buffer::Data(args[1]), Buffer::Length(args[1]));
+	} else {
+		NanUtf8String s(args[1]->ToString());
+		result = replace(re2, str, *s, s.length());
 	}
 
-	if (Buffer::HasInstance(args[1])) {
-		string result = replace(re2, str, Buffer::Data(args[1]), Buffer::Length(args[1]));
-		if (a.isBuffer) {
-			NanReturnValue(NanNewBufferHandle(result.data(), result.size()));
-		}
-		NanReturnValue(NanNew(result));
-	}
-
-	NanUtf8String s(args[1]->ToString());
-	string result = replace(re2, str, *s, s.length());
 	if (a.isBuffer) {
 		NanReturnValue(NanNewBufferHandle(result.data(), result.size()));
 	}
