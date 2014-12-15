@@ -59,7 +59,7 @@ inline bool translateRegExp(const char* data, size_t size, vector<char>& buffer)
 								result += "\\x{";
 								result += ch;
 								i += 3;
-								for (size_t j = 0; j < 5; ++i, ++j) {
+								for (size_t j = 0; j < 3; ++i, ++j) {
 									ch = data[i];
 									if (!isHexadecimal(ch)) {
 										break;
