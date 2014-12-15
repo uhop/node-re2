@@ -1,9 +1,7 @@
 #include "./wrapped_re2.h"
+#include "./util.h"
 
-#include <memory>
 #include <vector>
-
-#include <node_buffer.h>
 
 
 using std::vector;
@@ -12,8 +10,6 @@ using v8::Array;
 using v8::Integer;
 using v8::Local;
 using v8::String;
-
-using node::Buffer;
 
 
 NAN_METHOD(WrappedRE2::Match) {
@@ -26,26 +22,9 @@ NAN_METHOD(WrappedRE2::Match) {
 		NanReturnNull();
 	}
 
-	vector<char> buffer;
-
-	char*  data;
-	size_t size;
-	bool   isBuffer = false;
-
-	if (Buffer::HasInstance(args[0])) {
-		isBuffer = true;
-		size = Buffer::Length(args[0]);
-		data = Buffer::Data(args[0]);
-	} else {
-		Local<String> t(args[0]->ToString());
-		buffer.resize(t->Utf8Length() + 1);
-		t->WriteUtf8(&buffer[0]);
-		size = buffer.size() - 1;
-		data = &buffer[0];
-	}
-
+	StrVal a(args[0]);
 	vector<StringPiece> groups;
-	StringPiece str(data, size);
+	StringPiece str(a);
 
 	// actual work
 
@@ -55,9 +34,9 @@ NAN_METHOD(WrappedRE2::Match) {
 		StringPiece match;
 		size_t lastIndex = 0;
 
-		while (re2->regexp.Match(str, lastIndex, size, RE2::UNANCHORED, &match, 1)) {
+		while (re2->regexp.Match(str, lastIndex, a.size, RE2::UNANCHORED, &match, 1)) {
 			groups.push_back(match);
-			lastIndex = match.data() - data + match.size();
+			lastIndex = match.data() - a.data + match.size();
 		}
 
 		if (groups.empty()) {
@@ -67,7 +46,7 @@ NAN_METHOD(WrappedRE2::Match) {
 		// non-global: just like exec()
 
 		groups.resize(re2->regexp.NumberOfCapturingGroups() + 1);
-		if (!re2->regexp.Match(str, 0, size, RE2::UNANCHORED, &groups[0], groups.size())) {
+		if (!re2->regexp.Match(str, 0, a.size, RE2::UNANCHORED, &groups[0], groups.size())) {
 			NanReturnNull();
 		}
 	}
@@ -76,13 +55,13 @@ NAN_METHOD(WrappedRE2::Match) {
 
 	Local<Array> result = NanNew<Array>();
 
-	if (isBuffer) {
+	if (a.isBuffer) {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
 			const StringPiece& item = groups[i];
 			result->Set(i, NanNewBufferHandle(item.data(), item.size()));
 		}
 		if (!re2->global) {
-			result->Set(NanNew("index"), NanNew<Integer>(groups[0].data() - data));
+			result->Set(NanNew("index"), NanNew<Integer>(groups[0].data() - a.data));
 			result->Set(NanNew("input"), args[0]);
 		}
 	} else {
@@ -91,7 +70,7 @@ NAN_METHOD(WrappedRE2::Match) {
 			result->Set(i, NanNew<String>(item.data(), item.size()));
 		}
 		if (!re2->global) {
-			result->Set(NanNew("index"), NanNew<Integer>(getUtf16Length(data, groups[0].data())));
+			result->Set(NanNew("index"), NanNew<Integer>(getUtf16Length(a.data, groups[0].data())));
 			result->Set(NanNew("input"), args[0]);
 		}
 	}

@@ -1,16 +1,11 @@
 #include "./wrapped_re2.h"
+#include "./util.h"
 
 #include <algorithm>
-#include <memory>
 #include <string>
 #include <vector>
 
 #include <node_buffer.h>
-
-
-#include <iostream>
-using std::cout;
-using std::endl;
 
 
 using std::min;
@@ -18,7 +13,6 @@ using std::string;
 using std::vector;
 
 using v8::Array;
-using v8::Function;
 using v8::Integer;
 using v8::Local;
 using v8::String;
@@ -282,31 +276,14 @@ NAN_METHOD(WrappedRE2::Replace) {
 		NanReturnValue(args[0]);
 	}
 
-	vector<char> buffer;
-
-	char*  data;
-	size_t size;
-	bool   isBuffer = false;
-
-	if (Buffer::HasInstance(args[0])) {
-		isBuffer = true;
-		size = Buffer::Length(args[0]);
-		data = Buffer::Data(args[0]);
-	} else {
-		Local<String> t(args[0]->ToString());
-		buffer.resize(t->Utf8Length() + 1);
-		t->WriteUtf8(&buffer[0]);
-		size = buffer.size() - 1;
-		data = &buffer[0];
-	}
-
-	StringPiece str(data, size);
+	StrVal a(args[0]);
+	StringPiece str(a);
 
 	if (args[1]->IsFunction()) {
 		Local<Function> cb(args[1].As<Function>());
 		string result = replace(re2, str, NanCallback(cb),
 			args[0], requiresBuffers(cb));
-		if (isBuffer) {
+		if (a.isBuffer) {
 			NanReturnValue(NanNewBufferHandle(result.data(), result.size()));
 		}
 		NanReturnValue(NanNew(result));
@@ -314,7 +291,7 @@ NAN_METHOD(WrappedRE2::Replace) {
 
 	if (Buffer::HasInstance(args[1])) {
 		string result = replace(re2, str, Buffer::Data(args[1]), Buffer::Length(args[1]));
-		if (isBuffer) {
+		if (a.isBuffer) {
 			NanReturnValue(NanNewBufferHandle(result.data(), result.size()));
 		}
 		NanReturnValue(NanNew(result));
@@ -322,7 +299,7 @@ NAN_METHOD(WrappedRE2::Replace) {
 
 	NanUtf8String s(args[1]->ToString());
 	string result = replace(re2, str, *s, s.length());
-	if (isBuffer) {
+	if (a.isBuffer) {
 		NanReturnValue(NanNewBufferHandle(result.data(), result.size()));
 	}
 	NanReturnValue(NanNew(result));

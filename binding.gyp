@@ -13,6 +13,7 @@
         "lib/split.cc",
         "lib/toString.cc",
         "lib/accessors.cc",
+        "lib/util.cc",
         "vendor/re2/re2/bitstate.cc",
         "vendor/re2/re2/compile.cc",
         "vendor/re2/re2/dfa.cc",

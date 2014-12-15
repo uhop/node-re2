@@ -1,10 +1,9 @@
 #include "./wrapped_re2.h"
+#include "./util.h"
 
 #include <algorithm>
 #include <limits>
 #include <vector>
-
-#include <node_buffer.h>
 
 
 using std::min;
@@ -14,8 +13,6 @@ using std::vector;
 using v8::Array;
 using v8::Local;
 using v8::String;
-
-using node::Buffer;
 
 
 NAN_METHOD(WrappedRE2::Split) {
@@ -31,25 +28,8 @@ NAN_METHOD(WrappedRE2::Split) {
 		NanReturnValue(result);
 	}
 
-	vector<char> buffer;
-
-	char*  data;
-	size_t size;
-	bool   isBuffer = false;
-
-	if (Buffer::HasInstance(args[0])) {
-		isBuffer = true;
-		size = Buffer::Length(args[0]);
-		data = Buffer::Data(args[0]);
-	} else {
-		Local<String> t(args[0]->ToString());
-		buffer.resize(t->Utf8Length() + 1);
-		t->WriteUtf8(&buffer[0]);
-		size = buffer.size() - 1;
-		data = &buffer[0];
-	}
-
-	StringPiece str(data, size);
+	StrVal a(args[0]);
+	StringPiece str(a);
 
 	size_t limit = numeric_limits<size_t>::max();
 	if (args.Length() > 1 && args[1]->IsNumber()) {
@@ -66,24 +46,25 @@ NAN_METHOD(WrappedRE2::Split) {
 	const StringPiece& match = groups[0];
 	size_t lastIndex = 0;
 
-	while (lastIndex < size && re2->regexp.Match(str, lastIndex, size, RE2::UNANCHORED, &groups[0], groups.size())) {
+	while (lastIndex < a.size && re2->regexp.Match(str, lastIndex, a.size, RE2::UNANCHORED,
+			&groups[0], groups.size())) {
 		if (match.size()) {
-			if (match.data() == data || match.data() - data > lastIndex) {
-				pieces.push_back(StringPiece(data + lastIndex, match.data() - data - lastIndex));
+			if (match.data() == a.data || match.data() - a.data > lastIndex) {
+				pieces.push_back(StringPiece(a.data + lastIndex, match.data() - a.data - lastIndex));
 			}
-			lastIndex = match.data() - data + match.size();
+			lastIndex = match.data() - a.data + match.size();
 			pieces.insert(pieces.end(), groups.begin() + 1, groups.end());
 		} else {
-			size_t sym_size = getUtf8CharSize(data[lastIndex]);
-			pieces.push_back(StringPiece(data + lastIndex, sym_size));
+			size_t sym_size = getUtf8CharSize(a.data[lastIndex]);
+			pieces.push_back(StringPiece(a.data + lastIndex, sym_size));
 			lastIndex += sym_size;
 		}
 		if (pieces.size() >= limit) {
 			break;
 		}
 	}
-	if (pieces.size() < limit && (lastIndex < size || (lastIndex == size && match.size()))) {
-		pieces.push_back(StringPiece(data + lastIndex, size - lastIndex));
+	if (pieces.size() < limit && (lastIndex < a.size || (lastIndex == a.size && match.size()))) {
+		pieces.push_back(StringPiece(a.data + lastIndex, a.size - lastIndex));
 	}
 
 	if (pieces.empty()) {
@@ -93,7 +74,7 @@ NAN_METHOD(WrappedRE2::Split) {
 
 	// form a result
 
-	if (isBuffer) {
+	if (a.isBuffer) {
 		for (size_t i = 0, n = min(pieces.size(), limit); i < n; ++i) {
 			const StringPiece& item = pieces[i];
 			result->Set(i, NanNewBufferHandle(item.data(), item.size()));

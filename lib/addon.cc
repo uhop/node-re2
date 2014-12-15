@@ -1,14 +1,10 @@
 #include "./wrapped_re2.h"
 
 
-using v8::Function;
 using v8::FunctionTemplate;
-using v8::Handle;
 using v8::Integer;
 using v8::Local;
-using v8::Object;
 using v8::ObjectTemplate;
-using v8::Persistent;
 using v8::String;
 
 
