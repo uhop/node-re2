@@ -135,6 +135,12 @@ unit.add(module, [
 
 		eval(t.TEST("s.length === 7"));
 		eval(t.TEST("RE2.getUtf8Length(s) === 13"));
+	},
+	function test_sourceTranslation(t) {
+		"use strict";
+
+		var re = new RE2("a\\cM\\u34\\u1234\\u10abcdz");
+		eval(t.TEST("re.source === 'a\\\\x0D\\\\x{34}\\\\x{1234}\\\\x{10abcd}z'"));
 	}
 ]);
 
