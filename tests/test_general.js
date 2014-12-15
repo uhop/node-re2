@@ -135,6 +135,10 @@ unit.add(module, [
 
 		eval(t.TEST("s.length === 7"));
 		eval(t.TEST("RE2.getUtf8Length(s) === 13"));
+
+		var b = new Buffer(s);
+		eval(t.TEST("b.length === 13"));
+		eval(t.TEST("RE2.getUtf16Length(b) === 7"));
 	},
 	function test_sourceTranslation(t) {
 		"use strict";
