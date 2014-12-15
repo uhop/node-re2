@@ -114,6 +114,20 @@ RE2("б").replace("абв", bufReplacer);
 This feature works for string and buffer inputs. If a buffer was used as an input, its output will be returned as
 a buffer too, otherwise a string will be returned.
 
+### Calculate length
+
+Two functions to calculate string sizes between
+[UTF-8](http://en.wikipedia.org/wiki/UTF-8) and
+[UTF-16](http://en.wikipedia.org/wiki/UTF-16) are exposed on `RE2`:
+
+* `RE2.getUtf8Length(str)` &mdash; calculates a buffer size in bytes to encode a UTF-16 string as
+  a UTF-8 buffer.
+* `RE2.getUtf16Length(buf)` &mdash; calculates a string size in characters to encode a UTF-8 buffer as
+  a UTF-16 string.
+
+JavaScript supports UCS-2 strings with 16-bit characters, while node.js 0.11 supports full UTF-16 as
+a default string.
+
 ## How to install
 
 Installation:
@@ -187,6 +201,7 @@ If your application uses this kind of matching, you should continue to use `RegE
 
 ## Release history
 
+- 1.2.0 *Documented getUtfXLength() functions. Added support for `\c` and `\u` commands.*
 - 1.1.1 *Minor corrections in README.*
 - 1.1.0 *Buffer-based API is public. Unicode is fully supported.*
 - 1.0.0 *implemeted all `RegExp` methods, and all relevant `String` methods*
