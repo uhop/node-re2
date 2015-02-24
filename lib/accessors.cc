@@ -35,7 +35,7 @@ NAN_GETTER(WrappedRE2::GetMultiline) {
 NAN_GETTER(WrappedRE2::GetLastIndex) {
 	NanScope();
 	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
-	NanReturnValue(NanNew<Integer>(re2->lastIndex));
+	NanReturnValue(NanNew<Integer>(static_cast<int>(re2->lastIndex)));
 }
 
 

@@ -192,13 +192,13 @@ inline string replace(const NanCallback& replacer, const vector<StringPiece>& gr
 			const StringPiece& item = groups[i];
 			argv.push_back(NanNewBufferHandle(item.data(), item.size()));
 		}
-		argv.push_back(NanNew<Integer>(groups[0].data() - str.data()));
+		argv.push_back(NanNew<Integer>(static_cast<int>(groups[0].data() - str.data())));
 	} else {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
 			const StringPiece& item = groups[i];
 			argv.push_back(NanNew<String>(item.data(), item.size()));
 		}
-		argv.push_back(NanNew<Integer>(getUtf16Length(str.data(), groups[0].data())));
+		argv.push_back(NanNew<Integer>(static_cast<int>(getUtf16Length(str.data(), groups[0].data()))));
 	}
 	argv.push_back(input);
 

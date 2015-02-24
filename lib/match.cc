@@ -61,7 +61,7 @@ NAN_METHOD(WrappedRE2::Match) {
 			result->Set(i, NanNewBufferHandle(item.data(), item.size()));
 		}
 		if (!re2->global) {
-			result->Set(NanNew("index"), NanNew<Integer>(groups[0].data() - a.data));
+			result->Set(NanNew("index"), NanNew<Integer>(static_cast<int>(groups[0].data() - a.data)));
 			result->Set(NanNew("input"), args[0]);
 		}
 	} else {
@@ -70,7 +70,7 @@ NAN_METHOD(WrappedRE2::Match) {
 			result->Set(i, NanNew<String>(item.data(), item.size()));
 		}
 		if (!re2->global) {
-			result->Set(NanNew("index"), NanNew<Integer>(getUtf16Length(a.data, groups[0].data())));
+			result->Set(NanNew("index"), NanNew<Integer>(static_cast<int>(getUtf16Length(a.data, groups[0].data()))));
 			result->Set(NanNew("input"), args[0]);
 		}
 	}

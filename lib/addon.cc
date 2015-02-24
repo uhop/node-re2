@@ -18,7 +18,7 @@ Persistent<Function> WrappedRE2::constructor;
 static NAN_METHOD(GetUtf8Length) {
 	NanScope();
 	String::Value s(args[0]->ToString());
-	NanReturnValue(NanNew<Integer>(getUtf8Length(*s, *s + s.length())));
+	NanReturnValue(NanNew<Integer>(static_cast<int>(getUtf8Length(*s, *s + s.length()))));
 }
 
 
@@ -26,7 +26,7 @@ static NAN_METHOD(GetUtf16Length) {
 	NanScope();
 	if (Buffer::HasInstance(args[0])) {
 		char* s = Buffer::Data(args[0]);
-		NanReturnValue(NanNew<Integer>(getUtf16Length(s, s + Buffer::Length(args[0]))));
+		NanReturnValue(NanNew<Integer>(static_cast<int>(getUtf16Length(s, s + Buffer::Length(args[0])))));
 	}
 	NanReturnValue(NanNew(-1));
 }

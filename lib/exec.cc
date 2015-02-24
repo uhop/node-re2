@@ -81,13 +81,13 @@ NAN_METHOD(WrappedRE2::Exec) {
 			const StringPiece& item = groups[i];
 			result->Set(i, NanNewBufferHandle(item.data(), item.size()));
 		}
-		result->Set(NanNew("index"), NanNew<Integer>(groups[0].data() - data));
+		result->Set(NanNew("index"), NanNew<Integer>(static_cast<int>(groups[0].data() - data)));
 	} else {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
 			const StringPiece& item = groups[i];
 			result->Set(i, NanNew<String>(item.data(), item.size()));
 		}
-		result->Set(NanNew("index"), NanNew<Integer>(getUtf16Length(data, groups[0].data())));
+		result->Set(NanNew("index"), NanNew<Integer>(static_cast<int>(getUtf16Length(data, groups[0].data()))));
 	}
 
 	result->Set(NanNew("input"), args[0]);
