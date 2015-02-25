@@ -12,8 +12,6 @@ using v8::Integer;
 using v8::Local;
 using v8::String;
 
-using node::Buffer;
-
 
 NAN_METHOD(WrappedRE2::Exec) {
 	NanScope();
@@ -31,9 +29,9 @@ NAN_METHOD(WrappedRE2::Exec) {
 	size_t size, lastIndex = 0;
 	bool   isBuffer = false;
 
-	if (Buffer::HasInstance(args[0])) {
+	if (node::Buffer::HasInstance(args[0])) {
 		isBuffer = true;
-		size = Buffer::Length(args[0]);
+		size = node::Buffer::Length(args[0]);
 		if (re2->global) {
 			if (re2->lastIndex > size) {
 				re2->lastIndex = 0;
@@ -41,7 +39,7 @@ NAN_METHOD(WrappedRE2::Exec) {
 			}
 			lastIndex = re2->lastIndex;
 		}
-		data = Buffer::Data(args[0]);
+		data = node::Buffer::Data(args[0]);
 	} else {
 		if (re2->global && re2->lastIndex) {
 			String::Value s(args[0]->ToString());
@@ -49,7 +47,7 @@ NAN_METHOD(WrappedRE2::Exec) {
 				re2->lastIndex = 0;
 				NanReturnNull();
 			}
-			Local<String> t(String::New(*s + re2->lastIndex));
+			Local<String> t(NanNew(*s + re2->lastIndex));
 			buffer.resize(t->Utf8Length() + 1);
 			t->WriteUtf8(&buffer[0]);
 		} else {

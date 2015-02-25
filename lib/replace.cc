@@ -18,8 +18,6 @@ using v8::Local;
 using v8::String;
 using v8::Value;
 
-using node::Buffer;
-
 
 inline int getMaxSubmatch(const char* data, size_t size) {
 	int maxSubmatch = 0, index, index2;
@@ -184,9 +182,10 @@ static string replace(WrappedRE2* re2, const StringPiece& str, const char* repla
 }
 
 
-inline string replace(const NanCallback& replacer, const vector<StringPiece>& groups,
+inline string replace(const NanCallback* replacer, const vector<StringPiece>& groups,
 						const StringPiece& str, const Local<Value>& input, bool useBuffers) {
 	vector< Local<Value> >	argv;
+
 	if (useBuffers) {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
 			const StringPiece& item = groups[i];
@@ -202,10 +201,10 @@ inline string replace(const NanCallback& replacer, const vector<StringPiece>& gr
 	}
 	argv.push_back(input);
 
-	Local<Value> result(Local<Value>::New(replacer.Call(argv.size(), &argv[0])));
+	Local<Value> result(NanNew(replacer->Call(static_cast<int>(argv.size()), &argv[0])));
 
-	if (Buffer::HasInstance(result)) {
-		return string(Buffer::Data(result), Buffer::Length(result));
+	if (node::Buffer::HasInstance(result)) {
+		return string(node::Buffer::Data(result), node::Buffer::Length(result));
 	}
 
 	NanUtf8String val(result->ToString());
@@ -213,8 +212,8 @@ inline string replace(const NanCallback& replacer, const vector<StringPiece>& gr
 }
 
 
-static string replace(WrappedRE2* re2, const StringPiece& str,
-						const NanCallback& replacer, const Local<Value>& input, bool useBuffers) {
+static string replace(WrappedRE2* re2, const StringPiece& str, const NanCallback* replacer,
+						const Local<Value>& input, bool useBuffers) {
 
 	const char* data = str.data();
 	size_t      size = str.size();
@@ -281,10 +280,12 @@ NAN_METHOD(WrappedRE2::Replace) {
 	string result;
 
 	if (args[1]->IsFunction()) {
-		Local<Function> cb(args[1].As<Function>());
-		result = replace(re2, str, NanCallback(cb), args[0], requiresBuffers(cb));
-	} else if (Buffer::HasInstance(args[1])) {
-		result = replace(re2, str, Buffer::Data(args[1]), Buffer::Length(args[1]));
+		Local<Function> fun(args[1].As<Function>());
+		const NanCallback* cb = new NanCallback(fun);
+		result = replace(re2, str, cb, args[0], requiresBuffers(fun));
+		delete cb;
+	} else if (node::Buffer::HasInstance(args[1])) {
+		result = replace(re2, str, node::Buffer::Data(args[1]), node::Buffer::Length(args[1]));
 	} else {
 		NanUtf8String s(args[1]->ToString());
 		result = replace(re2, str, *s, s.length());
