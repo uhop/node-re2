@@ -8,13 +8,13 @@ using std::string;
 
 
 NAN_METHOD(WrappedRE2::ToString) {
-	NanScope();
 
 	// unpack arguments
 
-	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
+	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	if (!re2) {
-		NanReturnEmptyString();
+		info.GetReturnValue().SetEmptyString();
+		return;
 	}
 
 	// actual work
@@ -33,5 +33,5 @@ NAN_METHOD(WrappedRE2::ToString) {
 		buffer += "m";
 	}
 
-	NanReturnValue(NanNew(buffer));
+	info.GetReturnValue().Set(Nan::New(buffer).ToLocalChecked());
 }

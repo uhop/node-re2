@@ -11,15 +11,12 @@
 using v8::Function;
 using v8::Handle;
 using v8::Object;
-using v8::Persistent;
-
-using node::ObjectWrap;
 
 using re2::RE2;
 using re2::StringPiece;
 
 
-class WrappedRE2 : public ObjectWrap {
+class WrappedRE2 : public Nan::ObjectWrap {
 
 	private:
 		WrappedRE2(const StringPiece& pattern, const RE2::Options& options,
@@ -46,7 +43,7 @@ class WrappedRE2 : public ObjectWrap {
 		static NAN_METHOD(Search);
 		static NAN_METHOD(Split);
 
-		static Persistent<Function>	constructor;
+		static Nan::Persistent<Function>	constructor;
 
 	public:
 		static void Initialize(Handle<Object> exports, Handle<Object> module);

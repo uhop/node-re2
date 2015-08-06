@@ -10,59 +10,58 @@ using v8::ObjectTemplate;
 using v8::String;
 
 
-Persistent<Function> WrappedRE2::constructor;
+Nan::Persistent<Function> WrappedRE2::constructor;
 
 
 static NAN_METHOD(GetUtf8Length) {
-	NanScope();
-	String::Value s(args[0]->ToString());
-	NanReturnValue(NanNew<Integer>(static_cast<int>(getUtf8Length(*s, *s + s.length()))));
+	String::Value s(info[0]->ToString());
+	info.GetReturnValue().Set(static_cast<int>(getUtf8Length(*s, *s + s.length())));
 }
 
 
 static NAN_METHOD(GetUtf16Length) {
-	NanScope();
-	if (node::Buffer::HasInstance(args[0])) {
-		char* s = node::Buffer::Data(args[0]);
-		NanReturnValue(NanNew<Integer>(static_cast<int>(getUtf16Length(s, s + node::Buffer::Length(args[0])))));
+	if (node::Buffer::HasInstance(info[0])) {
+		char* s = node::Buffer::Data(info[0]);
+		info.GetReturnValue().Set(static_cast<int>(getUtf16Length(s, s + node::Buffer::Length(info[0]))));
+		return;
 	}
-	NanReturnValue(NanNew(-1));
+	info.GetReturnValue().Set(-1);
 }
 
 
 void WrappedRE2::Initialize(Handle<Object> exports, Handle<Object> module) {
 
 	// prepare constructor template
-	Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
-	tpl->SetClassName(NanNew("RE2"));
+	Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
+	tpl->SetClassName(Nan::New("RE2").ToLocalChecked());
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
 	// prototype
 
-	NODE_SET_PROTOTYPE_METHOD(tpl, "toString", ToString);
+	Nan::SetPrototypeMethod(tpl, "toString", ToString);
 
-	NODE_SET_PROTOTYPE_METHOD(tpl, "exec",     Exec);
-	NODE_SET_PROTOTYPE_METHOD(tpl, "test",     Test);
+	Nan::SetPrototypeMethod(tpl, "exec",     Exec);
+	Nan::SetPrototypeMethod(tpl, "test",     Test);
 
-	NODE_SET_PROTOTYPE_METHOD(tpl, "match",    Match);
-	NODE_SET_PROTOTYPE_METHOD(tpl, "replace",  Replace);
-	NODE_SET_PROTOTYPE_METHOD(tpl, "search",   Search);
-	NODE_SET_PROTOTYPE_METHOD(tpl, "split",    Split);
+	Nan::SetPrototypeMethod(tpl, "match",    Match);
+	Nan::SetPrototypeMethod(tpl, "replace",  Replace);
+	Nan::SetPrototypeMethod(tpl, "search",   Search);
+	Nan::SetPrototypeMethod(tpl, "split",    Split);
 
 	Local<ObjectTemplate> proto = tpl->PrototypeTemplate();
-	proto->SetAccessor(NanNew("source"),     GetSource);
-	proto->SetAccessor(NanNew("global"),     GetGlobal);
-	proto->SetAccessor(NanNew("ignoreCase"), GetIgnoreCase);
-	proto->SetAccessor(NanNew("multiline"),  GetMultiline);
-	proto->SetAccessor(NanNew("lastIndex"),  GetLastIndex, SetLastIndex);
+	Nan::SetAccessor(proto, Nan::New("source").ToLocalChecked(),     GetSource);
+	Nan::SetAccessor(proto, Nan::New("global").ToLocalChecked(),     GetGlobal);
+	Nan::SetAccessor(proto, Nan::New("ignoreCase").ToLocalChecked(), GetIgnoreCase);
+	Nan::SetAccessor(proto, Nan::New("multiline").ToLocalChecked(),  GetMultiline);
+	Nan::SetAccessor(proto, Nan::New("lastIndex").ToLocalChecked(),  GetLastIndex, SetLastIndex);
 
-	Local<Function> fun = tpl->GetFunction();
-	fun->Set(NanNew("getUtf8Length"), NanNew<FunctionTemplate>(GetUtf8Length)->GetFunction());
-	fun->Set(NanNew("getUtf16Length"), NanNew<FunctionTemplate>(GetUtf16Length)->GetFunction());
-	NanAssignPersistent(constructor, fun);
+	Local<Function> fun = Nan::GetFunction(tpl).ToLocalChecked();
+	Nan::Export(fun, "getUtf8Length",  GetUtf8Length);
+	Nan::Export(fun, "getUtf16Length", GetUtf16Length);
+	constructor.Reset(fun);
 
 	// return constructor as module's export
-	module->Set(NanNew("exports"), fun);
+	Nan::Set(module, Nan::New("exports").ToLocalChecked(), fun);
 }
 
 

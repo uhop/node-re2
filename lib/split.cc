@@ -16,29 +16,28 @@ using v8::String;
 
 
 NAN_METHOD(WrappedRE2::Split) {
-	NanScope();
 
-	Local<Array> result = NanNew<Array>();
+	Local<Array> result = Nan::New<Array>();
 
 	// unpack arguments
 
-	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
+	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	if (!re2) {
-		result->Set(0, args[0]);
-		NanReturnValue(result);
+		Nan::Set(result, 0, info[0]);
+		info.GetReturnValue().Set(result);
+		return;
 	}
 
-	StrVal a(args[0]);
+	StrVal a(info[0]);
 	StringPiece str(a);
 
 	size_t limit = numeric_limits<size_t>::max();
-	if (args.Length() > 1 && args[1]->IsNumber()) {
-		size_t lim = args[1]->NumberValue();
+	if (info.Length() > 1 && info[1]->IsNumber()) {
+		size_t lim = info[1]->NumberValue();
 		if (lim > 0) {
 			limit = lim;
 		}
 	}
-
 
 	// actual work
 
@@ -68,8 +67,9 @@ NAN_METHOD(WrappedRE2::Split) {
 	}
 
 	if (pieces.empty()) {
-		result->Set(0, args[0]);
-		NanReturnValue(result);
+		Nan::Set(result, 0, info[0]);
+		info.GetReturnValue().Set(result);
+		return;
 	}
 
 	// form a result
@@ -77,14 +77,14 @@ NAN_METHOD(WrappedRE2::Split) {
 	if (a.isBuffer) {
 		for (size_t i = 0, n = min(pieces.size(), limit); i < n; ++i) {
 			const StringPiece& item = pieces[i];
-			result->Set(i, NanNewBufferHandle(item.data(), item.size()));
+			Nan::Set(result, i, Nan::NewBuffer(const_cast<char*>(item.data()), item.size()).ToLocalChecked());
 		}
 	} else {
 		for (size_t i = 0, n = min(pieces.size(), limit); i < n; ++i) {
 			const StringPiece& item = pieces[i];
-			result->Set(i, NanNew<String>(item.data(), item.size()));
+			Nan::Set(result, i, Nan::New(item.data(), item.size()).ToLocalChecked());
 		}
 	}
 
-	NanReturnValue(result);
+	info.GetReturnValue().Set(result);
 }

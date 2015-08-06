@@ -6,25 +6,26 @@ using v8::Integer;
 
 
 NAN_METHOD(WrappedRE2::Search) {
-	NanScope();
 
 	// unpack arguments
 
-	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
+	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	if (!re2) {
-		NanReturnValue(NanNew(-1));
+		info.GetReturnValue().Set(-1);
+		return;
 	}
 
-	StrVal a(args[0]);
+	StrVal a(info[0]);
 
 	// actual work
 
 	StringPiece match;
 
 	if (re2->regexp.Match(a, 0, a.size, RE2::UNANCHORED, &match, 1)) {
-		NanReturnValue(NanNew<Integer>(static_cast<int>(a.isBuffer ? match.data() - a.data :
-			getUtf16Length(a.data, match.data()))));
+		info.GetReturnValue().Set(static_cast<int>(a.isBuffer ? match.data() - a.data :
+			getUtf16Length(a.data, match.data())));
+		return;
 	}
 
-	NanReturnValue(NanNew(-1));
+	info.GetReturnValue().Set(-1);
 }

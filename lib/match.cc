@@ -13,16 +13,16 @@ using v8::String;
 
 
 NAN_METHOD(WrappedRE2::Match) {
-	NanScope();
 
 	// unpack arguments
 
-	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
+	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	if (!re2) {
-		NanReturnNull();
+		info.GetReturnValue().SetNull();
+		return;
 	}
 
-	StrVal a(args[0]);
+	StrVal a(info[0]);
 	vector<StringPiece> groups;
 	StringPiece str(a);
 
@@ -40,40 +40,42 @@ NAN_METHOD(WrappedRE2::Match) {
 		}
 
 		if (groups.empty()) {
-			NanReturnNull();
+			info.GetReturnValue().SetNull();
+			return;
 		}
 	} else {
 		// non-global: just like exec()
 
 		groups.resize(re2->regexp.NumberOfCapturingGroups() + 1);
 		if (!re2->regexp.Match(str, 0, a.size, RE2::UNANCHORED, &groups[0], groups.size())) {
-			NanReturnNull();
+			info.GetReturnValue().SetNull();
+			return;
 		}
 	}
 
 	// form a result
 
-	Local<Array> result = NanNew<Array>();
+	Local<Array> result = Nan::New<Array>();
 
 	if (a.isBuffer) {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
 			const StringPiece& item = groups[i];
-			result->Set(i, NanNewBufferHandle(item.data(), item.size()));
+			Nan::Set(result, i, Nan::NewBuffer(const_cast<char*>(item.data()), item.size()).ToLocalChecked());
 		}
 		if (!re2->global) {
-			result->Set(NanNew("index"), NanNew<Integer>(static_cast<int>(groups[0].data() - a.data)));
-			result->Set(NanNew("input"), args[0]);
+			Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<Integer>(static_cast<int>(groups[0].data() - a.data)));
+			Nan::Set(result, Nan::New("input").ToLocalChecked(), info[0]);
 		}
 	} else {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
 			const StringPiece& item = groups[i];
-			result->Set(i, NanNew<String>(item.data(), item.size()));
+			Nan::Set(result, i, Nan::New<String>(item.data(), item.size()).ToLocalChecked());
 		}
 		if (!re2->global) {
-			result->Set(NanNew("index"), NanNew<Integer>(static_cast<int>(getUtf16Length(a.data, groups[0].data()))));
-			result->Set(NanNew("input"), args[0]);
+			Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<Integer>(static_cast<int>(getUtf16Length(a.data, groups[0].data()))));
+			Nan::Set(result, Nan::New("input").ToLocalChecked(), info[0]);
 		}
 	}
 
-	NanReturnValue(result);
+	info.GetReturnValue().Set(result);
 }

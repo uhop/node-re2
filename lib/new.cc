@@ -92,16 +92,16 @@ inline bool translateRegExp(const char* data, size_t size, vector<char>& buffer)
 
 
 NAN_METHOD(WrappedRE2::New) {
-	NanScope();
 
-	if (!args.IsConstructCall()) {
+	if (!info.IsConstructCall()) {
 		// call a constructor and return the result
 
-		vector< Local<Value> > parameters(args.Length());
-		for (size_t i = 0, n = args.Length(); i < n; ++i) {
-			parameters[i] = args[i];
+		vector< Local<Value> > parameters(info.Length());
+		for (size_t i = 0, n = info.Length(); i < n; ++i) {
+			parameters[i] = info[i];
 		}
-		NanReturnValue(NanNew<Function>(constructor)->NewInstance(parameters.size(), &parameters[0]));
+		info.GetReturnValue().Set(Nan::New<Function>(constructor)->NewInstance(parameters.size(), &parameters[0]));
+		return;
 	}
 
 	// process arguments
@@ -115,16 +115,16 @@ NAN_METHOD(WrappedRE2::New) {
 	bool multiline = false;
 	bool global = false;
 
-	if (args.Length() > 1) {
-		if (args[1]->IsString()) {
-			Local<String> t(args[1]->ToString());
+	if (info.Length() > 1) {
+		if (info[1]->IsString()) {
+			Local<String> t(info[1]->ToString());
 			buffer.resize(t->Utf8Length() + 1);
 			t->WriteUtf8(&buffer[0]);
 			size = buffer.size() - 1;
 			data = &buffer[0];
-		} else if (node::Buffer::HasInstance(args[1])) {
-			size = node::Buffer::Length(args[1]);
-			data = node::Buffer::Data(args[1]);
+		} else if (node::Buffer::HasInstance(info[1])) {
+			size = node::Buffer::Length(info[1]);
+			data = node::Buffer::Data(info[1]);
 		}
 		for (size_t i = 0; i < size; ++i) {
 			switch (data[i]) {
@@ -144,11 +144,11 @@ NAN_METHOD(WrappedRE2::New) {
 
 	bool needConversion = true;
 
-	if (node::Buffer::HasInstance(args[0])) {
-		size = node::Buffer::Length(args[0]);
-		data = node::Buffer::Data(args[0]);
-	} else if (args[0]->IsRegExp()) {
-		const RegExp* re = RegExp::Cast(*args[0]);
+	if (node::Buffer::HasInstance(info[0])) {
+		size = node::Buffer::Length(info[0]);
+		data = node::Buffer::Data(info[0]);
+	} else if (info[0]->IsRegExp()) {
+		const RegExp* re = RegExp::Cast(*info[0]);
 
 		Local<String> t(re->GetSource());
 		buffer.resize(t->Utf8Length() + 1);
@@ -160,8 +160,8 @@ NAN_METHOD(WrappedRE2::New) {
 		ignoreCase = bool(flags & RegExp::kIgnoreCase);
 		multiline  = bool(flags & RegExp::kMultiline);
 		global     = bool(flags & RegExp::kGlobal);
-	} else if (args[0]->IsObject() && !args[0]->IsString()) {
-		WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args[0]->ToObject());
+	} else if (info[0]->IsObject() && !info[0]->IsString()) {
+		WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info[0]->ToObject());
 		if (re2) {
 			const string& pattern = re2->regexp.pattern();
 			size = pattern.size();
@@ -175,7 +175,7 @@ NAN_METHOD(WrappedRE2::New) {
 			global     = re2->global;
 		}
 	} else {
-		Local<String> t(args[0]->ToString());
+		Local<String> t(info[0]->ToString());
 		buffer.resize(t->Utf8Length() + 1);
 		t->WriteUtf8(&buffer[0]);
 		size = buffer.size() - 1;
@@ -194,6 +194,6 @@ NAN_METHOD(WrappedRE2::New) {
 	// create and return an object
 
 	WrappedRE2* re2 = new WrappedRE2(StringPiece(data, size), options, global, ignoreCase, multiline);
-	re2->Wrap(args.This());
-	NanReturnThis();
+	re2->Wrap(info.This());
+	info.GetReturnValue().Set(info.This());
 }

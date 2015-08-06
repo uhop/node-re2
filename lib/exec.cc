@@ -14,13 +14,13 @@ using v8::String;
 
 
 NAN_METHOD(WrappedRE2::Exec) {
-	NanScope();
 
 	// unpack arguments
 
-	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
+	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	if (!re2) {
-		NanReturnNull();
+		info.GetReturnValue().SetNull();
+		return;
 	}
 
 	vector<char> buffer;
@@ -29,29 +29,31 @@ NAN_METHOD(WrappedRE2::Exec) {
 	size_t size, lastIndex = 0;
 	bool   isBuffer = false;
 
-	if (node::Buffer::HasInstance(args[0])) {
+	if (node::Buffer::HasInstance(info[0])) {
 		isBuffer = true;
-		size = node::Buffer::Length(args[0]);
+		size = node::Buffer::Length(info[0]);
 		if (re2->global) {
 			if (re2->lastIndex > size) {
 				re2->lastIndex = 0;
-				NanReturnNull();
+				info.GetReturnValue().SetNull();
+				return;
 			}
 			lastIndex = re2->lastIndex;
 		}
-		data = node::Buffer::Data(args[0]);
+		data = node::Buffer::Data(info[0]);
 	} else {
 		if (re2->global && re2->lastIndex) {
-			String::Value s(args[0]->ToString());
+			String::Value s(info[0]->ToString());
 			if (re2->lastIndex > s.length()) {
 				re2->lastIndex = 0;
-				NanReturnNull();
+				info.GetReturnValue().SetNull();
+				return;
 			}
-			Local<String> t(NanNew(*s + re2->lastIndex));
+			Local<String> t(Nan::New<String>(*s + re2->lastIndex).ToLocalChecked());
 			buffer.resize(t->Utf8Length() + 1);
 			t->WriteUtf8(&buffer[0]);
 		} else {
-			Local<String> t(args[0]->ToString());
+			Local<String> t(info[0]->ToString());
 			buffer.resize(t->Utf8Length() + 1);
 			t->WriteUtf8(&buffer[0]);
 		}
@@ -67,33 +69,34 @@ NAN_METHOD(WrappedRE2::Exec) {
 		if (re2->global) {
 			re2->lastIndex = 0;
 		}
-		NanReturnNull();
+		info.GetReturnValue().SetNull();
+		return;
 	}
 
 	// form a result
 
-	Local<Array> result = NanNew<Array>();
+	Local<Array> result = Nan::New<Array>();
 
 	if (isBuffer) {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
 			const StringPiece& item = groups[i];
-			result->Set(i, NanNewBufferHandle(item.data(), item.size()));
+			Nan::Set(result, i, Nan::NewBuffer(const_cast<char*>(item.data()), item.size()).ToLocalChecked());
 		}
-		result->Set(NanNew("index"), NanNew<Integer>(static_cast<int>(groups[0].data() - data)));
+		Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<Integer>(static_cast<int>(groups[0].data() - data)));
 	} else {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
 			const StringPiece& item = groups[i];
-			result->Set(i, NanNew<String>(item.data(), item.size()));
+			Nan::Set(result, i, Nan::New<String>(item.data(), item.size()).ToLocalChecked());
 		}
-		result->Set(NanNew("index"), NanNew<Integer>(static_cast<int>(getUtf16Length(data, groups[0].data()))));
+		Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<Integer>(static_cast<int>(getUtf16Length(data, groups[0].data()))));
 	}
 
-	result->Set(NanNew("input"), args[0]);
+	Nan::Set(result, Nan::New("input").ToLocalChecked(), info[0]);
 
 	if (re2->global) {
 		re2->lastIndex += isBuffer ? groups[0].data() - data + groups[0].size() - lastIndex :
 			getUtf16Length(data, groups[0].data() + groups[0].size());
 	}
 
-	NanReturnValue(result);
+	info.GetReturnValue().Set(result);
 }

@@ -182,37 +182,37 @@ static string replace(WrappedRE2* re2, const StringPiece& str, const char* repla
 }
 
 
-inline string replace(const NanCallback* replacer, const vector<StringPiece>& groups,
+inline string replace(const Nan::Callback* replacer, const vector<StringPiece>& groups,
 						const StringPiece& str, const Local<Value>& input, bool useBuffers) {
 	vector< Local<Value> >	argv;
 
 	if (useBuffers) {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
 			const StringPiece& item = groups[i];
-			argv.push_back(NanNewBufferHandle(item.data(), item.size()));
+			argv.push_back(Nan::NewBuffer(const_cast<char*>(item.data()), item.size()).ToLocalChecked());
 		}
-		argv.push_back(NanNew<Integer>(static_cast<int>(groups[0].data() - str.data())));
+		argv.push_back(Nan::New(static_cast<int>(groups[0].data() - str.data())));
 	} else {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
 			const StringPiece& item = groups[i];
-			argv.push_back(NanNew<String>(item.data(), item.size()));
+			argv.push_back(Nan::New(item.data(), item.size()).ToLocalChecked());
 		}
-		argv.push_back(NanNew<Integer>(static_cast<int>(getUtf16Length(str.data(), groups[0].data()))));
+		argv.push_back(Nan::New(static_cast<int>(getUtf16Length(str.data(), groups[0].data()))));
 	}
 	argv.push_back(input);
 
-	Local<Value> result(NanNew(replacer->Call(static_cast<int>(argv.size()), &argv[0])));
+	Local<Value> result(replacer->Call(static_cast<int>(argv.size()), &argv[0]));
 
 	if (node::Buffer::HasInstance(result)) {
 		return string(node::Buffer::Data(result), node::Buffer::Length(result));
 	}
 
-	NanUtf8String val(result->ToString());
+	Nan::Utf8String val(result->ToString());
 	return string(*val, val.length());
 }
 
 
-static string replace(WrappedRE2* re2, const StringPiece& str, const NanCallback* replacer,
+static string replace(WrappedRE2* re2, const StringPiece& str, const Nan::Callback* replacer,
 						const Local<Value>& input, bool useBuffers) {
 
 	const char* data = str.data();
@@ -253,7 +253,7 @@ static string replace(WrappedRE2* re2, const StringPiece& str, const NanCallback
 
 
 static bool requiresBuffers(const Local<Function>& f) {
-	Local<Value> flag(f->Get(NanNew("useBuffers")));
+	Local<Value> flag(Nan::Get(f, Nan::New("useBuffers").ToLocalChecked()).ToLocalChecked());
 	if (flag->IsUndefined() || flag->IsNull() || flag->IsFalse()) {
 		return false;
 	}
@@ -268,31 +268,32 @@ static bool requiresBuffers(const Local<Function>& f) {
 
 
 NAN_METHOD(WrappedRE2::Replace) {
-	NanScope();
 
-	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
+	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	if (!re2) {
-		NanReturnValue(args[0]);
+		info.GetReturnValue().Set(info[0]);
+		return;
 	}
 
-	StrVal a(args[0]);
+	StrVal a(info[0]);
 	StringPiece str(a);
 	string result;
 
-	if (args[1]->IsFunction()) {
-		Local<Function> fun(args[1].As<Function>());
-		const NanCallback* cb = new NanCallback(fun);
-		result = replace(re2, str, cb, args[0], requiresBuffers(fun));
+	if (info[1]->IsFunction()) {
+		Local<Function> fun(info[1].As<Function>());
+		const Nan::Callback* cb = new Nan::Callback(fun);
+		result = replace(re2, str, cb, info[0], requiresBuffers(fun));
 		delete cb;
-	} else if (node::Buffer::HasInstance(args[1])) {
-		result = replace(re2, str, node::Buffer::Data(args[1]), node::Buffer::Length(args[1]));
+	} else if (node::Buffer::HasInstance(info[1])) {
+		result = replace(re2, str, node::Buffer::Data(info[1]), node::Buffer::Length(info[1]));
 	} else {
-		NanUtf8String s(args[1]->ToString());
+		Nan::Utf8String s(info[1]->ToString());
 		result = replace(re2, str, *s, s.length());
 	}
 
 	if (a.isBuffer) {
-		NanReturnValue(NanNewBufferHandle(result.data(), result.size()));
+		info.GetReturnValue().Set(Nan::NewBuffer(const_cast<char*>(result.data()), result.size()).ToLocalChecked());
+		return;
 	}
-	NanReturnValue(NanNew(result));
+	info.GetReturnValue().Set(Nan::New(result).ToLocalChecked());
 }

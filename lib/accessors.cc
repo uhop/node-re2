@@ -5,43 +5,37 @@ using v8::Integer;
 
 
 NAN_GETTER(WrappedRE2::GetSource) {
-	NanScope();
-	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
-	NanReturnValue(NanNew(re2->regexp.pattern()));
+	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
+	info.GetReturnValue().Set(Nan::New(re2->regexp.pattern()).ToLocalChecked());
 }
 
 
 NAN_GETTER(WrappedRE2::GetGlobal) {
-	NanScope();
-	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
-	NanReturnValue(NanNew(re2->global));
+	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
+	info.GetReturnValue().Set(re2->global);
 }
 
 
 NAN_GETTER(WrappedRE2::GetIgnoreCase) {
-	NanScope();
-	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
-	NanReturnValue(NanNew(re2->ignoreCase));
+	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
+	info.GetReturnValue().Set(re2->ignoreCase);
 }
 
 
 NAN_GETTER(WrappedRE2::GetMultiline) {
-	NanScope();
-	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
-	NanReturnValue(NanNew(re2->multiline));
+	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
+	info.GetReturnValue().Set(re2->multiline);
 }
 
 
 NAN_GETTER(WrappedRE2::GetLastIndex) {
-	NanScope();
-	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
-	NanReturnValue(NanNew<Integer>(static_cast<int>(re2->lastIndex)));
+	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
+	info.GetReturnValue().Set(static_cast<int>(re2->lastIndex));
 }
 
 
 NAN_SETTER(WrappedRE2::SetLastIndex) {
-	NanScope();
-	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
+	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	if (value->IsNumber()) {
 		int n = value->NumberValue();
 		re2->lastIndex = n <= 0 ? 0 : n;

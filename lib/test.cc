@@ -12,13 +12,13 @@ using v8::String;
 
 
 NAN_METHOD(WrappedRE2::Test) {
-	NanScope();
 
 	// unpack arguments
 
-	WrappedRE2* re2 = ObjectWrap::Unwrap<WrappedRE2>(args.This());
+	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	if (!re2) {
-		NanReturnValue(NanNew(false));
+		info.GetReturnValue().Set(false);
+		return;
 	}
 
 	vector<char> buffer;
@@ -27,29 +27,31 @@ NAN_METHOD(WrappedRE2::Test) {
 	size_t size, lastIndex = 0;
 	bool   isBuffer = false;
 
-	if (node::Buffer::HasInstance(args[0])) {
+	if (node::Buffer::HasInstance(info[0])) {
 		isBuffer = true;
-		size = node::Buffer::Length(args[0]);
+		size = node::Buffer::Length(info[0]);
 		if (re2->global) {
 			if (re2->lastIndex > size) {
 				re2->lastIndex = 0;
-				NanReturnValue(NanNew(false));
+				info.GetReturnValue().Set(false);
+				return;
 			}
 			lastIndex = re2->lastIndex;
 		}
-		data = node::Buffer::Data(args[0]);
+		data = node::Buffer::Data(info[0]);
 	} else {
 		if (re2->global && re2->lastIndex) {
-			String::Value s(args[0]->ToString());
+			String::Value s(info[0]->ToString());
 			if (re2->lastIndex > s.length()) {
 				re2->lastIndex = 0;
-				NanReturnValue(NanNew(false));
+				info.GetReturnValue().Set(false);
+				return;
 			}
-			Local<String> t(NanNew(*s + re2->lastIndex));
+			Local<String> t(Nan::New(*s + re2->lastIndex).ToLocalChecked());
 			buffer.resize(t->Utf8Length() + 1);
 			t->WriteUtf8(&buffer[0]);
 		} else {
-			Local<String> t(args[0]->ToString());
+			Local<String> t(info[0]->ToString());
 			buffer.resize(t->Utf8Length() + 1);
 			t->WriteUtf8(&buffer[0]);
 		}
@@ -64,11 +66,13 @@ NAN_METHOD(WrappedRE2::Test) {
 		if (re2->regexp.Match(StringPiece(data, size), lastIndex, size, RE2::UNANCHORED, &match, 1)) {
 			re2->lastIndex += isBuffer ? match.data() - data + match.size() - lastIndex :
 				getUtf16Length(data, match.data() + match.size());
-			NanReturnValue(NanNew(true));
+			info.GetReturnValue().Set(true);
+			return;
 		}
 		re2->lastIndex = 0;
-		NanReturnValue(NanNew(false));
+		info.GetReturnValue().Set(false);
+		return;
 	}
 
-	NanReturnValue(NanNew(re2->regexp.Match(StringPiece(data, size), 0, size, RE2::UNANCHORED, NULL, 0)));
+	info.GetReturnValue().Set(re2->regexp.Match(StringPiece(data, size), 0, size, RE2::UNANCHORED, NULL, 0));
 }
