@@ -49,7 +49,7 @@ NAN_METHOD(WrappedRE2::Exec) {
 				info.GetReturnValue().SetNull();
 				return;
 			}
-			Local<String> t(Nan::New<String>(*s + re2->lastIndex).ToLocalChecked());
+			Local<String> t(Nan::New(*s + re2->lastIndex).ToLocalChecked());
 			buffer.resize(t->Utf8Length() + 1);
 			t->WriteUtf8(&buffer[0]);
 		} else {
@@ -80,13 +80,13 @@ NAN_METHOD(WrappedRE2::Exec) {
 	if (isBuffer) {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
 			const StringPiece& item = groups[i];
-			Nan::Set(result, i, Nan::NewBuffer(const_cast<char*>(item.data()), item.size()).ToLocalChecked());
+			Nan::Set(result, i, Nan::CopyBuffer(item.data(), item.size()).ToLocalChecked());
 		}
 		Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<Integer>(static_cast<int>(groups[0].data() - data)));
 	} else {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
 			const StringPiece& item = groups[i];
-			Nan::Set(result, i, Nan::New<String>(item.data(), item.size()).ToLocalChecked());
+			Nan::Set(result, i, Nan::New(item.data(), item.size()).ToLocalChecked());
 		}
 		Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<Integer>(static_cast<int>(getUtf16Length(data, groups[0].data()))));
 	}

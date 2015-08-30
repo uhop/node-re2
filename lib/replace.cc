@@ -189,7 +189,7 @@ inline string replace(const Nan::Callback* replacer, const vector<StringPiece>& 
 	if (useBuffers) {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
 			const StringPiece& item = groups[i];
-			argv.push_back(Nan::NewBuffer(const_cast<char*>(item.data()), item.size()).ToLocalChecked());
+			argv.push_back(Nan::CopyBuffer(item.data(), item.size()).ToLocalChecked());
 		}
 		argv.push_back(Nan::New(static_cast<int>(groups[0].data() - str.data())));
 	} else {
@@ -292,7 +292,7 @@ NAN_METHOD(WrappedRE2::Replace) {
 	}
 
 	if (a.isBuffer) {
-		info.GetReturnValue().Set(Nan::NewBuffer(const_cast<char*>(result.data()), result.size()).ToLocalChecked());
+		info.GetReturnValue().Set(Nan::CopyBuffer(result.data(), result.size()).ToLocalChecked());
 		return;
 	}
 	info.GetReturnValue().Set(Nan::New(result).ToLocalChecked());

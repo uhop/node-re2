@@ -9,7 +9,7 @@
     "test": "tests"
   },
   "dependencies": {
-    "nan": "^2.0.0"
+    "nan": "^2.0.8"
   },
   "devDependencies": {
     "heya-unit": "^0.2.0"

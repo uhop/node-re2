@@ -77,7 +77,7 @@ NAN_METHOD(WrappedRE2::Split) {
 	if (a.isBuffer) {
 		for (size_t i = 0, n = min(pieces.size(), limit); i < n; ++i) {
 			const StringPiece& item = pieces[i];
-			Nan::Set(result, i, Nan::NewBuffer(const_cast<char*>(item.data()), item.size()).ToLocalChecked());
+			Nan::Set(result, i, Nan::CopyBuffer(item.data(), item.size()).ToLocalChecked());
 		}
 	} else {
 		for (size_t i = 0, n = min(pieces.size(), limit); i < n; ++i) {
