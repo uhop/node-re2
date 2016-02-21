@@ -210,6 +210,9 @@ If your application uses this kind of matching, you should continue to use `RegE
 - 1.0.0 *Implemented all `RegExp` methods, and all relevant `String` methods.*
 - 0.9.0 *The initial public release.*
 
+## License
+
+BSD
 
 [npm-image]:      https://img.shields.io/npm/v/re2.svg
 [npm-url]:        https://npmjs.org/package/re2
