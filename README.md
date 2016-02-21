@@ -5,14 +5,14 @@
 [![devDependencies][dev-deps-image]][dev-deps-url]
 [![NPM version][npm-image]][npm-url]
 
-This project provides bindings for [RE2](https://code.google.com/p/re2/):
+This project provides bindings for [RE2](https://github.com/google/re2):
 fast, safe alternative to backtracking regular expression engines written by [Russ Cox](http://swtch.com/~rsc/).
 To learn more about RE2, start with an overview
 [Regular Expression Matching in the Wild](http://swtch.com/~rsc/regexp/regexp3.html). More resources can be found
 at his [Implementing Regular Expressions](http://swtch.com/~rsc/regexp/) page.
 
 RE2's regular expression language is almost a superset of what is provided by `RegExp`
-(see [Syntax](https://code.google.com/p/re2/wiki/Syntax)),
+(see [Syntax](https://github.com/google/re2/wiki/Syntax)),
 but it lacks one feature: backreferences. See below for more details.
 
 `RE2` object emulates standard `RegExp` making it a practical drop-in replacement in most cases.
@@ -201,13 +201,14 @@ If your application uses this kind of matching, you should continue to use `RegE
 
 ## Release history
 
+- 1.3.2 *Updated references in README (re2 was moved to github).*
 - 1.3.1 *Refreshed dependencies, new Travis-CI config.*
 - 1.3.0 *Upgraded NAN to 1.6.3, now we support node.js 0.10.36, 0.12.0, and io.js 1.3.0. Thx @reid!*
 - 1.2.0 *Documented getUtfXLength() functions. Added support for `\c` and `\u` commands.*
 - 1.1.1 *Minor corrections in README.*
 - 1.1.0 *Buffer-based API is public. Unicode is fully supported.*
-- 1.0.0 *implemeted all `RegExp` methods, and all relevant `String` methods*
-- 0.9.0 *the initial public release*
+- 1.0.0 *Implemented all `RegExp` methods, and all relevant `String` methods.*
+- 0.9.0 *The initial public release.*
 
 
 [npm-image]:      https://img.shields.io/npm/v/re2.svg
