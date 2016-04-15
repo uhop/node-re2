@@ -201,6 +201,7 @@ If your application uses this kind of matching, you should continue to use `RegE
 
 ## Release history
 
+- 1.3.3 *Refreshed dependencies.*
 - 1.3.2 *Updated references in README (re2 was moved to github).*
 - 1.3.1 *Refreshed dependencies, new Travis-CI config.*
 - 1.3.0 *Upgraded NAN to 1.6.3, now we support node.js 0.10.36, 0.12.0, and io.js 1.3.0. Thx @reid!*
