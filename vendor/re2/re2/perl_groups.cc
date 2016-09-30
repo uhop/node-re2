@@ -9,7 +9,8 @@ static const URange16 code1[] = {  /* \d */
 	{ 0x30, 0x39 },
 };
 static const URange16 code2[] = {  /* \s */
-	{ 0x9, 0xd },
+	{ 0x9, 0xa },
+	{ 0xc, 0xd },
 	{ 0x20, 0x20 },
 };
 static const URange16 code3[] = {  /* \w */
@@ -21,8 +22,8 @@ static const URange16 code3[] = {  /* \w */
 const UGroup perl_groups[] = {
 	{ "\\d", +1, code1, 1 },
 	{ "\\D", -1, code1, 1 },
-	{ "\\s", +1, code2, 2 },
-	{ "\\S", -1, code2, 2 },
+	{ "\\s", +1, code2, 3 },
+	{ "\\S", -1, code2, 3 },
 	{ "\\w", +1, code3, 4 },
 	{ "\\W", -1, code3, 4 },
 };

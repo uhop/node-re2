@@ -5,8 +5,21 @@
 // Regular expression representation.
 // Tested by parse_test.cc
 
-#include "util/util.h"
 #include "re2/regexp.h"
+
+#include <stddef.h>
+#include <stdint.h>
+#include <string.h>
+#include <algorithm>
+#include <map>
+#include <mutex>
+#include <string>
+#include <vector>
+
+#include "util/util.h"
+#include "util/logging.h"
+#include "util/mutex.h"
+#include "util/utf.h"
 #include "re2/stringpiece.h"
 #include "re2/walker-inl.h"
 
@@ -14,9 +27,9 @@ namespace re2 {
 
 // Constructor.  Allocates vectors as appropriate for operator.
 Regexp::Regexp(RegexpOp op, ParseFlags parse_flags)
-  : op_(op),
+  : op_(static_cast<uint8_t>(op)),
     simple_(false),
-    parse_flags_(static_cast<uint16>(parse_flags)),
+    parse_flags_(static_cast<uint16_t>(parse_flags)),
     ref_(1),
     nsub_(0),
     down_(NULL) {
@@ -43,7 +56,8 @@ Regexp::~Regexp() {
       delete[] runes_;
       break;
     case kRegexpCharClass:
-      cc_->Delete();
+      if (cc_)
+        cc_->Delete();
       delete ccb_;
       break;
   }
@@ -59,30 +73,29 @@ bool Regexp::QuickDestroy() {
   return false;
 }
 
-static map<Regexp*, int> *ref_map;
-GLOBAL_MUTEX(ref_mutex);
+// Lazily allocated.
+static Mutex* ref_mutex;
+static std::map<Regexp*, int>* ref_map;
 
 int Regexp::Ref() {
   if (ref_ < kMaxRef)
     return ref_;
 
-  GLOBAL_MUTEX_LOCK(ref_mutex);
-  int r = 0;
-  if (ref_map != NULL) {
-    r = (*ref_map)[this];
-  }
-  GLOBAL_MUTEX_UNLOCK(ref_mutex);
-  return r;
+  MutexLock l(ref_mutex);
+  return (*ref_map)[this];
 }
 
 // Increments reference count, returns object as convenience.
 Regexp* Regexp::Incref() {
   if (ref_ >= kMaxRef-1) {
+    static std::once_flag ref_once;
+    std::call_once(ref_once, []() {
+      ref_mutex = new Mutex;
+      ref_map = new std::map<Regexp*, int>;
+    });
+
     // Store ref count in overflow map.
-    GLOBAL_MUTEX_LOCK(ref_mutex);
-    if (ref_map == NULL) {
-      ref_map = new map<Regexp*, int>;
-    }
+    MutexLock l(ref_mutex);
     if (ref_ == kMaxRef) {
       // already overflowed
       (*ref_map)[this]++;
@@ -91,7 +104,6 @@ Regexp* Regexp::Incref() {
       (*ref_map)[this] = kMaxRef;
       ref_ = kMaxRef;
     }
-    GLOBAL_MUTEX_UNLOCK(ref_mutex);
     return this;
   }
 
@@ -103,15 +115,14 @@ Regexp* Regexp::Incref() {
 void Regexp::Decref() {
   if (ref_ == kMaxRef) {
     // Ref count is stored in overflow map.
-    GLOBAL_MUTEX_LOCK(ref_mutex);
+    MutexLock l(ref_mutex);
     int r = (*ref_map)[this] - 1;
     if (r < kMaxRef) {
-      ref_ = r;
+      ref_ = static_cast<uint16_t>(r);
       ref_map->erase(this);
     } else {
       (*ref_map)[this] = r;
     }
-    GLOBAL_MUTEX_UNLOCK(ref_mutex);
     return;
   }
   ref_--;
@@ -210,6 +221,13 @@ Regexp* Regexp::ConcatOrAlternate(RegexpOp op, Regexp** sub, int nsub,
                                   ParseFlags flags, bool can_factor) {
   if (nsub == 1)
     return sub[0];
+
+  if (nsub == 0) {
+    if (op == kRegexpAlternate)
+      return new Regexp(kRegexpNoMatch, flags);
+    else
+      return new Regexp(kRegexpEmptyMatch, flags);
+  }
 
   Regexp** subcopy = NULL;
   if (op == kRegexpAlternate && can_factor) {
@@ -405,7 +423,7 @@ bool Regexp::Equal(Regexp* a, Regexp* b) {
   // The stack (vector) has pairs of regexps waiting to
   // be compared.  The regexps are only equal if
   // all the pairs end up being equal.
-  vector<Regexp*> stk;
+  std::vector<Regexp*> stk;
 
   for (;;) {
     // Invariant: TopEqual(a, b) == true.
@@ -445,10 +463,11 @@ bool Regexp::Equal(Regexp* a, Regexp* b) {
         continue;
     }
 
-    int n = stk.size();
+    size_t n = stk.size();
     if (n == 0)
       break;
 
+    DCHECK_GE(n, 2);
     a = stk[n-2];
     b = stk[n-1];
     stk.resize(n-2);
@@ -517,7 +536,9 @@ class NumCapturesWalker : public Regexp::Walker<Ignored> {
 
  private:
   int ncapture_;
-  DISALLOW_EVIL_CONSTRUCTORS(NumCapturesWalker);
+
+  NumCapturesWalker(const NumCapturesWalker&) = delete;
+  NumCapturesWalker& operator=(const NumCapturesWalker&) = delete;
 };
 
 int Regexp::NumCaptures() {
@@ -532,8 +553,8 @@ class NamedCapturesWalker : public Regexp::Walker<Ignored> {
   NamedCapturesWalker() : map_(NULL) {}
   ~NamedCapturesWalker() { delete map_; }
 
-  map<string, int>* TakeMap() {
-    map<string, int>* m = map_;
+  std::map<string, int>* TakeMap() {
+    std::map<string, int>* m = map_;
     map_ = NULL;
     return m;
   }
@@ -542,7 +563,7 @@ class NamedCapturesWalker : public Regexp::Walker<Ignored> {
     if (re->op() == kRegexpCapture && re->name() != NULL) {
       // Allocate map once we find a name.
       if (map_ == NULL)
-        map_ = new map<string, int>;
+        map_ = new std::map<string, int>;
 
       // Record first occurrence of each name.
       // (The rule is that if you have the same name
@@ -560,11 +581,13 @@ class NamedCapturesWalker : public Regexp::Walker<Ignored> {
   }
 
  private:
-  map<string, int>* map_;
-  DISALLOW_EVIL_CONSTRUCTORS(NamedCapturesWalker);
+  std::map<string, int>* map_;
+
+  NamedCapturesWalker(const NamedCapturesWalker&) = delete;
+  NamedCapturesWalker& operator=(const NamedCapturesWalker&) = delete;
 };
 
-map<string, int>* Regexp::NamedCaptures() {
+std::map<string, int>* Regexp::NamedCaptures() {
   NamedCapturesWalker w;
   w.Walk(this, 0);
   return w.TakeMap();
@@ -576,8 +599,8 @@ class CaptureNamesWalker : public Regexp::Walker<Ignored> {
   CaptureNamesWalker() : map_(NULL) {}
   ~CaptureNamesWalker() { delete map_; }
 
-  map<int, string>* TakeMap() {
-    map<int, string>* m = map_;
+  std::map<int, string>* TakeMap() {
+    std::map<int, string>* m = map_;
     map_ = NULL;
     return m;
   }
@@ -586,7 +609,7 @@ class CaptureNamesWalker : public Regexp::Walker<Ignored> {
     if (re->op() == kRegexpCapture && re->name() != NULL) {
       // Allocate map once we find a name.
       if (map_ == NULL)
-        map_ = new map<int, string>;
+        map_ = new std::map<int, string>;
 
       (*map_)[re->cap()] = *re->name();
     }
@@ -600,11 +623,13 @@ class CaptureNamesWalker : public Regexp::Walker<Ignored> {
   }
 
  private:
-  map<int, string>* map_;
-  DISALLOW_EVIL_CONSTRUCTORS(CaptureNamesWalker);
+  std::map<int, string>* map_;
+
+  CaptureNamesWalker(const CaptureNamesWalker&) = delete;
+  CaptureNamesWalker& operator=(const CaptureNamesWalker&) = delete;
 };
 
-map<int, string>* Regexp::CaptureNames() {
+std::map<int, string>* Regexp::CaptureNames() {
   CaptureNamesWalker w;
   w.Walk(this, 0);
   return w.TakeMap();
@@ -643,7 +668,7 @@ bool Regexp::RequiredPrefix(string *prefix, bool *foldcase, Regexp** suffix) {
       if (re->parse_flags() & Latin1) {
         prefix->resize(re->nrunes_);
         for (int j = 0; j < re->nrunes_; j++)
-          (*prefix)[j] = re->runes_[j];
+          (*prefix)[j] = static_cast<char>(re->runes_[j]);
       } else {
         // Convert to UTF-8 in place.
         // Assume worst-case space and then trim.
@@ -652,7 +677,7 @@ bool Regexp::RequiredPrefix(string *prefix, bool *foldcase, Regexp** suffix) {
         for (int j = 0; j < re->nrunes_; j++) {
           Rune r = re->runes_[j];
           if (r < Runeself)
-            *p++ = r;
+            *p++ = static_cast<char>(r);
           else
             p += runetochar(p, &r);
         }
@@ -662,14 +687,14 @@ bool Regexp::RequiredPrefix(string *prefix, bool *foldcase, Regexp** suffix) {
 
     case kRegexpLiteral:
       if ((re->parse_flags() & Latin1) || re->rune_ < Runeself) {
-        prefix->append(1, re->rune_);
+        prefix->append(1, static_cast<char>(re->rune_));
       } else {
         char buf[UTFmax];
         prefix->append(buf, runetochar(buf, &re->rune_));
       }
       break;
   }
-  *foldcase = (sub[i]->parse_flags() & FoldCase);
+  *foldcase = (sub[i]->parse_flags() & FoldCase) != 0;
   i++;
 
   // The rest.
@@ -704,13 +729,13 @@ bool CharClassBuilder::AddRange(Rune lo, Rune hi) {
   if (lo <= 'z' && hi >= 'A') {
     // Overlaps some alpha, maybe not all.
     // Update bitmaps telling which ASCII letters are in the set.
-    Rune lo1 = max<Rune>(lo, 'A');
-    Rune hi1 = min<Rune>(hi, 'Z');
+    Rune lo1 = std::max<Rune>(lo, 'A');
+    Rune hi1 = std::min<Rune>(hi, 'Z');
     if (lo1 <= hi1)
       upper_ |= ((1 << (hi1 - lo1 + 1)) - 1) << (lo1 - 'A');
 
-    lo1 = max<Rune>(lo, 'a');
-    hi1 = min<Rune>(hi, 'z');
+    lo1 = std::max<Rune>(lo, 'a');
+    hi1 = std::min<Rune>(hi, 'z');
     if (lo1 <= hi1)
       lower_ |= ((1 << (hi1 - lo1 + 1)) - 1) << (lo1 - 'a');
   }
@@ -826,7 +851,7 @@ void CharClassBuilder::RemoveAbove(Rune r) {
 void CharClassBuilder::Negate() {
   // Build up negation and then copy in.
   // Could edit ranges in place, but C++ won't let me.
-  vector<RuneRange> v;
+  std::vector<RuneRange> v;
   v.reserve(ranges_.size() + 1);
 
   // In negation, first range begins at 0, unless
@@ -849,7 +874,7 @@ void CharClassBuilder::Negate() {
   }
 
   ranges_.clear();
-  for (int i = 0; i < v.size(); i++)
+  for (size_t i = 0; i < v.size(); i++)
     ranges_.insert(v[i]);
 
   upper_ = AlphaMask & ~upper_;
@@ -863,7 +888,7 @@ void CharClassBuilder::Negate() {
 
 CharClass* CharClass::New(int maxranges) {
   CharClass* cc;
-  uint8* data = new uint8[sizeof *cc + maxranges*sizeof cc->ranges_[0]];
+  uint8_t* data = new uint8_t[sizeof *cc + maxranges*sizeof cc->ranges_[0]];
   cc = reinterpret_cast<CharClass*>(data);
   cc->ranges_ = reinterpret_cast<RuneRange*>(data + sizeof *cc);
   cc->nranges_ = 0;
@@ -873,7 +898,7 @@ CharClass* CharClass::New(int maxranges) {
 }
 
 void CharClass::Delete() {
-  uint8 *data = reinterpret_cast<uint8*>(this);
+  uint8_t* data = reinterpret_cast<uint8_t*>(this);
   delete[] data;
 }
 
@@ -915,12 +940,12 @@ bool CharClass::Contains(Rune r) {
 }
 
 CharClass* CharClassBuilder::GetCharClass() {
-  CharClass* cc = CharClass::New(ranges_.size());
+  CharClass* cc = CharClass::New(static_cast<int>(ranges_.size()));
   int n = 0;
   for (iterator it = begin(); it != end(); ++it)
     cc->ranges_[n++] = *it;
   cc->nranges_ = n;
-  DCHECK_LE(n, ranges_.size());
+  DCHECK_LE(n, static_cast<int>(ranges_.size()));
   cc->nrunes_ = nrunes_;
   cc->folds_ascii_ = FoldsASCII();
   return cc;

@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+#include <string>
+
 #include "util/test.h"
+#include "util/logging.h"
 #include "re2/regexp.h"
 
 namespace re2 {
@@ -28,7 +31,7 @@ static PrefixTest tests[] = {
 
   // Otherwise, it should work.
   { "^abc$", true, "abc", false, "(?-m:$)" },
-  { "^abc", "true", "abc", false, "" },
+  { "^abc", true, "abc", false, "" },
   { "^(?i)abc", true, "abc", true, "" },
   { "^abcd*", true, "abc", false, "d*" },
   { "^[Aa][Bb]cd*", true, "ab", true, "cd*" },
