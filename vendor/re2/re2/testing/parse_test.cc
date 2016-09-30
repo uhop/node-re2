@@ -5,8 +5,9 @@
 // Test parse.cc, dump.cc, and tostring.cc.
 
 #include <string>
-#include <vector>
+
 #include "util/test.h"
+#include "util/logging.h"
 #include "re2/regexp.h"
 
 namespace re2 {
@@ -118,14 +119,24 @@ static Test tests[] = {
   { "(?:a)", "lit{a}" },
   { "(?:ab)(?:cd)", "str{abcd}" },
   { "(?:a|b)|(?:c|d)", "cc{0x61-0x64}" },
+  { "a|c", "cc{0x61 0x63}" },
+  { "a|[cd]", "cc{0x61 0x63-0x64}" },
   { "a|.", "dot{}" },
-  { ".|a", "dot{}" },
+  { "[ab]|c", "cc{0x61-0x63}" },
+  { "[ab]|[cd]", "cc{0x61-0x64}" },
+  { "[ab]|.", "dot{}" },
+  { ".|c", "dot{}" },
+  { ".|[cd]", "dot{}" },
+  { ".|.", "dot{}" },
 
   // Test Perl quoted literals
   { "\\Q+|*?{[\\E", "str{+|*?{[}" },
   { "\\Q+\\E+", "plus{lit{+}}" },
   { "\\Q\\\\E", "lit{\\}" },
   { "\\Q\\\\\\E", "str{\\\\}" },
+  { "\\Qa\\E*", "star{lit{a}}" },
+  { "\\Qab\\E*", "cat{lit{a}star{lit{b}}}" },
+  { "\\Qabc\\E*", "cat{str{ab}star{lit{c}}}" },
 
   // Test Perl \A and \z
   { "(?m)^", "bol{}" },
@@ -212,12 +223,12 @@ void TestParse(const Test* tests, int ntests, Regexp::ParseFlags flags,
                          << status.Text();
     string s = re[i]->Dump();
     EXPECT_EQ(string(tests[i].parse), s) << "Regexp: " << tests[i].regexp
-      << "\nparse: " << tests[i].parse << " s: " << s << " flag=" << f;
+      << "\nparse: " << string(tests[i].parse) << " s: " << s << " flag=" << f;
   }
 
   for (int i = 0; i < ntests; i++) {
     for (int j = 0; j < ntests; j++) {
-      EXPECT_EQ(string(tests[i].parse) == tests[j].parse,
+      EXPECT_EQ(string(tests[i].parse) == string(tests[j].parse),
                 RegexpEqualTestingOnly(re[i], re[j]))
         << "Regexp: " << tests[i].regexp << " " << tests[j].regexp;
     }
@@ -293,17 +304,45 @@ Test prefix_tests[] = {
   { "abc|x|abd", "alt{str{abc}lit{x}str{abd}}" },
   { "(?i)abc|ABD", "cat{strfold{ab}cc{0x43-0x44 0x63-0x64}}" },
   { "[ab]c|[ab]d", "cat{cc{0x61-0x62}cc{0x63-0x64}}" },
-  { "(?:xx|yy)c|(?:xx|yy)d",
-    "cat{alt{str{xx}str{yy}}cc{0x63-0x64}}" },
+  { ".c|.d", "cat{cc{0-0x9 0xb-0x10ffff}cc{0x63-0x64}}" },
+  { "\\Cc|\\Cd", "cat{byte{}cc{0x63-0x64}}" },
   { "x{2}|x{2}[0-9]",
     "cat{rep{2,2 lit{x}}alt{emp{}cc{0x30-0x39}}}" },
   { "x{2}y|x{2}[0-9]y",
     "cat{rep{2,2 lit{x}}alt{lit{y}cat{cc{0x30-0x39}lit{y}}}}" },
+  { "n|r|rs",
+    "alt{lit{n}cat{lit{r}alt{emp{}lit{s}}}}" },
+  { "n|rs|r",
+    "alt{lit{n}cat{lit{r}alt{lit{s}emp{}}}}" },
+  { "r|rs|n",
+    "alt{cat{lit{r}alt{emp{}lit{s}}}lit{n}}" },
+  { "rs|r|n",
+    "alt{cat{lit{r}alt{lit{s}emp{}}}lit{n}}" },
+  { "a\\C*?c|a\\C*?b",
+    "cat{lit{a}alt{cat{nstar{byte{}}lit{c}}cat{nstar{byte{}}lit{b}}}}" },
+  { "^/a/bc|^/a/de",
+    "cat{bol{}cat{str{/a/}alt{str{bc}str{de}}}}" },
 };
 
 // Test that prefix factoring works.
 TEST(TestParse, Prefix) {
   TestParse(prefix_tests, arraysize(prefix_tests), Regexp::PerlX, "prefix");
+}
+
+Test nested_tests[] = {
+  { "((((((((((x{2}){2}){2}){2}){2}){2}){2}){2}){2}))",
+    "cap{cap{rep{2,2 cap{rep{2,2 cap{rep{2,2 cap{rep{2,2 cap{rep{2,2 cap{rep{2,2 cap{rep{2,2 cap{rep{2,2 cap{rep{2,2 lit{x}}}}}}}}}}}}}}}}}}}}" },
+  { "((((((((((x{1}){2}){2}){2}){2}){2}){2}){2}){2}){2})",
+    "cap{rep{2,2 cap{rep{2,2 cap{rep{2,2 cap{rep{2,2 cap{rep{2,2 cap{rep{2,2 cap{rep{2,2 cap{rep{2,2 cap{rep{2,2 cap{rep{1,1 lit{x}}}}}}}}}}}}}}}}}}}}}" },
+  { "((((((((((x{0}){2}){2}){2}){2}){2}){2}){2}){2}){2})",
+    "cap{rep{2,2 cap{rep{2,2 cap{rep{2,2 cap{rep{2,2 cap{rep{2,2 cap{rep{2,2 cap{rep{2,2 cap{rep{2,2 cap{rep{2,2 cap{rep{0,0 lit{x}}}}}}}}}}}}}}}}}}}}}" },
+  { "((((((x{2}){2}){2}){5}){5}){5})",
+    "cap{rep{5,5 cap{rep{5,5 cap{rep{5,5 cap{rep{2,2 cap{rep{2,2 cap{rep{2,2 lit{x}}}}}}}}}}}}}" },
+};
+
+// Test that nested repetition works.
+TEST(TestParse, Nested) {
+  TestParse(nested_tests, arraysize(nested_tests), Regexp::PerlX, "nested");
 }
 
 // Invalid regular expressions
@@ -329,6 +368,9 @@ const char* badtests[] = {
   "(?i)[a-Z]",
   "a{100000}",
   "a{100000,}",
+  "((((((((((x{2}){2}){2}){2}){2}){2}){2}){2}){2}){2})",
+  "(((x{7}){11}){13})",
+  "\\Q\\E*",
 };
 
 // Valid in Perl, bad in POSIX

@@ -2,16 +2,28 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-#ifndef RE2_TESTING_EXHAUSTIVE_TESTER_H__
-#define RE2_TESTING_EXHAUSTIVE_TESTER_H__
+#ifndef RE2_TESTING_EXHAUSTIVE_TESTER_H_
+#define RE2_TESTING_EXHAUSTIVE_TESTER_H_
 
+#include <stdint.h>
 #include <string>
 #include <vector>
+
 #include "util/util.h"
 #include "re2/testing/regexp_generator.h"
 #include "re2/testing/string_generator.h"
 
 namespace re2 {
+
+#if !defined(NDEBUG)
+// We are in a debug build.
+const bool RE2_DEBUG_MODE = true;
+#elif ADDRESS_SANITIZER || MEMORY_SANITIZER || THREAD_SANITIZER
+// Not a debug build, but still under sanitizers.
+const bool RE2_DEBUG_MODE = true;
+#else
+const bool RE2_DEBUG_MODE = false;
+#endif
 
 // Exhaustive regular expression test: generate all regexps within parameters,
 // then generate all strings of a given length over a given alphabet,
@@ -25,10 +37,10 @@ class ExhaustiveTester : public RegexpGenerator {
  public:
   ExhaustiveTester(int maxatoms,
                    int maxops,
-                   const vector<string>& alphabet,
-                   const vector<string>& ops,
+                   const std::vector<string>& alphabet,
+                   const std::vector<string>& ops,
                    int maxstrlen,
-                   const vector<string>& stralphabet,
+                   const std::vector<string>& stralphabet,
                    const string& wrapper,
                    const string& topwrapper)
     : RegexpGenerator(maxatoms, maxops, alphabet, ops),
@@ -46,7 +58,7 @@ class ExhaustiveTester : public RegexpGenerator {
   void HandleRegexp(const string& regexp);
 
   // Causes testing to generate random input strings.
-  void RandomStrings(int32 seed, int32 count) {
+  void RandomStrings(int32_t seed, int32_t count) {
     randomstrings_ = true;
     stringseed_ = seed;
     stringcount_ = count;
@@ -61,16 +73,19 @@ class ExhaustiveTester : public RegexpGenerator {
   int failures_;  // Number of tests failed.
 
   bool randomstrings_;  // Whether to use random strings
-  int32 stringseed_;    // If so, the seed.
+  int32_t stringseed_;  // If so, the seed.
   int stringcount_;     // If so, how many to generate.
-  DISALLOW_EVIL_CONSTRUCTORS(ExhaustiveTester);
+
+  ExhaustiveTester(const ExhaustiveTester&) = delete;
+  ExhaustiveTester& operator=(const ExhaustiveTester&) = delete;
 };
 
 // Runs an exhaustive test on the given parameters.
 void ExhaustiveTest(int maxatoms, int maxops,
-                    const vector<string>& alphabet,
-                    const vector<string>& ops,
-                    int maxstrlen, const vector<string>& stralphabet,
+                    const std::vector<string>& alphabet,
+                    const std::vector<string>& ops,
+                    int maxstrlen,
+                    const std::vector<string>& stralphabet,
                     const string& wrapper,
                     const string& topwrapper);
 
@@ -82,4 +97,4 @@ void EgrepTest(int maxatoms, int maxops, const string& alphabet,
 
 }  // namespace re2
 
-#endif  // RE2_TESTING_EXHAUSTIVE_TESTER_H__
+#endif  // RE2_TESTING_EXHAUSTIVE_TESTER_H_

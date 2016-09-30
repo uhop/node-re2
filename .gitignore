@@ -1,4 +1,6 @@
 *.sublime-*
+.idea
+*.iml
 node_modules/
 build/
 report/
