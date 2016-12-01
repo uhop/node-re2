@@ -4,3 +4,4 @@ build/
 report/
 coverage/
 .AppleDouble
+yarn.lock
