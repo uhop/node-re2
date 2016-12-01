@@ -201,6 +201,7 @@ If your application uses this kind of matching, you should continue to use `RegE
 
 ## Release history
 
+- 1.4.1 *Minor corrections in README.*
 - 1.4.0 *Use re2 as a git submodule. Thx [Ben James](https://github.com/benhjames)!*
 - 1.3.3 *Refreshed dependencies.*
 - 1.3.2 *Updated references in README (re2 was moved to github).*
