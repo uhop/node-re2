@@ -77,6 +77,8 @@ NAN_METHOD(WrappedRE2::Exec) {
 
 	Local<Array> result = Nan::New<Array>();
 
+	int indexOffset = re2->global ? re2->lastIndex : 0;
+
 	if (isBuffer) {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
 			const StringPiece& item = groups[i];
@@ -84,7 +86,7 @@ NAN_METHOD(WrappedRE2::Exec) {
 				Nan::Set(result, i, Nan::CopyBuffer(item.data(), item.size()).ToLocalChecked());
 			}
 		}
-		Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<Integer>(static_cast<int>(groups[0].data() - data)));
+		Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<Integer>(indexOffset + static_cast<int>(groups[0].data() - data)));
 	} else {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
 			const StringPiece& item = groups[i];
@@ -92,7 +94,7 @@ NAN_METHOD(WrappedRE2::Exec) {
 				Nan::Set(result, i, Nan::New(item.data(), item.size()).ToLocalChecked());
 			}
 		}
-		Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<Integer>(static_cast<int>(getUtf16Length(data, groups[0].data()))));
+		Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<Integer>(indexOffset + static_cast<int>(getUtf16Length(data, groups[0].data()))));
 	}
 
 	Nan::Set(result, Nan::New("input").ToLocalChecked(), info[0]);
