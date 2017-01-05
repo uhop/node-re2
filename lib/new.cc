@@ -8,6 +8,7 @@ using std::string;
 using std::vector;
 
 using v8::Local;
+using v8::MaybeLocal;
 using v8::RegExp;
 using v8::String;
 using v8::Value;
@@ -190,6 +191,13 @@ NAN_METHOD(WrappedRE2::New) {
 	RE2::Options options;
 	options.set_case_sensitive(!ignoreCase);
 	options.set_one_line(!multiline);
+
+	if (info.Length() >= 3 && info[2]->IsObject()) {
+		MaybeLocal<Value> max_mem = info[2]->ToObject()->Get(Nan::New("max_mem").ToLocalChecked());
+		if (!max_mem.IsEmpty()) {
+			options.set_max_mem(max_mem.ToLocalChecked()->IntegerValue());
+		}
+	}
 
 	// create and return an object
 
