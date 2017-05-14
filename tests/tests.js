@@ -11,6 +11,7 @@ var testMatch    = require("./test_match");
 var testReplace  = require("./test_replace");
 var testSearch   = require("./test_search");
 var testSplit    = require("./test_split");
+var testInval    = require("./test_inval");
 
 
 unit.run();

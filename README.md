@@ -188,6 +188,12 @@ result = RE2("ab*").exec("abba");
 ## Backreferences
 
 Unlike `RegExp`, `RE2` doesn't support backreferences, which are numbered references to previously
+`RE2` will throw a SyntaxError if you try to declare a regular expression using these features.
+If you are evaluating an externally-provided regular expression, wrap your RE2 declarations in a try-catch block.
+
+### Backreferences
+
+`RE2` doesn't support backreferences, which are numbered references to previously
 matched groups, like so: `\1`, `\2`, and so on. Example of backrefrences:
 
 ```js
