@@ -199,8 +199,26 @@ matched groups, like so: `\1`, `\2`, and so on. Example of backrefrences:
 
 If your application uses this kind of matching, you should continue to use `RegExp`.
 
+## Working on this project
+
+This project uses git submodules, so the correct way to get it is:
+
+    git clone git@github.com:uhop/node-re2.git
+    cd node-re2
+    git submodule update --init --recursive
+
+In order to build it, make sure that you have all necessary `gyp` dependencies
+for your platform, then run:
+
+    npm install
+
+Or:
+
+    yarn
+
 ## Release history
 
+- 1.5.0 *Bug fixes.*
 - 1.4.1 *Minor corrections in README.*
 - 1.4.0 *Use re2 as a git submodule. Thx [Ben James](https://github.com/benhjames)!*
 - 1.3.3 *Refreshed dependencies.*
