@@ -35,6 +35,20 @@ unit.add(module, [
 
 		eval(t.TEST("t.unify(result, ['A', 'B', 'C', 'D', 'E', 'a', 'b', 'c', 'd', 'e'])"));
 	},
+	function test_matchFail(t) {
+		"use strict";
+
+		var re = new RE2("(a+)?(b+)?");
+		var result = re.match("aaabb");
+
+		eval(t.TEST("result[1] === 'aaa'"));
+		eval(t.TEST("result[2] === 'bb'"));
+
+		result = re.match("aaacbb");
+
+		eval(t.TEST("result[1] === 'aaa'"));
+		eval(t.TEST("result[2] === undefined"));
+	},
 
 	// Unicode tests
 

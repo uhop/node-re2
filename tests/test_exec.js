@@ -59,6 +59,20 @@ unit.add(module, [
 
 		eval(t.TEST("result[1] === 'hello world!'"));
 	},
+	function test_execFail(t) {
+		"use strict";
+
+		var re = new RE2("(a+)?(b+)?");
+		var result = re.exec("aaabb");
+
+		eval(t.TEST("result[1] === 'aaa'"));
+		eval(t.TEST("result[2] === 'bb'"));
+
+		result = re.exec("aaacbb");
+
+		eval(t.TEST("result[1] === 'aaa'"));
+		eval(t.TEST("result[2] === undefined"));
+	},
 
 	// Unicode tests
 
