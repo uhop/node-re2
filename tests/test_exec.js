@@ -39,12 +39,14 @@ unit.add(module, [
 
 		eval(t.TEST("!!result"));
 		eval(t.TEST("result[0] === 'abb'"));
+		eval(t.TEST("result.index === 0"));
 		eval(t.TEST("re.lastIndex === 3"));
 
 		result = re.exec(str);
 
 		eval(t.TEST("!!result"));
 		eval(t.TEST("result[0] === 'ab'"));
+		eval(t.TEST("result.index === 7"));
 		eval(t.TEST("re.lastIndex === 9"));
 
 		result = re.exec(str);
