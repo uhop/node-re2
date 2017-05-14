@@ -29,9 +29,10 @@ The built-in Node.js regular expression engine can run in exponential time with 
  - ``Evil input''
 
 This can lead to what is known as a [Regular Expression Denial of Service (ReDoS)](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS).
-To tell if your regular expressions are vulnreable, you might try the one of these projects:
+To tell if your regular expressions are vulnerable, you might try the one of these projects:
  - [rxxr2](http://www.cs.bham.ac.uk/~hxt/research/rxxr2/)
  - [safe-regex](https://github.com/substack/safe-regex)
+
 However, neither project is perfect.
 
 node-re2 can protect your Node.js application from ReDoS.
