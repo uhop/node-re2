@@ -286,7 +286,7 @@ Or:
 
 ## Release history
 
-- 1.5.0 *Bug fixes.*
+- 1.5.0 *Bug fixes, error checks, better docs. Thx [Jamie Davis](https://github.com/davisjam), and [omg](https://github.com/omg)!*
 - 1.4.1 *Minor corrections in README.*
 - 1.4.0 *Use re2 as a git submodule. Thx [Ben James](https://github.com/benhjames)!*
 - 1.3.3 *Refreshed dependencies.*
