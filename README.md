@@ -201,7 +201,7 @@ result = new RE2("ab*").exec("abba");
 result = RE2("ab*").exec("abba");
 ```
 
-## Things RE2 does not support
+## Limitations (Things RE2 does not support)
 
 `RE2` consciously avoids any regular expression features that require worst-case exponential time to evaluate.
 These features are essentially those that describe a Context-Free Language (CFL) rather than a Regular Expression,
@@ -210,6 +210,8 @@ and are extensions to the traditional regular expression language because some p
 The most noteworthy missing features are backreferences and lookahead assertions.
 If your application uses these features, you should continue to use `RegExp`.
 But since these features are fundamentally vulnerable to ReDoS, you should strongly consider replacing them.
+
+In addition to these missing features, `RE2` also behaves somewhat differently from the built-in regular expression engine in corner cases.
 
 ### Backreferences
 
@@ -230,6 +232,36 @@ matched groups, like so: `\1`, `\2`, and so on. Example of backrefrences:
 ```js
 /abc(?=def)/; // match abc only if it is followed by def
 /abc(?!def)/; // match abc only if it is not followed by def
+```
+
+### Mismatched behavior
+
+`RE2` and the built-in regex engines disagree a bit.
+Before you switch to RE2, verify that your regular expressions continue to work as expected.
+They should do so in the vast majority of cases.
+
+Here is an example of a case where they may not:
+
+```
+$ cat comp.js
+var RE2  = require("../re2");
+
+var pattern = '(?:(a)|(b)|(c))+';
+
+var built_in = new RegExp(pattern);
+var re2 = new RE2(pattern);
+
+var input = 'abc';
+
+var bi_res = built_in.exec(input);
+var re2_res = re2.exec(input);
+
+console.log('bi_res: ' + bi_res);
+console.log('re2_res : ' + re2_res);
+
+$ node comp.js
+bi_res: abc,,,c
+re2_res : abc,a,b,c
 ```
 
 ## Working on this project
