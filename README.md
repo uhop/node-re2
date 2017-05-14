@@ -264,6 +264,9 @@ bi_res: abc,,,c
 re2_res : abc,a,b,c
 ```
 
+`RE2` will throw a SyntaxError if you try to declare a regular expression using these features.
+If you are evaluating an externally-provided regular expression, wrap your RE2 declarations in a try-catch block.
+
 ## Working on this project
 
 This project uses git submodules, so the correct way to get it is:
