@@ -196,20 +196,19 @@ NAN_METHOD(WrappedRE2::New) {
 		data = &buffer[0];
 	}
 
+	// create and return an object
+
 	RE2::Options options;
 	options.set_case_sensitive(!ignoreCase);
 	options.set_one_line(!multiline);
 	options.set_log_errors(false); // inappropriate when embedding
 
-	// try to make an re2
-	RE2 canary(StringPiece(data, size), options);
-	if (!canary.ok()) {
-		return Nan::ThrowSyntaxError("Unsupported regexp features (check for backreferences, lookahead assertions).");
+	WrappedRE2* re2 = new WrappedRE2(StringPiece(data, size), options, global, ignoreCase, multiline);
+	if (!re2->regexp.ok()) {
+		delete re2;
+		return Nan::ThrowSyntaxError("Unsupported regular expression features (check for backreferences, lookahead assertions).");
 	}
 
-	// create and return an object
-
-	WrappedRE2* re2 = new WrappedRE2(StringPiece(data, size), options, global, ignoreCase, multiline);
 	re2->Wrap(info.This());
 	info.GetReturnValue().Set(info.This());
 }
