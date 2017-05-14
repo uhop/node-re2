@@ -1,3 +1,0 @@
-vendor/*
-!vendor/re2/*
-!vendor/util/*
