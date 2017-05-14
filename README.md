@@ -240,6 +240,6 @@ BSD
 [deps-image]:     https://img.shields.io/david/uhop/node-re2.svg
 [deps-url]:       https://david-dm.org/uhop/node-re2
 [dev-deps-image]: https://img.shields.io/david/dev/uhop/node-re2.svg
-[dev-deps-url]:   https://david-dm.org/uhop/node-re2#info=devDependencies
+[dev-deps-url]:   https://david-dm.org/uhop/node-re2#info=dev
 [travis-image]:   https://img.shields.io/travis/uhop/node-re2.svg
 [travis-url]:     https://travis-ci.org/uhop/node-re2
