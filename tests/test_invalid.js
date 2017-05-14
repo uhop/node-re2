@@ -20,13 +20,9 @@ unit.add(module, [
 			new RE2(/(a)\1/);
 		} catch (e) {
 			threw = true;
-			/* TODO 
-			assert(e instanceof SyntaxError);
-			*/
+			eval(t.TEST("e instanceof SyntaxError"));
 		}
-		/* TODO 
-		assert(threw);
-		*/
+		t.test(threw);
 
 		// Lookahead assertions
 
@@ -36,13 +32,9 @@ unit.add(module, [
 			new RE2(/a(?=b)/);
 		} catch (e) {
 			threw = true;
-			/* TODO 
-			assert(e instanceof SyntaxError);
-			*/
+			eval(t.TEST("e instanceof SyntaxError"));
 		}
-		/* TODO 
-		assert(threw);
-		*/
+		t.test(threw);
 
 		// Negative
 		threw = false;
@@ -50,13 +42,8 @@ unit.add(module, [
 			new RE2(/a(?!b)/);
 		} catch (e) {
 			threw = true;
-			/* TODO 
-			assert(e instanceof SyntaxError);
-			*/
+			eval(t.TEST("e instanceof SyntaxError"));
 		}
-		/* TODO 
-		assert(threw);
-		*/
+		t.test(threw);
 	},
-
 ]);
