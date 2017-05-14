@@ -26,7 +26,7 @@ on recoding and copying characters, and making processing/parsing long files fas
 
 The built-in Node.js regular expression engine can run in exponential time with a special combination:
  - A vulnerable regular expression
- - ``Evil input''
+ - "Evil input"
 
 This can lead to what is known as a [Regular Expression Denial of Service (ReDoS)](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS).
 To tell if your regular expressions are vulnerable, you might try the one of these projects:
@@ -209,7 +209,24 @@ and are extensions to the traditional regular expression language because some p
 
 The most noteworthy missing features are backreferences and lookahead assertions.
 If your application uses these features, you should continue to use `RegExp`.
-But since these features are fundamentally vulnerable to ReDoS, you should strongly consider replacing them.
+But since these features are fundamentally vulnerable to
+[ReDoS](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS),
+you should strongly consider replacing them.
+
+`RE2` will throw a `SyntaxError` if you try to declare a regular expression using these features.
+If you are evaluating an externally-provided regular expression, wrap your `RE2` declarations in a try-catch block. It allows to use `RegExp`, when `RE2` misses a feature:
+
+```js
+var re = /(a)+(b)*/;
+try {
+  re = new RE2(re);
+  // use RE2 as a drop-in replacement
+} catch (e) {
+  // suppress an error, and use
+  // the original RegExp
+}
+var result = re.exec(sample);
+```
 
 In addition to these missing features, `RE2` also behaves somewhat differently from the built-in regular expression engine in corner cases.
 
@@ -227,7 +244,7 @@ matched groups, like so: `\1`, `\2`, and so on. Example of backrefrences:
 
 ### Lookahead assertions
 
-`RE2` doesn't support lookahead assertions, which are ways to allow a matchin dependent on subsequent contents.
+`RE2` doesn't support lookahead assertions, which are ways to allow a matching dependent on subsequent contents.
 
 ```js
 /abc(?=def)/; // match abc only if it is followed by def
@@ -237,13 +254,12 @@ matched groups, like so: `\1`, `\2`, and so on. Example of backrefrences:
 ### Mismatched behavior
 
 `RE2` and the built-in regex engines disagree a bit.
-Before you switch to RE2, verify that your regular expressions continue to work as expected.
+Before you switch to `RE2`, verify that your regular expressions continue to work as expected.
 They should do so in the vast majority of cases.
 
 Here is an example of a case where they may not:
 
-```
-$ cat comp.js
+```js
 var RE2  = require("../re2");
 
 var pattern = '(?:(a)|(b)|(c))+';
@@ -256,16 +272,9 @@ var input = 'abc';
 var bi_res = built_in.exec(input);
 var re2_res = re2.exec(input);
 
-console.log('bi_res: ' + bi_res);
-console.log('re2_res : ' + re2_res);
-
-$ node comp.js
-bi_res: abc,,,c
-re2_res : abc,a,b,c
+console.log('bi_res: ' + bi_res);    // prints: bi_res: abc,,,c
+console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 ```
-
-`RE2` will throw a SyntaxError if you try to declare a regular expression using these features.
-If you are evaluating an externally-provided regular expression, wrap your RE2 declarations in a try-catch block.
 
 ## Working on this project
 
