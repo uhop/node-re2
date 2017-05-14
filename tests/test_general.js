@@ -40,6 +40,42 @@ unit.add(module, [
 		eval(t.TEST("re2 instanceof RE2"));
 		compare(re1, re2, t);
 	},
+	function test_instErrors(t) {
+		try {
+			var re = new RE2([]);
+			t.test(false); // shouldn't be here
+		} catch(e) {
+			eval(t.TEST("e instanceof TypeError"));
+		}
+
+		try {
+			var re = new RE2({});
+			t.test(false); // shouldn't be here
+		} catch(e) {
+			eval(t.TEST("e instanceof TypeError"));
+		}
+
+		try {
+			var re = new RE2(new Date());
+			t.test(false); // shouldn't be here
+		} catch(e) {
+			eval(t.TEST("e instanceof TypeError"));
+		}
+
+		try {
+			var re = new RE2(null);
+			t.test(false); // shouldn't be here
+		} catch(e) {
+			eval(t.TEST("e instanceof TypeError"));
+		}
+
+		try {
+			var re = new RE2();
+			t.test(false); // shouldn't be here
+		} catch(e) {
+			eval(t.TEST("e instanceof TypeError"));
+		}
+	},
 	function test_generalIn(t) {
 		"use strict";
 
