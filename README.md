@@ -11,9 +11,9 @@ To learn more about RE2, start with an overview
 [Regular Expression Matching in the Wild](http://swtch.com/~rsc/regexp/regexp3.html). More resources can be found
 at his [Implementing Regular Expressions](http://swtch.com/~rsc/regexp/) page.
 
-RE2's regular expression language is almost a superset of what is provided by `RegExp`
+`RE2`'s regular expression language is almost a superset of what is provided by `RegExp`
 (see [Syntax](https://github.com/google/re2/wiki/Syntax)),
-but it lacks one feature: backreferences. See below for more details.
+but it lacks two features: backreferences and lookahead assertions. See below for more details.
 
 `RE2` object emulates standard `RegExp` making it a practical drop-in replacement in most cases.
 `RE2` is extended to provide `String`-based regular expression methods as well. To help converting
@@ -21,6 +21,21 @@ but it lacks one feature: backreferences. See below for more details.
 
 It can work with [node.js buffers](http://nodejs.org/api/buffer.html) directly reducing overhead
 on recoding and copying characters, and making processing/parsing long files fast.
+
+## Why use node-re2?
+
+The built-in Node.js regular expression engine can run in exponential time with a special combination:
+ - A vulnerable regular expression
+ - ``Evil input''
+
+This can lead to what is known as a [Regular Expression Denial of Service (ReDoS)](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS).
+To tell if your regular expressions are vulnreable, you might try the one of these projects:
+ - [rxxr2](http://www.cs.bham.ac.uk/~hxt/research/rxxr2/)
+ - [safe-regex](https://github.com/substack/safe-regex)
+However, neither project is perfect.
+
+node-re2 can protect your Node.js application from ReDoS.
+node-re2 makes vulnerable regular expression patterns safe by evaluating them in `RE2` instead of the built-in Node.js regex engine.
 
 ## Standard features
 
@@ -185,9 +200,19 @@ result = new RE2("ab*").exec("abba");
 result = RE2("ab*").exec("abba");
 ```
 
-## Backreferences
+## Things RE2 does not support
 
-Unlike `RegExp`, `RE2` doesn't support backreferences, which are numbered references to previously
+`RE2` consciously avoids any regular expression features that require worst-case exponential time to evaluate.
+These features are essentially those that describe a Context-Free Language (CFL) rather than a Regular Expression,
+and are extensions to the traditional regular expression language because some people don't know when enough is enough.
+
+The most noteworthy missing features are backreferences and lookahead assertions.
+If your application uses these features, you should continue to use `RegExp`.
+But since these features are fundamentally vulnerable to ReDoS, you should strongly consider replacing them.
+
+### Backreferences
+
+`RE2` doesn't support backreferences, which are numbered references to previously
 matched groups, like so: `\1`, `\2`, and so on. Example of backrefrences:
 
 ```js
@@ -197,7 +222,14 @@ matched groups, like so: `\1`, `\2`, and so on. Example of backrefrences:
 /(cat|dog)\1/.test("dogcat"); // false
 ```
 
-If your application uses this kind of matching, you should continue to use `RegExp`.
+### Lookahead assertions
+
+`RE2` doesn't support lookahead assertions, which are ways to allow a matchin dependent on subsequent contents.
+
+```js
+/abc(?=def)/; // match abc only if it is followed by def
+/abc(?!def)/; // match abc only if it is not followed by def
+```
 
 ## Working on this project
 
