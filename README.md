@@ -58,6 +58,23 @@ Supported methods:
 * [`re2.test(str)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test)
 * [`re2.toString()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/toString)
 
+Starting with 1.6.0 following well-known symbol-based methods are supported (see [Symbols](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol)):
+
+* [`re2[Symbol.match](str)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/match)
+* [`re2[Symbol.search](str)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/search)
+* [`re2[Symbol.replace](str, newSubStr|function)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/replace)
+* [`re2[Symbol.split](str[, limit])`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/split)
+
+It allows to use `RE2` instances on strings directly, just like `RegExp` instances:
+
+```js
+var re = new RE2("1");
+"213".match(re);        // [ '1', index: 1, input: '213' ]
+"213".search(re);       // 1
+"213".replace(re, "+"); // 2+3
+"213".split(re);        // [ '2', '3' ]
+```
+
 ## Extensions
 
 ### Shortcut construction
@@ -82,6 +99,8 @@ exchanging positions of a string, and a regular expression:
   * See [`str.search(regexp)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/search)
 * `re2.split(str[, limit])`
   * See [`str.split(regexp[, limit])`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split)
+
+Starting with 1.6.0, these methods added as well-known symbol-based methods to be used transparently with ES6 string/regex machinery.
 
 ### `Buffer` support
 
@@ -295,6 +314,7 @@ Or:
 
 ## Release history
 
+- 1.6.0 *Added well-known symbol-based methods of ES6. Refreshed NAN.*
 - 1.5.0 *Bug fixes, error checks, better docs. Thx [Jamie Davis](https://github.com/davisjam), and [omg](https://github.com/omg)!*
 - 1.4.1 *Minor corrections in README.*
 - 1.4.0 *Use re2 as a git submodule. Thx [Ben James](https://github.com/benhjames)!*
