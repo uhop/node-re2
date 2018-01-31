@@ -314,6 +314,7 @@ Or:
 
 ## Release history
 
+- 1.6.1 *Returned support for node 4 LTS. Thx [Kannan Goundan](https://github.com/cakoose)!*
 - 1.6.0 *Added well-known symbol-based methods of ES6. Refreshed NAN.*
 - 1.5.0 *Bug fixes, error checks, better docs. Thx [Jamie Davis](https://github.com/davisjam), and [omg](https://github.com/omg)!*
 - 1.4.1 *Minor corrections in README.*
