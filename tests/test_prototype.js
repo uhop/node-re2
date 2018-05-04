@@ -12,9 +12,9 @@ unit.add(module, [
 		"use strict";
 
 		eval(t.TEST("RE2.prototype.source === '(?:)'"));
-		eval(t.TEST("RE2.prototype.global === false"));
-		eval(t.TEST("RE2.prototype.ignoreCase === false"));
-		eval(t.TEST("RE2.prototype.multiline === false"));
-		eval(t.TEST("RE2.prototype.lastIndex === 0'"));
+		eval(t.TEST("RE2.prototype.global === undefined"));
+		eval(t.TEST("RE2.prototype.ignoreCase === undefined"));
+		eval(t.TEST("RE2.prototype.multiline === undefined"));
+		eval(t.TEST("RE2.prototype.lastIndex === undefined'"));
 	}
 ]);
