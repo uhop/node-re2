@@ -10,7 +10,9 @@
 
 using v8::Function;
 using v8::Handle;
+using v8::Local;
 using v8::Object;
+using v8::FunctionTemplate;
 
 using re2::RE2;
 using re2::StringPiece;
@@ -43,10 +45,15 @@ class WrappedRE2 : public Nan::ObjectWrap {
 		static NAN_METHOD(Search);
 		static NAN_METHOD(Split);
 
-		static Nan::Persistent<Function>	constructor;
+		static Nan::Persistent<Function>			constructor;
+		static Nan::Persistent<FunctionTemplate>	ctorTemplate;
 
 	public:
 		static void Initialize(Handle<Object> exports, Handle<Object> module);
+
+		static inline bool HasInstance(Local<Object> object) {
+			return Nan::New(ctorTemplate)->HasInstance(object);
+		}
 
 		RE2		regexp;
 		bool	global;

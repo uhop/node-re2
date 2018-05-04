@@ -10,7 +10,8 @@ using v8::ObjectTemplate;
 using v8::String;
 
 
-Nan::Persistent<Function> WrappedRE2::constructor;
+Nan::Persistent<Function>         WrappedRE2::constructor;
+Nan::Persistent<FunctionTemplate> WrappedRE2::ctorTemplate;
 
 
 static NAN_METHOD(GetUtf8Length) {
@@ -59,6 +60,7 @@ void WrappedRE2::Initialize(Handle<Object> exports, Handle<Object> module) {
 	Nan::Export(fun, "getUtf8Length",  GetUtf8Length);
 	Nan::Export(fun, "getUtf16Length", GetUtf16Length);
 	constructor.Reset(fun);
+	ctorTemplate.Reset(tpl);
 
 	// return constructor as module's export
 	Nan::Set(module, Nan::New("exports").ToLocalChecked(), fun);
