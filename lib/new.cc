@@ -25,6 +25,7 @@ inline bool isHexadecimal(char ch) {
 
 inline bool translateRegExp(const char* data, size_t size, vector<char>& buffer) {
 	string result;
+	bool changed = false;
 
 	for (size_t i = 0; i < size;) {
 		char ch = data[i];
@@ -44,6 +45,7 @@ inline bool translateRegExp(const char* data, size_t size, vector<char>& buffer)
 								result += hex[((ch - '@') / 16) & 15];
 								result += hex[(ch - '@') & 15];
 								i += 3;
+								changed = true;
 								continue;
 							}
 						}
@@ -57,7 +59,7 @@ inline bool translateRegExp(const char* data, size_t size, vector<char>& buffer)
 								result += "\\x{";
 								result += ch;
 								i += 3;
-								for (size_t j = 0; j < 3; ++i, ++j) {
+								for (size_t j = 0; j < 3 && i < size; ++i, ++j) {
 									ch = data[i];
 									if (!isHexadecimal(ch)) {
 										break;
@@ -65,6 +67,12 @@ inline bool translateRegExp(const char* data, size_t size, vector<char>& buffer)
 									result += ch;
 								}
 								result += '}';
+								changed = true;
+								continue;
+							} else if (ch == '{') {
+								result += "\\x";
+								i += 2;
+								changed = true;
 								continue;
 							}
 						}
@@ -79,7 +87,7 @@ inline bool translateRegExp(const char* data, size_t size, vector<char>& buffer)
 		i += sym_size;
 	}
 
-	if (result.size() + 1 == buffer.size()) {
+	if (!changed) {
 		return false;
 	}
 
