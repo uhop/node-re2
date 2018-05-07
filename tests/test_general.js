@@ -182,6 +182,25 @@ unit.add(module, [
 		var b = new Buffer(s);
 		eval(t.TEST("b.length === 13"));
 		eval(t.TEST("RE2.getUtf16Length(b) === 7"));
+
+		var s2 = "\u{1F603}";
+
+		eval(t.TEST("s2.length === 2"));
+		eval(t.TEST("RE2.getUtf8Length(s2) === 4"));
+
+		var b2 = new Buffer(s2);
+		eval(t.TEST("b2.length === 4"));
+		eval(t.TEST("RE2.getUtf16Length(b2) === 2"));
+
+		var s3 = "\uD83D";
+
+		eval(t.TEST("s3.length === 1"));
+		eval(t.TEST("RE2.getUtf8Length(s3) === 4"));
+
+		var b3 = new Buffer([ 0xF0 ]);
+
+		eval(t.TEST("b3.length === 1"));
+		eval(t.TEST("RE2.getUtf16Length(b3) === 2"));
 	},
 	function test_sourceTranslation(t) {
 		"use strict";
