@@ -184,6 +184,15 @@ unit.add(module, [
 
 		var re = new RE2("a\\cM\\u34\\u1234\\u{10abcd}z");
 		eval(t.TEST("re.source === 'a\\\\x0D\\\\x{34}\\\\x{1234}\\\\x{10abcd}z'"));
+
+		var re = new RE2("");
+		eval(t.TEST("re.source === '(?:)'"));
+
+		var re = new RE2("foo/bar");
+		eval(t.TEST("re.source === 'foo\\\\/bar'"));
+
+		var re = new RE2("foo\\/bar");
+		eval(t.TEST("re.source === 'foo\\\\/bar'"));
 	}
 ]);
 
