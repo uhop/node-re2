@@ -98,6 +98,51 @@ unit.add(module, [
 		eval(t.TEST("result.input.substr(result.index) === 'Охотник Желает Знать Где Сидит Фазан'"));
 		eval(t.TEST("result.input.substr(re.lastIndex) === ' Сидит Фазан'"));
 	},
+	function test_execUnicodeSupplementary(t) {
+		"use strict";
+
+		var re = new RE2("\\u{1F603}", "g");
+
+		eval(t.TEST("re.source === '\\\\x{1F603}'"));
+		eval(t.TEST("!re.ignoreCase"));
+		eval(t.TEST("re.global"));
+		eval(t.TEST("!re.multiline"));
+
+		var result = re.exec("\u{1F603}"); // 1F603 is the SMILING FACE WITH OPEN MOUTH emoji
+
+		eval(t.TEST("t.unify(result, ['\\u{1F603}'])"));
+		eval(t.TEST("result.index === 0"));
+		eval(t.TEST("result.input === '\\u{1F603}'"));
+		eval(t.TEST("re.lastIndex === 2"));
+
+		var re2 = new RE2(".", "g");
+
+		eval(t.TEST("re2.source === '.'"));
+		eval(t.TEST("!re2.ignoreCase"));
+		eval(t.TEST("re2.global"));
+		eval(t.TEST("!re2.multiline"));
+
+		var result2 = re2.exec("\u{1F603}");
+
+		eval(t.TEST("t.unify(result2, ['\\u{1F603}'])"));
+		eval(t.TEST("result2.index === 0"));
+		eval(t.TEST("result2.input === '\\u{1F603}'"));
+		eval(t.TEST("re2.lastIndex === 2"));
+
+		var re3 = new RE2("[\u{1F603}-\u{1F605}]", "g");
+
+		eval(t.TEST("re3.source === '[\u{1F603}-\u{1F605}]'"));
+		eval(t.TEST("!re3.ignoreCase"));
+		eval(t.TEST("re3.global"));
+		eval(t.TEST("!re3.multiline"));
+
+		var result3 = re3.exec("\u{1F604}");
+
+		eval(t.TEST("t.unify(result3, ['\\u{1F604}'])"));
+		eval(t.TEST("result3.index === 0"));
+		eval(t.TEST("result3.input === '\\u{1F604}'"));
+		eval(t.TEST("re3.lastIndex === 2"));
+	},
 
 	// Buffer tests
 
