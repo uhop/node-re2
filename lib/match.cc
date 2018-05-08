@@ -22,9 +22,11 @@ NAN_METHOD(WrappedRE2::Match) {
 		return;
 	}
 
-	StrVal a(info[0]);
+	StrVal str(info[0]);
+
+	Utf8LastIndexGuard guard(re2, info[0], str);
+
 	vector<StringPiece> groups;
-	StringPiece str(a);
 
 	// actual work
 
@@ -32,11 +34,10 @@ NAN_METHOD(WrappedRE2::Match) {
 		// global: collect all matches
 
 		StringPiece match;
-		size_t lastIndex = 0;
+		re2->lastIndex = 0;
 
-		while (re2->regexp.Match(str, lastIndex, a.size, RE2::UNANCHORED, &match, 1)) {
+		while (re2->DoExec(str, match)) {
 			groups.push_back(match);
-			lastIndex = match.data() - a.data + match.size();
 		}
 
 		if (groups.empty()) {
@@ -46,8 +47,7 @@ NAN_METHOD(WrappedRE2::Match) {
 	} else {
 		// non-global: just like exec()
 
-		groups.resize(re2->regexp.NumberOfCapturingGroups() + 1);
-		if (!re2->regexp.Match(str, 0, a.size, RE2::UNANCHORED, &groups[0], groups.size())) {
+		if (!re2->DoExec(str, groups)) {
 			info.GetReturnValue().SetNull();
 			return;
 		}
@@ -57,7 +57,7 @@ NAN_METHOD(WrappedRE2::Match) {
 
 	Local<Array> result = Nan::New<Array>();
 
-	if (a.isBuffer) {
+	if (str.isBuffer) {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
 			const StringPiece& item = groups[i];
 			if (item.data() != NULL) {
@@ -65,7 +65,7 @@ NAN_METHOD(WrappedRE2::Match) {
 			}
 		}
 		if (!re2->global) {
-			Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<Integer>(static_cast<int>(groups[0].data() - a.data)));
+			Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<Integer>(static_cast<int>(groups[0].data() - str.data)));
 			Nan::Set(result, Nan::New("input").ToLocalChecked(), info[0]);
 		}
 	} else {
@@ -76,7 +76,7 @@ NAN_METHOD(WrappedRE2::Match) {
 			}
 		}
 		if (!re2->global) {
-			Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<Integer>(static_cast<int>(getUtf16Length(a.data, groups[0].data()))));
+			Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<Integer>(static_cast<int>(getUtf16Length(str.data, groups[0].data()))));
 			Nan::Set(result, Nan::New("input").ToLocalChecked(), info[0]);
 		}
 	}

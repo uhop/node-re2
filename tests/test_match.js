@@ -90,5 +90,36 @@ unit.add(module, [
 		eval(t.TEST("result[0].toString() === 'ГЛАВА 3.4.5.1'"));
 		eval(t.TEST("result[1].toString() === 'ГЛАВА 3.4.5.1'"));
 		eval(t.TEST("result[2].toString() === '.1'"));
-	}
+	},
+
+	// Sticky tests
+
+	function test_matchSticky(t) {
+		"use strict";
+
+		var re = new RE2("\\s+", "y");
+
+		eval(t.TEST("re.match('Hello world, how are you?') === null"));
+
+		re.lastIndex = 5;
+
+		var result = re.match("Hello world, how are you?");
+
+		eval(t.TEST("t.unify(result, [' '])"));
+		eval(t.TEST("result.index === 5"));
+		eval(t.TEST("re.lastIndex === 6"));
+
+		var re2 = new RE2("\\s+", "gy");
+
+		eval(t.TEST("re2.match('Hello world, how are you?') === null"));
+
+		re2.lastIndex = 5;
+		
+		eval(t.TEST("re2.match('Hello world, how are you?') === null"));
+
+		var re3 = new RE2(/[A-E]/giy);
+		var result3 = re3.match("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+
+		eval(t.TEST("t.unify(result3, ['A', 'B', 'C', 'D', 'E'])"));
+	},
 ]);

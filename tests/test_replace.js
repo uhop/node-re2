@@ -160,5 +160,31 @@ unit.add(module, [
 		var result = re.replace("ИВАН и пЁтр", replacer);
 		eval(t.TEST("typeof result == 'string'"));
 		eval(t.TEST("result === 'Иван и Пётр'"));
-	}
+	},
+
+	// Sticky tests
+
+	function test_replaceSticky(t) {
+		"use strict";
+
+		var re = new RE2(/[A-E]/y);
+
+		eval(t.TEST("re.replace('ABCDEFABCDEF', '!') === '!BCDEFABCDEF'"));
+		eval(t.TEST("re.replace('ABCDEFABCDEF', '!') === 'A!CDEFABCDEF'"));
+		eval(t.TEST("re.replace('ABCDEFABCDEF', '!') === 'AB!DEFABCDEF'"));
+		eval(t.TEST("re.replace('ABCDEFABCDEF', '!') === 'ABC!EFABCDEF'"));
+		eval(t.TEST("re.replace('ABCDEFABCDEF', '!') === 'ABCD!FABCDEF'"));
+		eval(t.TEST("re.replace('ABCDEFABCDEF', '!') === 'ABCDEFABCDEF'"));
+		eval(t.TEST("re.replace('ABCDEFABCDEF', '!') === '!BCDEFABCDEF'"));
+
+		var re2 = new RE2(/[A-E]/gy);
+
+		eval(t.TEST("re2.replace('ABCDEFABCDEF', '!') === '!!!!!FABCDEF'"));
+		eval(t.TEST("re2.replace('FABCDEFABCDE', '!') === 'FABCDEFABCDE'"));
+
+		re2.lastIndex = 3;
+
+		eval(t.TEST("re2.replace('ABCDEFABCDEF', '!') === '!!!!!FABCDEF'"));
+		eval(t.TEST("re2.lastIndex === 0"));
+	},
 ]);

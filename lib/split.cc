@@ -41,30 +41,36 @@ NAN_METHOD(WrappedRE2::Split) {
 
 	// actual work
 
+	size_t lastIndex = re2->lastIndex;
+	bool global = re2->global;
+	re2->lastIndex = 0;
+	re2->global = true;
+
 	vector<StringPiece> groups(re2->regexp.NumberOfCapturingGroups() + 1), pieces;
 	const StringPiece& match = groups[0];
-	size_t lastIndex = 0;
+	const char* lastPointer = a.data;
 
-	while (lastIndex < a.size && re2->regexp.Match(str, lastIndex, a.size, RE2::UNANCHORED,
-			&groups[0], groups.size())) {
+	while (re2->DoExec(str, groups, false)) {
 		if (match.size()) {
-			if (match.data() == a.data || match.data() - a.data > lastIndex) {
-				pieces.push_back(StringPiece(a.data + lastIndex, match.data() - a.data - lastIndex));
-			}
-			lastIndex = match.data() - a.data + match.size();
+			pieces.push_back(StringPiece(lastPointer, match.data() - lastPointer));
+			lastPointer = match.data() + match.size();
 			pieces.insert(pieces.end(), groups.begin() + 1, groups.end());
 		} else {
-			size_t sym_size = getUtf8CharSize(a.data[lastIndex]);
-			pieces.push_back(StringPiece(a.data + lastIndex, sym_size));
-			lastIndex += sym_size;
+			size_t sym_size = getUtf8CharSize(*lastPointer);
+			pieces.push_back(StringPiece(lastPointer, sym_size));
+			lastPointer += sym_size;
+			re2->lastIndex += sym_size;
 		}
 		if (pieces.size() >= limit) {
 			break;
 		}
 	}
-	if (pieces.size() < limit && (lastIndex < a.size || (lastIndex == a.size && match.size()))) {
-		pieces.push_back(StringPiece(a.data + lastIndex, a.size - lastIndex));
+	if (pieces.size() < limit && (lastPointer - a.data < a.size || (lastPointer - a.data == a.size && match.size()))) {
+		pieces.push_back(StringPiece(lastPointer, a.size - (lastPointer - a.data)));
 	}
+
+	re2->lastIndex = lastIndex;
+	re2->global = global;
 
 	if (pieces.empty()) {
 		Nan::Set(result, 0, info[0]);

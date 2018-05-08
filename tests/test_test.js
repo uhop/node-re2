@@ -97,5 +97,29 @@ unit.add(module, [
 
 		eval(t.TEST("re.test(new Buffer('Это просто привет всем.'))"));
 		eval(t.TEST("!re.test(new Buffer('Это просто Привет всем.'))"));
-	}
+	},
+
+	// Sticky tests
+
+	function test_testSticky(t) {
+		"use strict";
+
+		var re = new RE2("\\s+", "y");
+
+		eval(t.TEST("!re.test('Hello world, how are you?')"));
+
+		re.lastIndex = 5;
+
+		eval(t.TEST("re.test('Hello world, how are you?')"));
+		eval(t.TEST("re.lastIndex === 6"));
+
+		var re2 = new RE2("\\s+", "gy");
+
+		eval(t.TEST("!re2.test('Hello world, how are you?')"));
+
+		re2.lastIndex = 5;
+
+		eval(t.TEST("re2.test('Hello world, how are you?')"));
+		eval(t.TEST("re2.lastIndex === 6"));
+	},
 ]);

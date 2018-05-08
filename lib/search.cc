@@ -21,7 +21,14 @@ NAN_METHOD(WrappedRE2::Search) {
 
 	StringPiece match;
 
-	if (re2->regexp.Match(a, 0, a.size, RE2::UNANCHORED, &match, 1)) {
+	size_t lastIndex = re2->lastIndex;
+	re2->lastIndex = 0;
+
+	bool found = re2->DoExec(a, match);
+
+	re2->lastIndex = lastIndex;
+
+	if (found) {
 		info.GetReturnValue().Set(static_cast<int>(a.isBuffer ? match.data() - a.data :
 			getUtf16Length(a.data, match.data())));
 		return;

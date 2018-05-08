@@ -151,31 +151,36 @@ static string replace(WrappedRE2* re2, const StringPiece& str, const char* repla
 								getMaxSubmatch(replacer, replacer_size)) + 1);
 	const StringPiece& match = groups[0];
 
-	size_t lastIndex = 0;
+	if (re2->global) {
+		re2->lastIndex = 0;
+	}
+	const char* lastPointer = data;
 	string result;
 
-	while (lastIndex <= size && re2->regexp.Match(str, lastIndex, size,
-				RE2::UNANCHORED, &groups[0], groups.size())) {
+	while (re2->DoExec(str, groups, false)) {
 		if (match.size()) {
-			if (match.data() == data || match.data() - data > lastIndex) {
-				result += string(data + lastIndex, match.data() - data - lastIndex);
+			if (match.data() > lastPointer) {
+				result += string(lastPointer, match.data() - lastPointer);
 			}
 			result += replace(replacer, replacer_size, groups, str);
-			lastIndex = match.data() - data + match.size();
+			lastPointer = match.data() + match.size();
 		} else {
 			result += replace(replacer, replacer_size, groups, str);
-			size_t sym_size = getUtf8CharSize(data[lastIndex]);
-			if (lastIndex < size) {
-				result.append(data + lastIndex, sym_size);
+			size_t sym_size = getUtf8CharSize(*lastPointer);
+			if (lastPointer - data < size) {
+				result.append(lastPointer, sym_size);
 			}
-			lastIndex += sym_size;
+			lastPointer += sym_size;
+			if (re2->global) {
+				re2->lastIndex += sym_size;
+			}
 		}
 		if (!re2->global) {
 			break;
 		}
 	}
-	if (lastIndex < size) {
-		result += string(data + lastIndex, size - lastIndex);
+	if (lastPointer - data < size) {
+		result += string(lastPointer, size - (lastPointer - data));
 	}
 
 	return result;
@@ -221,31 +226,36 @@ static string replace(WrappedRE2* re2, const StringPiece& str, const Nan::Callba
 	vector<StringPiece> groups(re2->regexp.NumberOfCapturingGroups() + 1);
 	const StringPiece& match = groups[0];
 
-	size_t lastIndex = 0;
+	if (re2->global) {
+		re2->lastIndex = 0;
+	}
+	const char* lastPointer = data;
 	string result;
 
-	while (lastIndex <= size && re2->regexp.Match(str, lastIndex, size,
-				RE2::UNANCHORED, &groups[0], groups.size())) {
+	while (re2->DoExec(str, groups, false)) {
 		if (match.size()) {
-			if (match.data() == data || match.data() - data > lastIndex) {
-				result += string(data + lastIndex, match.data() - data - lastIndex);
+			if (match.data() > lastPointer) {
+				result += string(lastPointer, match.data() - lastPointer);
 			}
 			result += replace(replacer, groups, str, input, useBuffers);
-			lastIndex = match.data() - data + match.size();
+			lastPointer = match.data() + match.size();
 		} else {
 			result += replace(replacer, groups, str, input, useBuffers);
-			size_t sym_size = getUtf8CharSize(data[lastIndex]);
-			if (lastIndex < size) {
-				result.append(data + lastIndex, sym_size);
+			size_t sym_size = getUtf8CharSize(*lastPointer);
+			if (lastPointer - data < size) {
+				result.append(lastPointer, sym_size);
 			}
-			lastIndex += sym_size;
+			lastPointer += sym_size;
+			if (re2->global) {
+				re2->lastIndex += sym_size;
+			}
 		}
 		if (!re2->global) {
 			break;
 		}
 	}
-	if (lastIndex < size) {
-		result += string(data + lastIndex, size - lastIndex);
+	if (lastPointer - data < size) {
+		result += string(lastPointer, size - (lastPointer - data));
 	}
 
 	return result;

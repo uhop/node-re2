@@ -19,5 +19,17 @@ struct StrVal {
 	operator const StringPiece () const { return StringPiece(data, size); }
 };
 
+class Utf8LastIndexGuard {
+		WrappedRE2*   re2_;
+		const StrVal& utf8Input_;
+
+	public:
+		Utf8LastIndexGuard(WrappedRE2* re2, const v8::Local<v8::Value>& utf16Input, const StrVal& utf8Input);
+		Utf8LastIndexGuard(const Utf8LastIndexGuard&) = delete;
+		~Utf8LastIndexGuard();
+
+		Utf8LastIndexGuard& operator =(const Utf8LastIndexGuard&) = delete;
+};
+
 
 #endif

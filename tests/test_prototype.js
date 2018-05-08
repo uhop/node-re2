@@ -15,6 +15,7 @@ unit.add(module, [
 		eval(t.TEST("RE2.prototype.global === undefined"));
 		eval(t.TEST("RE2.prototype.ignoreCase === undefined"));
 		eval(t.TEST("RE2.prototype.multiline === undefined"));
+		eval(t.TEST("RE2.prototype.sticky === undefined"));
 		eval(t.TEST("RE2.prototype.lastIndex === undefined"));
 	}
 ]);

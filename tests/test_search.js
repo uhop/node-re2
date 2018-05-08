@@ -70,5 +70,26 @@ unit.add(module, [
 		re = new RE2("z", "gm");
 		result = re.search(buf);
 		eval(t.TEST("result === -1"));
-	}
+	},
+	function test_searchSticky(t) {
+		"use strict";
+
+		var str = "Total is 42 units.";
+
+		var re = new RE2(/\d+/y);
+		var result = re.search(str);
+		eval(t.TEST("result === -1"));
+
+		re = new RE2("\\b[a-z]+\\b", "y");
+		result = re.search(str);
+		eval(t.TEST("result === -1"));
+
+		re = new RE2("\\b\\w+\\b", "y");
+		result = re.search(str);
+		eval(t.TEST("result === 0"));
+
+		re = new RE2("z", "gmy");
+		result = re.search(str);
+		eval(t.TEST("result === -1"));
+	},
 ]);

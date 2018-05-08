@@ -20,8 +20,8 @@ unit.add(module, [
 		eval(t.TEST("t.unify(result, ['Oh', 'brave', 'new', 'world', 'that', 'has', 'such', 'people', 'in', 'it.'])"));
 
 		re = new RE2(",");
-		result = re.split("Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec");
-		eval(t.TEST("t.unify(result, ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'])"));
+		result = re.split(",Jan,Feb,Mar,Apr,May,Jun,,Jul,Aug,Sep,Oct,Nov,Dec,");
+		eval(t.TEST("t.unify(result, ['','Jan','Feb','Mar','Apr','May','Jun','','Jul','Aug','Sep','Oct','Nov','Dec',''])"));
 
 		re = new RE2(/\s*;\s*/);
 		result = re.split("Harry Trump ;Fred Barney; Helen Rigby ; Bill Abel ;Chris Hand ");
@@ -92,7 +92,21 @@ unit.add(module, [
 		eval(t.TEST("t.unify(verifyBuffer(result, t), ['Привет ', '1', ' слово. Предложение номер ', '2', '.'])"));
 
 		eval(t.TEST("RE2(/[э-я]*/).split(new Buffer('фывапролд')).map(function(x) { return x.toString(); }).reverse().join('') === 'длорпавыф'"));
-	}
+	},
+
+	// Sticky tests
+
+	function test_splitSticky(t) {
+		"use strict";
+
+		var re = new RE2(/\s+/y);
+
+		var result = re.split("Oh brave new world that has such people in it.");
+		eval(t.TEST("t.unify(result, ['Oh brave new world that has such people in it.'])"));
+
+		var result2 = re.split(" Oh brave new world that has such people in it.");
+		eval(t.TEST("t.unify(result2, ['', 'Oh brave new world that has such people in it.'])"));
+	},
 ]);
 
 

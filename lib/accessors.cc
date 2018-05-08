@@ -48,6 +48,17 @@ NAN_GETTER(WrappedRE2::GetMultiline) {
 }
 
 
+NAN_GETTER(WrappedRE2::GetSticky) {
+	if (!WrappedRE2::HasInstance(info.This())) {
+		info.GetReturnValue().SetUndefined();
+		return;
+	}
+
+	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
+	info.GetReturnValue().Set(re2->sticky);
+}
+
+
 NAN_GETTER(WrappedRE2::GetLastIndex) {
 	if (!WrappedRE2::HasInstance(info.This())) {
 		info.GetReturnValue().SetUndefined();

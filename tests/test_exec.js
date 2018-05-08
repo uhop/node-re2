@@ -169,5 +169,36 @@ unit.add(module, [
 		eval(t.TEST("re.lastIndex === 58"));
 
 		eval(t.TEST("result.input.toString('utf8', result.index) === 'Охотник Желает Знать Где Сидит Фазан'"));
-		eval(t.TEST("result.input.toString('utf8', re.lastIndex) === ' Сидит Фазан'"));	}
+		eval(t.TEST("result.input.toString('utf8', re.lastIndex) === ' Сидит Фазан'"));
+	},
+
+	// Sticky tests
+
+	function test_execSticky(t) {
+		"use strict";
+
+		var re = new RE2("\\s+", "y");
+
+		eval(t.TEST("re.exec('Hello world, how are you?') === null"));
+
+		re.lastIndex = 5;
+
+		var result = re.exec("Hello world, how are you?");
+
+		eval(t.TEST("t.unify(result, [' '])"));
+		eval(t.TEST("result.index === 5"));
+		eval(t.TEST("re.lastIndex === 6"));
+
+		var re2 = new RE2("\\s+", "gy");
+
+		eval(t.TEST("re2.exec('Hello world, how are you?') === null"));
+
+		re2.lastIndex = 5;
+
+		var result2 = re2.exec("Hello world, how are you?");
+
+		eval(t.TEST("t.unify(result2, [' '])"));
+		eval(t.TEST("result2.index === 5"));
+		eval(t.TEST("re2.lastIndex === 6"));
+	},
 ]);
