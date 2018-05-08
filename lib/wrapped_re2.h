@@ -71,7 +71,11 @@ inline size_t getUtf8Length(const uint16_t* from, const uint16_t* to) {
 		uint16_t ch = *from++;
 		if (ch <= 0x7F) ++n;
 		else if (ch <= 0x7FF) n += 2;
-		else if (0xD800 <= ch && ch <= 0xDFFF) { n += 4; if (from == to) break; from++; }
+		else if (0xD800 <= ch && ch <= 0xDFFF) {
+			n += 4;
+			if (from == to) break;
+			++from;
+		}
 		else if (ch < 0xFFFF) n += 3;
 		else n += 4;
 	}
@@ -94,7 +98,7 @@ inline size_t getUtf16Length(const char* from, const char* to) {
 					}
 				} else {
 					from += 3;
-					if (from == to + 1 || from == to + 2) {
+					if (from > to && from < to + 3) {
 						++n;
 						break;
 					}
@@ -104,9 +108,7 @@ inline size_t getUtf16Length(const char* from, const char* to) {
 		} else {
 			from += 4;
 			n += 2;
-			if (from == to + 1 || from == to + 2 || from == to + 3) {
-				break;
-			}
+			if (from > to && from < to + 4) break;
 		}
 	}
 	return n;
