@@ -28,7 +28,7 @@ inline bool translateRegExp(const char* data, size_t size, vector<char>& buffer)
 	bool changed = false;
 
 	if (!size) {
-		result += "(?:)";
+		result = "(?:)";
 		changed = true;
 	}
 
