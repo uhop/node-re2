@@ -3,15 +3,12 @@
 
 #include <algorithm>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include <node_buffer.h>
 
 
-using std::make_pair;
 using std::min;
-using std::pair;
 using std::string;
 using std::vector;
 
@@ -190,9 +187,7 @@ static string replace(WrappedRE2* re2, const StringPiece& str, const char* repla
 }
 
 
-// Returns a pair with false as first and empty string as second on failure
-// Returns a pair with true as first and the actual return value as second on success
-inline pair<bool, string> replace(const Nan::Callback* replacer, const vector<StringPiece>& groups,
+inline Nan::Maybe<string> replace(const Nan::Callback* replacer, const vector<StringPiece>& groups,
 						const StringPiece& str, const Local<Value>& input, bool useBuffers) {
 	vector< Local<Value> >	argv;
 
@@ -214,27 +209,25 @@ inline pair<bool, string> replace(const Nan::Callback* replacer, const vector<St
 	Nan::MaybeLocal<Value> maybeResult(Nan::Call(replacer->GetFunction(), v8::Isolate::GetCurrent()->GetCurrentContext()->Global(), static_cast<int>(argv.size()), &argv[0]));
 
 	if (maybeResult.IsEmpty()) {
-		return make_pair(false, string());
+		return Nan::Nothing<string>();
 	}
 
 	Local<Value> result = maybeResult.ToLocalChecked();
 
 	if (node::Buffer::HasInstance(result)) {
-		return make_pair(true, string(node::Buffer::Data(result), node::Buffer::Length(result)));
+		return Nan::Just(string(node::Buffer::Data(result), node::Buffer::Length(result)));
 	}
 
 	ToStringHelper<Nan::Utf8String> maybeVal(result);
 	if (maybeVal.IsEmpty()) {
-		return make_pair(false, string());
+		return Nan::Nothing<string>();
 	}
 	const Nan::Utf8String& val = maybeVal.Unwrap();
-	return make_pair(true, string(*val, val.length()));
+	return Nan::Just(string(*val, val.length()));
 }
 
 
-// Returns a pair with false as first and empty string as second on failure
-// Returns a pair with true as first and the actual return value as second on success
-static pair<bool, string> replace(WrappedRE2* re2, const StringPiece& str, const Nan::Callback* replacer,
+static Nan::Maybe<string> replace(WrappedRE2* re2, const StringPiece& str, const Nan::Callback* replacer,
 						const Local<Value>& input, bool useBuffers) {
 
 	const char* data = str.data();
@@ -254,18 +247,18 @@ static pair<bool, string> replace(WrappedRE2* re2, const StringPiece& str, const
 			if (match.data() > lastPointer) {
 				result += string(lastPointer, match.data() - lastPointer);
 			}
-			pair<bool, string> part = replace(replacer, groups, str, input, useBuffers);
-			if (!part.first) {
+			Nan::Maybe<string> part = replace(replacer, groups, str, input, useBuffers);
+			if (part.IsNothing()) {
 				return part;
 			}
-			result += part.second;
+			result += part.FromJust();
 			lastPointer = match.data() + match.size();
 		} else {
-			pair<bool, string> part = replace(replacer, groups, str, input, useBuffers);
-			if (!part.first) {
+			Nan::Maybe<string> part = replace(replacer, groups, str, input, useBuffers);
+			if (part.IsNothing()) {
 				return part;
 			}
-			result += part.second;
+			result += part.FromJust();
 			size_t sym_size = getUtf8CharSize(*lastPointer);
 			if (lastPointer - data < size) {
 				result.append(lastPointer, sym_size);
@@ -283,7 +276,7 @@ static pair<bool, string> replace(WrappedRE2* re2, const StringPiece& str, const
 		result += string(lastPointer, size - (lastPointer - data));
 	}
 
-	return make_pair(true, result);
+	return Nan::Just(result);
 }
 
 
@@ -320,12 +313,12 @@ NAN_METHOD(WrappedRE2::Replace) {
 	if (info[1]->IsFunction()) {
 		Local<Function> fun(info[1].As<Function>());
 		const Nan::Callback* cb = new Nan::Callback(fun);
-		pair<bool, string> maybeResult = replace(re2, str, cb, info[0], requiresBuffers(fun));
+		Nan::Maybe<string> maybeResult = replace(re2, str, cb, info[0], requiresBuffers(fun));
 		delete cb;
-		if (!maybeResult.first) {
+		if (maybeResult.IsNothing()) {
 			return;
 		}
-		result = maybeResult.second;
+		result = maybeResult.FromJust();
 	} else if (node::Buffer::HasInstance(info[1])) {
 		result = replace(re2, str, node::Buffer::Data(info[1]), node::Buffer::Length(info[1]));
 	} else {
