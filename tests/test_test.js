@@ -50,6 +50,14 @@ unit.add(module, [
 
 		eval(t.TEST("!re3.test(str)"));
 	},
+	function test_testAnchoredToBeginning(t) {
+		"use strict";
+
+		var re = RE2('^hello', 'g');
+
+		eval(t.TEST("re.test('hellohello')"));
+		eval(t.TEST("!re.test('hellohello')"));
+	},
 	function test_testInvalid(t) {
 		"use strict";
 

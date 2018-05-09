@@ -23,9 +23,11 @@ inline bool isHexadecimal(char ch) {
 	return ('0' <= ch && ch <= '9') || ('A' <= ch && ch <= 'Z') || ('a' <= ch && ch <= 'z');
 }
 
-inline bool translateRegExp(const char* data, size_t size, vector<char>& buffer) {
+inline bool translateAndAnalyzeRegExp(const char* data, size_t size, vector<char>& buffer, bool& safeToCutBeginning) {
 	string result;
 	bool changed = false;
+
+	safeToCutBeginning = true;
 
 	if (!size) {
 		result = "(?:)";
@@ -84,6 +86,12 @@ inline bool translateRegExp(const char* data, size_t size, vector<char>& buffer)
 						result += "\\u";
 						i += 2;
 						continue;
+						// https://github.com/google/re2/wiki/Syntax
+					case 'A': // Anchor to beginning
+					case 'b': // Word boundary
+					case 'B': // Not word boundary
+						safeToCutBeginning = false;
+						// fall through
 					default:
 						result += "\\";
 						size_t sym_size = getUtf8CharSize(ch);
@@ -97,6 +105,14 @@ inline bool translateRegExp(const char* data, size_t size, vector<char>& buffer)
 			i += 1;
 			changed = true;
 			continue;
+		} else if (ch == '^') { // Anchor to beginning
+			safeToCutBeginning = false;
+		} else if (ch == '[') {
+			if (i + 1 < size && data[i + 1] == '^') {
+				result += "[^";
+				i += 2;
+				continue;
+			}
 		}
 		size_t sym_size = getUtf8CharSize(ch);
 		result.append(data + i, sym_size);
@@ -143,6 +159,7 @@ NAN_METHOD(WrappedRE2::New) {
 	bool multiline = false;
 	bool global = false;
 	bool sticky = false;
+	bool safeToCutBeginning = false;
 
 	if (info.Length() > 1) {
 		if (info[1]->IsString()) {
@@ -207,10 +224,11 @@ NAN_METHOD(WrappedRE2::New) {
 			memcpy(data, pattern.data(), size);
 			needConversion = false;
 
-			ignoreCase = re2->ignoreCase;
-			multiline  = re2->multiline;
-			global     = re2->global;
-			sticky     = re2->sticky;
+			ignoreCase         = re2->ignoreCase;
+			multiline          = re2->multiline;
+			global             = re2->global;
+			sticky             = re2->sticky;
+			safeToCutBeginning = re2->safeToCutBeginning;
 		}
 	} else if (info[0]->IsString()) {
 		Local<String> t(info[0]->ToString());
@@ -224,7 +242,7 @@ NAN_METHOD(WrappedRE2::New) {
 		return Nan::ThrowTypeError("Expected string, Buffer, RegExp, or RE2 as the 1st argument.");
 	}
 
-	if (needConversion && translateRegExp(data, size, buffer)) {
+	if (needConversion && translateAndAnalyzeRegExp(data, size, buffer, safeToCutBeginning)) {
 		size = buffer.size() - 1;
 		data = &buffer[0];
 	}
@@ -236,7 +254,7 @@ NAN_METHOD(WrappedRE2::New) {
 	options.set_one_line(!multiline);
 	options.set_log_errors(false); // inappropriate when embedding
 
-	WrappedRE2* re2 = new WrappedRE2(StringPiece(data, size), options, global, ignoreCase, multiline, sticky);
+	WrappedRE2* re2 = new WrappedRE2(StringPiece(data, size), options, global, ignoreCase, multiline, sticky, safeToCutBeginning);
 	if (!re2->regexp.ok()) {
 		delete re2;
 		return Nan::ThrowSyntaxError("Unsupported regular expression features (check for backreferences, lookahead assertions).");

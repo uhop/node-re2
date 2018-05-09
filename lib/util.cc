@@ -8,7 +8,7 @@ using v8::String;
 using v8::Value;
 
 
-StrVal::StrVal(const Local<Value>& arg) : data(NULL), size(0), isBuffer(false) {
+StrVal::StrVal(const Local<Value>& arg, size_t startIndexHint) : data(NULL), size(0), startIndex(0), isBuffer(false), original() {
 	if (node::Buffer::HasInstance(arg)) {
 		isBuffer = true;
 		size = node::Buffer::Length(arg);
@@ -17,23 +17,31 @@ StrVal::StrVal(const Local<Value>& arg) : data(NULL), size(0), isBuffer(false) {
 		ToStringHelper< Local<String> > mt(arg);
 		if (!mt.IsEmpty()) {
 			const Local<String>& t = mt.Unwrap();
-			size = t->Utf8Length();
+			if (startIndexHint) {
+				startIndex = startIndexHint;
+				String::Value s(t);
+				original = Nan::New(*s + startIndex, s.length() - startIndex);
+			} else {
+				original = t;
+			}
+			Local<String> t2 = original.ToLocalChecked();
+			size = t2->Utf8Length();
 			buffer.resize(size + 1);
 			data = &buffer[0];
-			t->WriteUtf8(data);
+			t2->WriteUtf8(data);
 		}
 	}
 }
 
 
-Utf8LastIndexGuard::Utf8LastIndexGuard(WrappedRE2* re2, const Local<Value>& utf16Input, const StrVal& utf8Input) : re2_(re2), utf8Input_(utf8Input) {
-	if (!re2 || (!re2->global && !re2->sticky) || utf8Input.isBuffer) {
+Utf8LastIndexGuard::Utf8LastIndexGuard(WrappedRE2* re2, StrVal& input) : re2_(re2), input_(input) {
+	if (!re2 || (!re2->global && !re2->sticky) || input.isBuffer) {
 		re2_ = NULL;
 	} else {
-		ToStringHelper<String::Value> maybeInputValue(utf16Input);
-		if (!maybeInputValue.IsEmpty()) {
-			const String::Value& inputValue = maybeInputValue.Unwrap();
-			re2->lastIndex = getUtf8Length(*inputValue, *inputValue + ((re2->lastIndex < inputValue.length()) ? re2->lastIndex : inputValue.length()));
+		if (!input.original.IsEmpty()) {
+			String::Value inputValue(input.original.ToLocalChecked());
+			re2->lastIndex -= input.startIndex;
+			re2->lastIndex = getUtf8Length(*inputValue + input.startIndex, *inputValue + input.startIndex + ((re2->lastIndex < inputValue.length()) ? re2->lastIndex : inputValue.length()));
 		}
 	}
 }
@@ -41,6 +49,6 @@ Utf8LastIndexGuard::Utf8LastIndexGuard(WrappedRE2* re2, const Local<Value>& utf1
 
 Utf8LastIndexGuard::~Utf8LastIndexGuard() {
 	if (re2_) {
-		re2_->lastIndex = getUtf16Length(utf8Input_.data, utf8Input_.data + ((re2_->lastIndex < utf8Input_.size) ? re2_->lastIndex : utf8Input_.size));
+		re2_->lastIndex = getUtf16Length(input_.data, input_.data + ((re2_->lastIndex < input_.size) ? re2_->lastIndex : input_.size)) + input_.startIndex;
 	}
 }

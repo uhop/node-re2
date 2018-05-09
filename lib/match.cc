@@ -27,7 +27,7 @@ NAN_METHOD(WrappedRE2::Match) {
 		return;
 	}
 
-	Utf8LastIndexGuard guard(re2, info[0], str);
+	Utf8LastIndexGuard guard(re2, str);
 
 	vector<StringPiece> groups;
 
@@ -68,7 +68,7 @@ NAN_METHOD(WrappedRE2::Match) {
 			}
 		}
 		if (!re2->global) {
-			Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<Integer>(static_cast<int>(groups[0].data() - str.data)));
+			Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<Integer>(static_cast<int>(groups[0].data() - str.data + str.startIndex)));
 			Nan::Set(result, Nan::New("input").ToLocalChecked(), info[0]);
 		}
 	} else {
@@ -79,7 +79,7 @@ NAN_METHOD(WrappedRE2::Match) {
 			}
 		}
 		if (!re2->global) {
-			Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<Integer>(static_cast<int>(getUtf16Length(str.data, groups[0].data()))));
+			Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<Integer>(static_cast<int>(getUtf16Length(str.data, groups[0].data()) + str.startIndex)));
 			Nan::Set(result, Nan::New("input").ToLocalChecked(), info[0]);
 		}
 	}

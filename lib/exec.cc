@@ -14,6 +14,17 @@ using v8::Local;
 using v8::String;
 
 
+size_t WrappedRE2::GetStartIndexHint() const {
+	if (global || sticky) {
+		size_t minSafePrevious = safeToCutBeginning ? 0 : 1;
+
+		return (lastIndex > minSafePrevious) ? (lastIndex - minSafePrevious) : 0;
+	} else {
+		return 0;
+	}
+}
+
+
 bool WrappedRE2::DoExec(const StringPiece& input, StringPiece& match, size_t numberOfGroups) {
 	if (global || sticky) {
 		if (lastIndex >= input.size()) {
@@ -53,18 +64,19 @@ NAN_METHOD(WrappedRE2::Exec) {
 
 	vector<char> buffer;
 
-	StrVal str(info[0]);
+	StrVal str(info[0], re2->GetStartIndexHint());
 	if (str.IsEmpty()) {
 		return;
 	}
 
-	Utf8LastIndexGuard guard(re2, info[0], str);
+	Utf8LastIndexGuard guard(re2, str);
 
 	// actual work
 
 	vector<StringPiece> groups;
 
 	if (!re2->DoExec(str, groups)) {
+		guard.DontRestore();
 		info.GetReturnValue().SetNull();
 		return;
 	}
@@ -90,7 +102,7 @@ NAN_METHOD(WrappedRE2::Exec) {
 			}
 		}
 		Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<Integer>(
-			static_cast<int>(getUtf16Length(str.data, groups[0].data()))));
+			static_cast<int>(getUtf16Length(str.data, groups[0].data()) + str.startIndex)));
 	}
 
 	Nan::Set(result, Nan::New("input").ToLocalChecked(), info[0]);

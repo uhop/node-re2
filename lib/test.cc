@@ -24,15 +24,19 @@ NAN_METHOD(WrappedRE2::Test) {
 
 	vector<char> buffer;
 
-	StrVal str(info[0]);
+	StrVal str(info[0], re2->GetStartIndexHint());
 	if (str.IsEmpty()) {
 		return;
 	}
 
-	Utf8LastIndexGuard guard(re2, info[0], str);
+	Utf8LastIndexGuard guard(re2, str);
 
 	// actual work
 
 	StringPiece match;
-	info.GetReturnValue().Set(re2->DoExec(str, match));
+	bool result = re2->DoExec(str, match);
+	if (!result) {
+		guard.DontRestore();
+	}
+	info.GetReturnValue().Set(result);
 }

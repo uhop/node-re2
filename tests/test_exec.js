@@ -75,6 +75,19 @@ unit.add(module, [
 		eval(t.TEST("result[1] === 'aaa'"));
 		eval(t.TEST("result[2] === undefined"));
 	},
+	function test_execAnchoredToBeginning(t) {
+		"use strict";
+
+		var re = RE2('^hello', 'g');
+
+		var result = re.exec("hellohello");
+
+		eval(t.TEST("t.unify(result, ['hello'])"));
+		eval(t.TEST("result.index === 0"));
+		eval(t.TEST("re.lastIndex === 5"));
+
+		eval(t.TEST("re.exec('hellohello') === null"));
+	},
 	function test_execInvalid(t) {
 		"use strict";
 

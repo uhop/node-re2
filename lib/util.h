@@ -10,10 +10,12 @@ struct StrVal {
 	std::vector<char> buffer;
 	char*  data;
 	size_t size;
+	size_t startIndex;
 	bool   isBuffer;
+	v8::MaybeLocal<v8::String> original;
 
-	StrVal() : data(NULL), size(0), isBuffer(false) {}
-	StrVal(const v8::Local<v8::Value>& arg);
+	StrVal() : data(NULL), size(0), startIndex(0), isBuffer(false), original() {}
+	StrVal(const v8::Local<v8::Value>& arg, size_t startIndexHint = 0);
 
 	inline bool IsEmpty() const { return data == NULL; }
 
@@ -51,14 +53,16 @@ class ToStringHelper {
 
 class Utf8LastIndexGuard {
 		WrappedRE2*   re2_;
-		const StrVal& utf8Input_;
+		const StrVal& input_;
 
 	public:
-		Utf8LastIndexGuard(WrappedRE2* re2, const v8::Local<v8::Value>& utf16Input, const StrVal& utf8Input);
+		Utf8LastIndexGuard(WrappedRE2* re2, StrVal& input);
 		Utf8LastIndexGuard(const Utf8LastIndexGuard&) = delete;
 		~Utf8LastIndexGuard();
 
 		Utf8LastIndexGuard& operator =(const Utf8LastIndexGuard&) = delete;
+
+		inline void DontRestore() { re2_ = NULL; }
 };
 
 
