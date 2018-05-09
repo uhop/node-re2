@@ -26,13 +26,13 @@ struct StrVal {
 
 template<typename T>
 class ToStringHelper {
+		v8::MaybeLocal<v8::String> str_;
 		T* value_;
 
 	public:
-		inline ToStringHelper(const v8::Local<v8::Value>& value) : value_(NULL) {
-			v8::MaybeLocal<v8::String> str(value->ToString(v8::Isolate::GetCurrent()->GetCurrentContext()));
-			if (!str.IsEmpty()) {
-				value_ = new T(str.ToLocalChecked());
+		inline ToStringHelper(const v8::Local<v8::Value>& value) : str_(value->ToString(v8::Isolate::GetCurrent()->GetCurrentContext())), value_(NULL) {
+			if (!str_.IsEmpty()) {
+				value_ = new T(str_.ToLocalChecked());
 			}
 		}
 		ToStringHelper(const ToStringHelper&) = delete;
