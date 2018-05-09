@@ -32,6 +32,9 @@ NAN_METHOD(WrappedRE2::ToString) {
 	if (re2->multiline) {
 		buffer += "m";
 	}
+	if (re2->sticky) {
+		buffer += "y";
+	}
 
 	info.GetReturnValue().Set(Nan::New(buffer).ToLocalChecked());
 }

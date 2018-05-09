@@ -11,6 +11,7 @@ unit.add(module, [
 	function test_toString(t) {
 		"use strict";
 
+		eval(t.TEST("RE2('').toString() === '/(?:)/'"));
 		eval(t.TEST("RE2('a').toString() === '/a/'"));
 		eval(t.TEST("RE2('b', 'i').toString() === '/b/i'"));
 		eval(t.TEST("RE2('c', 'g').toString() === '/c/g'"));
@@ -21,5 +22,6 @@ unit.add(module, [
 		eval(t.TEST("RE2('\\\\D{,2}', 'mig') + '' === '/\\\\D{,2}/igm'"));
 		eval(t.TEST("RE2('^a{2,}', 'mi') + '' === '/^a{2,}/im'"));
 		eval(t.TEST("RE2('^a{5}$', 'gim') + '' === '/^a{5}$/igm'"));
+		eval(t.TEST("RE2('\\\\u{1F603}/', 'iy') + '' === '/\\\\x{1F603}\\\\//iy'"));
 	}
 ]);
