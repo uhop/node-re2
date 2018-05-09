@@ -29,6 +29,9 @@ NAN_METHOD(WrappedRE2::Split) {
 	}
 
 	StrVal a(info[0]);
+	if (a.IsEmpty()) {
+		return;
+	}
 	StringPiece str(a);
 
 	size_t limit = numeric_limits<size_t>::max();

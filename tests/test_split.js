@@ -20,6 +20,10 @@ unit.add(module, [
 		eval(t.TEST("t.unify(result, ['Oh', 'brave', 'new', 'world', 'that', 'has', 'such', 'people', 'in', 'it.'])"));
 
 		re = new RE2(",");
+		result = re.split("Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec");
+		eval(t.TEST("t.unify(result, ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'])"));
+
+		re = new RE2(",");
 		result = re.split(",Jan,Feb,Mar,Apr,May,Jun,,Jul,Aug,Sep,Oct,Nov,Dec,");
 		eval(t.TEST("t.unify(result, ['','Jan','Feb','Mar','Apr','May','Jun','','Jul','Aug','Sep','Oct','Nov','Dec',''])"));
 
@@ -36,6 +40,18 @@ unit.add(module, [
 		eval(t.TEST("t.unify(result, ['Hello ', '1', ' word. Sentence number ', '2', '.'])"));
 
 		eval(t.TEST("RE2(/[x-z]*/).split('asdfghjkl').reverse().join('') === 'lkjhgfdsa'"));
+	},
+	function test_splitInvalid(t) {
+		"use strict";
+
+		var re = RE2('');
+
+		try {
+			re.split({ toString() { throw "corner"; } });
+			t.test(false); // shouldn't be here
+		} catch(e) {
+			eval(t.TEST("e === 'corner'"));
+		}
 	},
 
 	// Unicode tests

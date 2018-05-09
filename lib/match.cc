@@ -23,6 +23,9 @@ NAN_METHOD(WrappedRE2::Match) {
 	}
 
 	StrVal str(info[0]);
+	if (str.IsEmpty()) {
+		return;
+	}
 
 	Utf8LastIndexGuard guard(re2, info[0], str);
 

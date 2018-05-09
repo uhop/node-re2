@@ -50,6 +50,18 @@ unit.add(module, [
 
 		eval(t.TEST("!re3.test(str)"));
 	},
+	function test_testInvalid(t) {
+		"use strict";
+
+		var re = RE2('');
+
+		try {
+			re.test({ toString() { throw "corner"; } });
+			t.test(false); // shouldn't be here
+		} catch(e) {
+			eval(t.TEST("e === 'corner'"));
+		}
+	},
 
 	// Unicode tests
 

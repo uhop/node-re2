@@ -49,6 +49,18 @@ unit.add(module, [
 		eval(t.TEST("result[1] === 'aaa'"));
 		eval(t.TEST("result[2] === undefined"));
 	},
+	function test_matchInvalid(t) {
+		"use strict";
+
+		var re = RE2('');
+
+		try {
+			re.match({ toString() { throw "corner"; } });
+			t.test(false); // shouldn't be here
+		} catch(e) {
+			eval(t.TEST("e === 'corner'"));
+		}
+	},
 
 	// Unicode tests
 
@@ -114,7 +126,7 @@ unit.add(module, [
 		eval(t.TEST("re2.match('Hello world, how are you?') === null"));
 
 		re2.lastIndex = 5;
-		
+
 		eval(t.TEST("re2.match('Hello world, how are you?') === null"));
 
 		var re3 = new RE2(/[A-E]/giy);

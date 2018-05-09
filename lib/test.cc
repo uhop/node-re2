@@ -25,6 +25,9 @@ NAN_METHOD(WrappedRE2::Test) {
 	vector<char> buffer;
 
 	StrVal str(info[0]);
+	if (str.IsEmpty()) {
+		return;
+	}
 
 	Utf8LastIndexGuard guard(re2, info[0], str);
 

@@ -75,6 +75,18 @@ unit.add(module, [
 		eval(t.TEST("result[1] === 'aaa'"));
 		eval(t.TEST("result[2] === undefined"));
 	},
+	function test_execInvalid(t) {
+		"use strict";
+
+		var re = RE2('');
+
+		try {
+			re.exec({ toString() { throw "corner"; } });
+			t.test(false); // shouldn't be here
+		} catch(e) {
+			eval(t.TEST("e === 'corner'"));
+		}
+	},
 
 	// Unicode tests
 

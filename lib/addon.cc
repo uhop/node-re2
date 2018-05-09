@@ -1,4 +1,5 @@
 #include "./wrapped_re2.h"
+#include "./util.h"
 
 #include <node_buffer.h>
 
@@ -15,7 +16,11 @@ Nan::Persistent<FunctionTemplate> WrappedRE2::ctorTemplate;
 
 
 static NAN_METHOD(GetUtf8Length) {
-	String::Value s(info[0]->ToString());
+	ToStringHelper<String::Value> ms(info[0]);
+	if (ms.IsEmpty()) {
+		return;
+	}
+	const String::Value& s = ms.Unwrap();
 	info.GetReturnValue().Set(static_cast<int>(getUtf8Length(*s, *s + s.length())));
 }
 

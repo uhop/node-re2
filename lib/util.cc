@@ -14,11 +14,14 @@ StrVal::StrVal(const Local<Value>& arg) : data(NULL), size(0), isBuffer(false) {
 		size = node::Buffer::Length(arg);
 		data = node::Buffer::Data(arg);
 	} else {
-		Local<String> t(arg->ToString());
-		size = t->Utf8Length();
-		buffer.resize(size + 1);
-		data = &buffer[0];
-		t->WriteUtf8(data);
+		ToStringHelper< Local<String> > mt(arg);
+		if (!mt.IsEmpty()) {
+			const Local<String>& t = mt.Unwrap();
+			size = t->Utf8Length();
+			buffer.resize(size + 1);
+			data = &buffer[0];
+			t->WriteUtf8(data);
+		}
 	}
 }
 
@@ -27,8 +30,11 @@ Utf8LastIndexGuard::Utf8LastIndexGuard(WrappedRE2* re2, const Local<Value>& utf1
 	if (!re2 || (!re2->global && !re2->sticky) || utf8Input.isBuffer) {
 		re2_ = NULL;
 	} else {
-		String::Value inputValue(utf16Input->ToString());
-		re2->lastIndex = getUtf8Length(*inputValue, *inputValue + ((re2->lastIndex < inputValue.length()) ? re2->lastIndex : inputValue.length()));
+		ToStringHelper<String::Value> maybeInputValue(utf16Input);
+		if (!maybeInputValue.IsEmpty()) {
+			const String::Value& inputValue = maybeInputValue.Unwrap();
+			re2->lastIndex = getUtf8Length(*inputValue, *inputValue + ((re2->lastIndex < inputValue.length()) ? re2->lastIndex : inputValue.length()));
+		}
 	}
 }
 

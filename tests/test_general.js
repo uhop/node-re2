@@ -82,6 +82,13 @@ unit.add(module, [
 		} catch(e) {
 			eval(t.TEST("e instanceof TypeError"));
 		}
+
+		try {
+			var re = RE2({ toString() { throw "corner"; } });
+			t.test(false); // shouldn't be here
+		} catch(e) {
+			eval(t.TEST("e instanceof TypeError"));
+		}
 	},
 	function test_generalIn(t) {
 		"use strict";
@@ -203,6 +210,15 @@ unit.add(module, [
 
 		eval(t.TEST("b3.length === 1"));
 		eval(t.TEST("RE2.getUtf16Length(b3) === 2"));
+
+		try {
+			RE2.getUtf8Length({ toString() { throw "corner"; } });
+			t.test(false); // shouldn't be here
+		} catch(e) {
+			eval(t.TEST("e === 'corner'"));
+		}
+
+		eval(t.TEST("RE2.getUtf16Length({ toString() { throw 'corner'; } }) === -1"));
 	},
 	function test_sourceTranslation(t) {
 		"use strict";

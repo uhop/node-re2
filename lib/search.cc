@@ -16,6 +16,9 @@ NAN_METHOD(WrappedRE2::Search) {
 	}
 
 	StrVal a(info[0]);
+	if (a.IsEmpty()) {
+		return;
+	}
 
 	// actual work
 

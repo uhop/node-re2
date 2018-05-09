@@ -15,9 +15,39 @@ struct StrVal {
 	StrVal() : data(NULL), size(0), isBuffer(false) {}
 	StrVal(const v8::Local<v8::Value>& arg);
 
+	inline bool IsEmpty() const { return data == NULL; }
+
 	operator StringPiece () { return StringPiece(data, size); }
 	operator const StringPiece () const { return StringPiece(data, size); }
 };
+
+
+template<typename T>
+class ToStringHelper {
+		T* value_;
+
+	public:
+		inline ToStringHelper(const v8::Local<v8::Value>& value) : value_(NULL) {
+			v8::MaybeLocal<v8::String> str(value->ToString(v8::Isolate::GetCurrent()->GetCurrentContext()));
+			if (!str.IsEmpty()) {
+				value_ = new T(str.ToLocalChecked());
+			}
+		}
+		ToStringHelper(const ToStringHelper&) = delete;
+		inline ~ToStringHelper() {
+			if (value_) {
+				delete value_;
+			}
+		}
+
+		ToStringHelper& operator =(const ToStringHelper&) = delete;
+
+		inline bool IsEmpty() const { return value_ == NULL; }
+
+		inline T& Unwrap() { return *value_; }
+		inline const T& Unwrap() const { return *value_; }
+};
+
 
 class Utf8LastIndexGuard {
 		WrappedRE2*   re2_;

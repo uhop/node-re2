@@ -29,6 +29,18 @@ unit.add(module, [
 		result = re.search(str);
 		eval(t.TEST("result === -1"));
 	},
+	function test_searchInvalid(t) {
+		"use strict";
+
+		var re = RE2('');
+
+		try {
+			re.search({ toString() { throw "corner"; } });
+			t.test(false); // shouldn't be here
+		} catch(e) {
+			eval(t.TEST("e === 'corner'"));
+		}
+	},
 	function test_searchUnicode(t) {
 		"use strict";
 
