@@ -38,6 +38,14 @@ unit.add(module, [
 		eval(t.TEST("RE2(/[x-z]*/).split('asdfghjkl').reverse().join('') === 'lkjhgfdsa'"));
 	},
 
+	function test_cornerCases(t) {
+		"use strict";
+
+		var re = new RE2(/1/);
+		var result = re.split("23456");
+		eval(t.TEST("t.unify(result, ['23456'])"));
+	},
+
 	// Unicode tests
 
 	function test_splitUnicode(t) {
