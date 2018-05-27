@@ -33,6 +33,26 @@ unit.add(module, [
 		eval(t.TEST("re.test('This is a hello world!')"));
 		eval(t.TEST("!re.test('This is a Hello world!')"));
 	},
+	function test_testSucc(t) {
+		"use strict";
+
+		var str = "abbcdefabh";
+
+		var re = new RE2("ab*", "g");
+		var result = re.test(str);
+
+		eval(t.TEST("result"));
+		eval(t.TEST("re.lastIndex === 3"));
+
+		result = re.test(str);
+
+		eval(t.TEST("result"));
+		eval(t.TEST("re.lastIndex === 9"));
+
+		result = re.test(str);
+
+		eval(t.TEST("!result"));
+	},
 	function test_testSimple(t) {
 		"use strict";
 
@@ -49,6 +69,34 @@ unit.add(module, [
 		var re3 = new RE2("abc");
 
 		eval(t.TEST("!re3.test(str)"));
+	},
+	function test_testAnchor1(t) {
+		"use strict";
+
+		var re = new RE2("b|^a", "g");
+
+		var result = re.test("aabc");
+		eval(t.TEST("result"));
+		eval(t.TEST("re.lastIndex === 1"));
+
+		result = re.test("aabc");
+		eval(t.TEST("result"));
+		eval(t.TEST("re.lastIndex === 3"));
+
+		result = re.test("aabc");
+		eval(t.TEST("!result"));
+	},
+	function test_testAnchor2(t) {
+		"use strict";
+
+		var re = new RE2("(?:^a)", "g");
+
+		var result = re.test("aabc");
+		eval(t.TEST("result"));
+		eval(t.TEST("re.lastIndex === 1"));
+
+		result = re.test("aabc");
+		eval(t.TEST("!result"));
 	},
 
 	// Unicode tests
@@ -73,6 +121,26 @@ unit.add(module, [
 
 		eval(t.TEST("re.test('Это просто привет всем.')"));
 		eval(t.TEST("!re.test('Это просто Привет всем.')"));
+	},
+	function test_testUnicodeSubsequent(t) {
+		"use strict";
+
+		var str = "аббвгдеабё";
+
+		var re = new RE2("аб*", "g");
+		var result = re.test(str);
+
+		eval(t.TEST("result"));
+		eval(t.TEST("re.lastIndex === 3"));
+
+		result = re.test(str);
+
+		eval(t.TEST("result"));
+		eval(t.TEST("re.lastIndex === 9"));
+
+		result = re.test(str);
+
+		eval(t.TEST("!result"));
 	},
 
 	// Buffer tests

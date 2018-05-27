@@ -75,6 +75,37 @@ unit.add(module, [
 		eval(t.TEST("result[1] === 'aaa'"));
 		eval(t.TEST("result[2] === undefined"));
 	},
+	function test_execAnchor1(t) {
+		"use strict";
+
+		var re = new RE2("b|^a", "g");
+
+		var result = re.exec("aabc");
+		eval(t.TEST("!!result"));
+		eval(t.TEST("result.index === 0"));
+		eval(t.TEST("re.lastIndex === 1"));
+
+		result = re.exec("aabc");
+		eval(t.TEST("!!result"));
+		eval(t.TEST("result.index === 2"));
+		eval(t.TEST("re.lastIndex === 3"));
+
+		result = re.exec("aabc");
+		eval(t.TEST("!result"));
+	},
+	function test_execAnchor2(t) {
+		"use strict";
+
+		var re = new RE2("(?:^a)", "g");
+
+		var result = re.exec("aabc");
+		eval(t.TEST("!!result"));
+		eval(t.TEST("result.index === 0"));
+		eval(t.TEST("re.lastIndex === 1"));
+
+		result = re.exec("aabc");
+		eval(t.TEST("!result"));
+	},
 
 	// Unicode tests
 
@@ -97,6 +128,30 @@ unit.add(module, [
 
 		eval(t.TEST("result.input.substr(result.index) === 'Охотник Желает Знать Где Сидит Фазан'"));
 		eval(t.TEST("result.input.substr(re.lastIndex) === ' Сидит Фазан'"));
+	},
+	function test_execUnicodeSubsequent(t) {
+		"use strict";
+
+		var str = "аббвгдеабё";
+
+		var re = new RE2("аб*", "g");
+		var result = re.exec(str);
+
+		eval(t.TEST("!!result"));
+		eval(t.TEST("result[0] === 'абб'"));
+		eval(t.TEST("result.index === 0"));
+		eval(t.TEST("re.lastIndex === 3"));
+
+		result = re.exec(str);
+
+		eval(t.TEST("!!result"));
+		eval(t.TEST("result[0] === 'аб'"));
+		eval(t.TEST("result.index === 7"));
+		eval(t.TEST("re.lastIndex === 9"));
+
+		result = re.exec(str);
+
+		eval(t.TEST("!result"));
 	},
 	function test_execUnicodeSupplementary(t) {
 		"use strict";
