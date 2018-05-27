@@ -142,6 +142,7 @@ NAN_METHOD(WrappedRE2::New) {
 	bool ignoreCase = false;
 	bool multiline = false;
 	bool global = false;
+	bool sticky = false;
 
 	if (info.Length() > 1) {
 		if (info[1]->IsString()) {
@@ -164,6 +165,9 @@ NAN_METHOD(WrappedRE2::New) {
 					break;
 				case 'g':
 					global = true;
+					break;
+				case 'y':
+					sticky = true;
 					break;
 			}
 		}
@@ -188,6 +192,7 @@ NAN_METHOD(WrappedRE2::New) {
 		ignoreCase = bool(flags & RegExp::kIgnoreCase);
 		multiline  = bool(flags & RegExp::kMultiline);
 		global     = bool(flags & RegExp::kGlobal);
+		sticky     = bool(flags & RegExp::kSticky);
 	} else if (info[0]->IsObject() && !info[0]->IsString()) {
 		WrappedRE2* re2 = NULL;
 		auto object = info[0]->ToObject();
@@ -205,6 +210,7 @@ NAN_METHOD(WrappedRE2::New) {
 			ignoreCase = re2->ignoreCase;
 			multiline  = re2->multiline;
 			global     = re2->global;
+			sticky     = re2->sticky;
 		}
 	} else if (info[0]->IsString()) {
 		Local<String> t(info[0]->ToString());
@@ -230,7 +236,7 @@ NAN_METHOD(WrappedRE2::New) {
 	options.set_one_line(!multiline);
 	options.set_log_errors(false); // inappropriate when embedding
 
-	WrappedRE2* re2 = new WrappedRE2(StringPiece(data, size), options, global, ignoreCase, multiline);
+	WrappedRE2* re2 = new WrappedRE2(StringPiece(data, size), options, global, ignoreCase, multiline, sticky);
 	if (!re2->regexp.ok()) {
 		delete re2;
 		return Nan::ThrowSyntaxError("Unsupported regular expression features (check for backreferences, lookahead assertions).");
