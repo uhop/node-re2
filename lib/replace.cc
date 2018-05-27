@@ -143,20 +143,38 @@ inline string replace(const char* data, size_t size, const vector<StringPiece>& 
 }
 
 
-static string replace(WrappedRE2* re2, const StringPiece& str, const char* replacer, size_t replacer_size) {
-
+static string replace(WrappedRE2* re2, const StrVal& replacee, const char* replacer, size_t replacer_size) {
+	const StringPiece str(replacee);
 	const char* data = str.data();
 	size_t      size = str.size();
 
-	vector<StringPiece> groups(min(re2->regexp.NumberOfCapturingGroups(),
-								getMaxSubmatch(replacer, replacer_size)) + 1);
+	vector<StringPiece> groups(min(re2->regexp.NumberOfCapturingGroups(), getMaxSubmatch(replacer, replacer_size)) + 1);
 	const StringPiece& match = groups[0];
 
 	size_t lastIndex = 0;
 	string result;
 
-	while (lastIndex <= size && re2->regexp.Match(str, lastIndex, size,
-				RE2::UNANCHORED, &groups[0], groups.size())) {
+	if (re2->sticky) {
+		if (replacee.isBuffer) {
+			lastIndex = re2->lastIndex;
+		} else {
+			for (size_t n = re2->lastIndex; n; --n) {
+				lastIndex += getUtf8CharSize(data[lastIndex]);
+			}
+		}
+	}
+
+	if (lastIndex) {
+		result = string(data, lastIndex);
+	}
+
+	bool noMatch = true;
+	while (lastIndex <= size && re2->regexp.Match(str, lastIndex, size, re2->sticky ? RE2::ANCHOR_START : RE2::UNANCHORED, &groups[0], groups.size())) {
+		noMatch = false;
+		if (re2->sticky) {
+			re2->lastIndex += replacee.isBuffer ? match.data() - data + match.size() - lastIndex :
+				getUtf16Length(data + lastIndex, match.data() + match.size());
+		}
 		if (match.size()) {
 			if (match.data() == data || match.data() - data > lastIndex) {
 				result += string(data + lastIndex, match.data() - data - lastIndex);
@@ -171,7 +189,7 @@ static string replace(WrappedRE2* re2, const StringPiece& str, const char* repla
 			}
 			lastIndex += sym_size;
 		}
-		if (!re2->global) {
+		if (!re2->global || re2->sticky) {
 			break;
 		}
 	}
@@ -179,12 +197,19 @@ static string replace(WrappedRE2* re2, const StringPiece& str, const char* repla
 		result += string(data + lastIndex, size - lastIndex);
 	}
 
+	if (re2->sticky) {
+		if (noMatch) {
+			re2->lastIndex = 0;
+		}
+	} else if (re2->global) {
+		re2->lastIndex = 0;
+	}
+
 	return result;
 }
 
 
-inline string replace(const Nan::Callback* replacer, const vector<StringPiece>& groups,
-						const StringPiece& str, const Local<Value>& input, bool useBuffers) {
+inline string replace(const Nan::Callback* replacer, const vector<StringPiece>& groups, const StringPiece& str, const Local<Value>& input, bool useBuffers) {
 	vector< Local<Value> >	argv;
 
 	if (useBuffers) {
@@ -219,9 +244,8 @@ inline string replace(const Nan::Callback* replacer, const vector<StringPiece>& 
 }
 
 
-static string replace(WrappedRE2* re2, const StringPiece& str, const Nan::Callback* replacer,
-						const Local<Value>& input, bool useBuffers) {
-
+static string replace(WrappedRE2* re2, const StrVal& replacee, const Nan::Callback* replacer, const Local<Value>& input, bool useBuffers) {
+	const StringPiece str(replacee);
 	const char* data = str.data();
 	size_t      size = str.size();
 
@@ -231,8 +255,27 @@ static string replace(WrappedRE2* re2, const StringPiece& str, const Nan::Callba
 	size_t lastIndex = 0;
 	string result;
 
-	while (lastIndex <= size && re2->regexp.Match(str, lastIndex, size,
-				RE2::UNANCHORED, &groups[0], groups.size())) {
+	if (re2->sticky) {
+		if (replacee.isBuffer) {
+			lastIndex = re2->lastIndex;
+		} else {
+			for (size_t n = re2->lastIndex; n; --n) {
+				lastIndex += getUtf8CharSize(data[lastIndex]);
+			}
+		}
+	}
+
+	if (lastIndex) {
+		result = string(data, lastIndex);
+	}
+
+	bool noMatch = true;
+	while (lastIndex <= size && re2->regexp.Match(str, lastIndex, size, re2->sticky ? RE2::ANCHOR_START : RE2::UNANCHORED, &groups[0], groups.size())) {
+		noMatch = false;
+		if (re2->sticky) {
+			re2->lastIndex += replacee.isBuffer ? match.data() - data + match.size() - lastIndex :
+				getUtf16Length(data + lastIndex, match.data() + match.size());
+		}
 		if (match.size()) {
 			if (match.data() == data || match.data() - data > lastIndex) {
 				result += string(data + lastIndex, match.data() - data - lastIndex);
@@ -247,12 +290,20 @@ static string replace(WrappedRE2* re2, const StringPiece& str, const Nan::Callba
 			}
 			lastIndex += sym_size;
 		}
-		if (!re2->global) {
+		if (!re2->global || re2->sticky) {
 			break;
 		}
 	}
 	if (lastIndex < size) {
 		result += string(data + lastIndex, size - lastIndex);
+	}
+
+	if (re2->sticky) {
+		if (noMatch) {
+			re2->lastIndex = 0;
+		}
+	} else if (re2->global) {
+		re2->lastIndex = 0;
 	}
 
 	return result;
@@ -282,23 +333,22 @@ NAN_METHOD(WrappedRE2::Replace) {
 		return;
 	}
 
-	StrVal a(info[0]);
-	StringPiece str(a);
+	StrVal replacee(info[0]);
 	string result;
 
 	if (info[1]->IsFunction()) {
 		Local<Function> fun(info[1].As<Function>());
 		const Nan::Callback* cb = new Nan::Callback(fun);
-		result = replace(re2, str, cb, info[0], requiresBuffers(fun));
+		result = replace(re2, replacee, cb, info[0], requiresBuffers(fun));
 		delete cb;
 	} else if (node::Buffer::HasInstance(info[1])) {
-		result = replace(re2, str, node::Buffer::Data(info[1]), node::Buffer::Length(info[1]));
+		result = replace(re2, replacee, node::Buffer::Data(info[1]), node::Buffer::Length(info[1]));
 	} else {
 		Nan::Utf8String s(info[1]->ToString());
-		result = replace(re2, str, *s, s.length());
+		result = replace(re2, replacee, *s, s.length());
 	}
 
-	if (a.isBuffer) {
+	if (replacee.isBuffer) {
 		info.GetReturnValue().Set(Nan::CopyBuffer(result.data(), result.size()).ToLocalChecked());
 		return;
 	}
