@@ -21,7 +21,7 @@ NAN_METHOD(WrappedRE2::Search) {
 
 	StringPiece match;
 
-	if (re2->regexp.Match(a, 0, a.size, RE2::UNANCHORED, &match, 1)) {
+	if (re2->regexp.Match(a, 0, a.size, re2->sticky ? RE2::ANCHOR_START : RE2::UNANCHORED, &match, 1)) {
 		info.GetReturnValue().Set(static_cast<int>(a.isBuffer ? match.data() - a.data :
 			getUtf16Length(a.data, match.data())));
 		return;
