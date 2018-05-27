@@ -23,6 +23,10 @@ NAN_METHOD(WrappedRE2::Match) {
 	}
 
 	StrVal a(info[0]);
+	if (!a.data) {
+		return;
+	}
+
 	vector<StringPiece> groups;
 	StringPiece str(a);
 	size_t lastIndex = 0;

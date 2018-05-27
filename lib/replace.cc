@@ -334,6 +334,10 @@ NAN_METHOD(WrappedRE2::Replace) {
 	}
 
 	StrVal replacee(info[0]);
+	if (!replacee.data) {
+		return;
+	}
+
 	string result;
 
 	if (info[1]->IsFunction()) {
@@ -341,11 +345,12 @@ NAN_METHOD(WrappedRE2::Replace) {
 		const Nan::Callback* cb = new Nan::Callback(fun);
 		result = replace(re2, replacee, cb, info[0], requiresBuffers(fun));
 		delete cb;
-	} else if (node::Buffer::HasInstance(info[1])) {
-		result = replace(re2, replacee, node::Buffer::Data(info[1]), node::Buffer::Length(info[1]));
 	} else {
-		Nan::Utf8String s(info[1]->ToString());
-		result = replace(re2, replacee, *s, s.length());
+		StrVal replacer(info[1]);
+		if (!replacer.data) {
+			return;
+		}
+		result = replace(re2, replacee, replacer.data, replacer.size);
 	}
 
 	if (replacee.isBuffer) {
