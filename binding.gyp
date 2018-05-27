@@ -45,6 +45,7 @@
         "-Wno-sign-compare",
         "-Wno-unused-parameter",
         "-Wno-missing-field-initializers",
+		"-Wimplicit-fallthrough=0",
         "-O3",
         "-g"
       ],
@@ -66,6 +67,7 @@
           "-Wno-sign-compare",
           "-Wno-unused-parameter",
           "-Wno-missing-field-initializers",
+		  "-Wimplicit-fallthrough=0",
           "-O3",
           "-g"
         ]
