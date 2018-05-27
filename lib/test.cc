@@ -1,4 +1,5 @@
 #include "./wrapped_re2.h"
+#include "./util.h"
 
 #include <vector>
 
@@ -21,40 +22,31 @@ NAN_METHOD(WrappedRE2::Test) {
 		return;
 	}
 
-	vector<char> buffer;
+	StrVal str(info[0]);
+	if (!str.data) {
+		return;
+	}
 
-	char*  data;
-	size_t size, lastIndex = 0;
-	bool   isBuffer = false;
+	size_t lastIndex = 0;
 
-	if (node::Buffer::HasInstance(info[0])) {
-		isBuffer = true;
-		size = node::Buffer::Length(info[0]);
+	if (str.isBuffer) {
 		if ((re2->global || re2->sticky) && re2->lastIndex) {
-			if (re2->lastIndex > size) {
+			if (re2->lastIndex > str.size) {
 				re2->lastIndex = 0;
 				info.GetReturnValue().Set(false);
 				return;
 			}
 			lastIndex = re2->lastIndex;
 		}
-		data = node::Buffer::Data(info[0]);
 	} else {
-		Local<String> t(info[0]->ToString());
 		if ((re2->global || re2->sticky) && re2->lastIndex) {
-			if (re2->lastIndex > t->Length()) {
+			if (re2->lastIndex > str.length) {
 				re2->lastIndex = 0;
 				info.GetReturnValue().Set(false);
 				return;
 			}
-		}
-		buffer.resize(t->Utf8Length() + 1);
-		t->WriteUtf8(&buffer[0]);
-		size = buffer.size() - 1;
-		data = &buffer[0];
-		if ((re2->global || re2->sticky) && re2->lastIndex) {
 			for (size_t n = re2->lastIndex; n; --n) {
-				lastIndex += getUtf8CharSize(data[lastIndex]);
+				lastIndex += getUtf8CharSize(str.data[lastIndex]);
 			}
 		}
 	}
@@ -63,9 +55,9 @@ NAN_METHOD(WrappedRE2::Test) {
 
 	if (re2->global || re2->sticky) {
 		StringPiece match;
-		if (re2->regexp.Match(StringPiece(data, size), lastIndex, size, re2->sticky ? RE2::ANCHOR_START : RE2::UNANCHORED, &match, 1)) {
-			re2->lastIndex += isBuffer ? match.data() - data + match.size() - lastIndex :
-				getUtf16Length(data + lastIndex, match.data() + match.size());
+		if (re2->regexp.Match(str, lastIndex, str.size, re2->sticky ? RE2::ANCHOR_START : RE2::UNANCHORED, &match, 1)) {
+			re2->lastIndex += str.isBuffer ? match.data() - str.data + match.size() - lastIndex :
+				getUtf16Length(str.data + lastIndex, match.data() + match.size());
 			info.GetReturnValue().Set(true);
 			return;
 		}
@@ -74,5 +66,5 @@ NAN_METHOD(WrappedRE2::Test) {
 		return;
 	}
 
-	info.GetReturnValue().Set(re2->regexp.Match(StringPiece(data, size), lastIndex, size, RE2::UNANCHORED, NULL, 0));
+	info.GetReturnValue().Set(re2->regexp.Match(str, lastIndex, str.size, RE2::UNANCHORED, NULL, 0));
 }

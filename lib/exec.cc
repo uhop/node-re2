@@ -1,4 +1,5 @@
 #include "./wrapped_re2.h"
+#include "./util.h"
 
 #include <vector>
 
@@ -23,40 +24,31 @@ NAN_METHOD(WrappedRE2::Exec) {
 		return;
 	}
 
-	vector<char> buffer;
+	StrVal str(info[0]);
+	if (!str.data) {
+		return;
+	}
 
-	char*  data;
-	size_t size, lastIndex = 0;
-	bool   isBuffer = false;
+	size_t lastIndex = 0;
 
-	if (node::Buffer::HasInstance(info[0])) {
-		isBuffer = true;
-		size = node::Buffer::Length(info[0]);
+	if (str.isBuffer) {
 		if ((re2->global || re2->sticky) && re2->lastIndex) {
-			if (re2->lastIndex > size) {
+			if (re2->lastIndex > str.size) {
 				re2->lastIndex = 0;
 				info.GetReturnValue().SetNull();
 				return;
 			}
 			lastIndex = re2->lastIndex;
 		}
-		data = node::Buffer::Data(info[0]);
 	} else {
-		Local<String> t(info[0]->ToString());
 		if ((re2->global || re2-> sticky) && re2->lastIndex) {
-			if (re2->lastIndex > t->Length()) {
+			if (re2->lastIndex > str.length) {
 				re2->lastIndex = 0;
 				info.GetReturnValue().SetNull();
 				return;
 			}
-		}
-		buffer.resize(t->Utf8Length() + 1);
-		t->WriteUtf8(&buffer[0]);
-		size = buffer.size() - 1;
-		data = &buffer[0];
-		if ((re2->global || re2->sticky) && re2->lastIndex) {
 			for (size_t n = re2->lastIndex; n; --n) {
-				lastIndex += getUtf8CharSize(data[lastIndex]);
+				lastIndex += getUtf8CharSize(str.data[lastIndex]);
 			}
 		}
 	}
@@ -65,7 +57,7 @@ NAN_METHOD(WrappedRE2::Exec) {
 
 	vector<StringPiece> groups(re2->regexp.NumberOfCapturingGroups() + 1);
 
-	if (!re2->regexp.Match(StringPiece(data, size), lastIndex, size, re2->sticky ? RE2::ANCHOR_START : RE2::UNANCHORED, &groups[0], groups.size())) {
+	if (!re2->regexp.Match(str, lastIndex, str.size, re2->sticky ? RE2::ANCHOR_START : RE2::UNANCHORED, &groups[0], groups.size())) {
 		if (re2->global || re2->sticky) {
 			re2->lastIndex = 0;
 		}
@@ -79,7 +71,7 @@ NAN_METHOD(WrappedRE2::Exec) {
 
 	int indexOffset = re2->global || re2->sticky ? re2->lastIndex : 0;
 
-	if (isBuffer) {
+	if (str.isBuffer) {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
 			const StringPiece& item = groups[i];
 			if (item.data() != NULL) {
@@ -87,7 +79,7 @@ NAN_METHOD(WrappedRE2::Exec) {
 			}
 		}
 		Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<Integer>(
-			indexOffset + static_cast<int>(groups[0].data() - data)));
+			indexOffset + static_cast<int>(groups[0].data() - str.data)));
 	} else {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
 			const StringPiece& item = groups[i];
@@ -96,14 +88,14 @@ NAN_METHOD(WrappedRE2::Exec) {
 			}
 		}
 		Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<Integer>(
-			indexOffset + static_cast<int>(getUtf16Length(data + lastIndex, groups[0].data()))));
+			indexOffset + static_cast<int>(getUtf16Length(str.data + lastIndex, groups[0].data()))));
 	}
 
 	Nan::Set(result, Nan::New("input").ToLocalChecked(), info[0]);
 
 	if (re2->global || re2->sticky) {
-		re2->lastIndex += isBuffer ? groups[0].data() - data + groups[0].size() - lastIndex :
-			getUtf16Length(data + lastIndex, groups[0].data() + groups[0].size());
+		re2->lastIndex += str.isBuffer ? groups[0].data() - str.data + groups[0].size() - lastIndex :
+			getUtf16Length(str.data + lastIndex, groups[0].data() + groups[0].size());
 	}
 
 	info.GetReturnValue().Set(result);
