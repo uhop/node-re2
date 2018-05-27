@@ -15,6 +15,7 @@ using std::vector;
 using v8::Array;
 using v8::Integer;
 using v8::Local;
+using v8::MaybeLocal;
 using v8::String;
 using v8::Value;
 
@@ -201,7 +202,13 @@ inline string replace(const Nan::Callback* replacer, const vector<StringPiece>& 
 	}
 	argv.push_back(input);
 
-	Local<Value> result(replacer->Call(static_cast<int>(argv.size()), &argv[0]));
+	MaybeLocal<Value> maybeResult(Nan::Call(replacer->GetFunction(), v8::Isolate::GetCurrent()->GetCurrentContext()->Global(), static_cast<int>(argv.size()), &argv[0]));
+
+	if (maybeResult.IsEmpty()) {
+		return string();
+	}
+
+	Local<Value> result = maybeResult.ToLocalChecked();
 
 	if (node::Buffer::HasInstance(result)) {
 		return string(node::Buffer::Data(result), node::Buffer::Length(result));
