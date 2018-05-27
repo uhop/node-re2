@@ -32,7 +32,7 @@ NAN_METHOD(WrappedRE2::Exec) {
 	if (node::Buffer::HasInstance(info[0])) {
 		isBuffer = true;
 		size = node::Buffer::Length(info[0]);
-		if (re2->global && re2->lastIndex) {
+		if ((re2->global || re2->sticky) && re2->lastIndex) {
 			if (re2->lastIndex > size) {
 				re2->lastIndex = 0;
 				info.GetReturnValue().SetNull();
@@ -43,7 +43,7 @@ NAN_METHOD(WrappedRE2::Exec) {
 		data = node::Buffer::Data(info[0]);
 	} else {
 		Local<String> t(info[0]->ToString());
-		if (re2->global && re2->lastIndex) {
+		if ((re2->global || re2-> sticky) && re2->lastIndex) {
 			if (re2->lastIndex > t->Length()) {
 				re2->lastIndex = 0;
 				info.GetReturnValue().SetNull();
@@ -54,7 +54,7 @@ NAN_METHOD(WrappedRE2::Exec) {
 		t->WriteUtf8(&buffer[0]);
 		size = buffer.size() - 1;
 		data = &buffer[0];
-		if (re2->global && re2->lastIndex) {
+		if ((re2->global || re2->sticky) && re2->lastIndex) {
 			for (size_t n = re2->lastIndex; n; --n) {
 				lastIndex += getUtf8CharSize(data[lastIndex]);
 			}
@@ -65,8 +65,8 @@ NAN_METHOD(WrappedRE2::Exec) {
 
 	vector<StringPiece> groups(re2->regexp.NumberOfCapturingGroups() + 1);
 
-	if (!re2->regexp.Match(StringPiece(data, size), lastIndex, size, RE2::UNANCHORED, &groups[0], groups.size())) {
-		if (re2->global) {
+	if (!re2->regexp.Match(StringPiece(data, size), lastIndex, size, re2->sticky ? RE2::ANCHOR_START : RE2::UNANCHORED, &groups[0], groups.size())) {
+		if (re2->global || re2->sticky) {
 			re2->lastIndex = 0;
 		}
 		info.GetReturnValue().SetNull();
@@ -77,7 +77,7 @@ NAN_METHOD(WrappedRE2::Exec) {
 
 	Local<Array> result = Nan::New<Array>();
 
-	int indexOffset = re2->global ? re2->lastIndex : 0;
+	int indexOffset = re2->global || re2->sticky ? re2->lastIndex : 0;
 
 	if (isBuffer) {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
@@ -101,7 +101,7 @@ NAN_METHOD(WrappedRE2::Exec) {
 
 	Nan::Set(result, Nan::New("input").ToLocalChecked(), info[0]);
 
-	if (re2->global) {
+	if (re2->global || re2->sticky) {
 		re2->lastIndex += isBuffer ? groups[0].data() - data + groups[0].size() - lastIndex :
 			getUtf16Length(data + lastIndex, groups[0].data() + groups[0].size());
 	}
