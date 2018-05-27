@@ -25,14 +25,14 @@ NAN_METHOD(WrappedRE2::Match) {
 	StrVal a(info[0]);
 	vector<StringPiece> groups;
 	StringPiece str(a);
+	size_t lastIndex = 0;
 
 	// actual work
 
-	if (re2->global) {
+	if (re2->global && !re2->sticky) {
 		// global: collect all matches
 
 		StringPiece match;
-		size_t lastIndex = 0;
 
 		while (re2->regexp.Match(str, lastIndex, a.size, RE2::UNANCHORED, &match, 1)) {
 			groups.push_back(match);
@@ -46,8 +46,17 @@ NAN_METHOD(WrappedRE2::Match) {
 	} else {
 		// non-global: just like exec()
 
+		if (re2->sticky) {
+			for (size_t n = re2->lastIndex; n; --n) {
+				lastIndex += getUtf8CharSize(a.data[lastIndex]);
+			}
+		}
+
 		groups.resize(re2->regexp.NumberOfCapturingGroups() + 1);
-		if (!re2->regexp.Match(str, 0, a.size, RE2::UNANCHORED, &groups[0], groups.size())) {
+		if (!re2->regexp.Match(str, lastIndex, a.size, re2->sticky ? RE2::ANCHOR_START : RE2::UNANCHORED, &groups[0], groups.size())) {
+			if (re2->sticky) {
+				re2->lastIndex = 0;
+			}
 			info.GetReturnValue().SetNull();
 			return;
 		}
@@ -79,6 +88,11 @@ NAN_METHOD(WrappedRE2::Match) {
 			Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<Integer>(static_cast<int>(getUtf16Length(a.data, groups[0].data()))));
 			Nan::Set(result, Nan::New("input").ToLocalChecked(), info[0]);
 		}
+	}
+
+	if (!re2->global && re2->sticky) {
+		re2->lastIndex += a.isBuffer ? groups[0].data() - a.data + groups[0].size() - lastIndex :
+			getUtf16Length(a.data + lastIndex, groups[0].data() + groups[0].size());
 	}
 
 	info.GetReturnValue().Set(result);
