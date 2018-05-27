@@ -15,8 +15,8 @@ Nan::Persistent<FunctionTemplate> WrappedRE2::ctorTemplate;
 
 
 static NAN_METHOD(GetUtf8Length) {
-	String::Value s(info[0]->ToString());
-	info.GetReturnValue().Set(static_cast<int>(getUtf8Length(*s, *s + s.length())));
+	Local<String> s(info[0]->ToString());
+	info.GetReturnValue().Set(static_cast<int>(s->Utf8Length()));
 }
 
 
