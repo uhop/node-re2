@@ -29,6 +29,7 @@ class WrappedRE2 : public Nan::ObjectWrap {
 		static NAN_METHOD(ToString);
 
 		static NAN_GETTER(GetSource);
+		static NAN_GETTER(GetFlags);
 		static NAN_GETTER(GetGlobal);
 		static NAN_GETTER(GetIgnoreCase);
 		static NAN_GETTER(GetMultiline);

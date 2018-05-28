@@ -102,6 +102,7 @@ unit.add(module, [
 		eval(t.TEST("'search' in re"));
 		eval(t.TEST("'split' in re"));
 		eval(t.TEST("'source' in re"));
+		eval(t.TEST("'flags' in re"));
 		eval(t.TEST("'global' in re"));
 		eval(t.TEST("'ignoreCase' in re"));
 		eval(t.TEST("'multiline' in re"));
@@ -120,6 +121,7 @@ unit.add(module, [
 		eval(t.TEST("typeof re.search == 'function'"));
 		eval(t.TEST("typeof re.split == 'function'"));
 		eval(t.TEST("typeof re.source == 'string'"));
+		eval(t.TEST("typeof re.flags == 'string'"));
 		eval(t.TEST("typeof re.global == 'boolean'"));
 		eval(t.TEST("typeof re.ignoreCase == 'boolean'"));
 		eval(t.TEST("typeof re.multiline == 'boolean'"));
@@ -240,6 +242,42 @@ unit.add(module, [
 
 		var re = new RE2("foo\\/bar");
 		eval(t.TEST("re.source === 'foo\\\\/bar'"));
+	},
+	function test_flags(t) {
+		"use strict";
+
+		var re = new RE2("a");
+		eval(t.TEST("re.flags === ''"));
+
+		re = new RE2("a", "i");
+		eval(t.TEST("re.flags === 'i'"));
+
+		re = new RE2("a", "m");
+		eval(t.TEST("re.flags === 'm'"));
+
+		re = new RE2("a", "g");
+		eval(t.TEST("re.flags === 'g'"));
+
+		re = new RE2("a", "y");
+		eval(t.TEST("re.flags === 'y'"));
+
+		re = new RE2("a", "yi");
+		eval(t.TEST("re.flags === 'iy'"));
+
+		re = new RE2("a", "yig");
+		eval(t.TEST("re.flags === 'giy'"));
+
+		re = new RE2("a", "mi");
+		eval(t.TEST("re.flags === 'im'"));
+
+		re = new RE2("a", "yg");
+		eval(t.TEST("re.flags === 'gy'"));
+
+		re = new RE2("a", "my");
+		eval(t.TEST("re.flags === 'my'"));
+
+		re = new RE2("a", "migy");
+		eval(t.TEST("re.flags === 'gimy'"));
 	}
 ]);
 

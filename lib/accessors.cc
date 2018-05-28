@@ -1,5 +1,8 @@
 #include "./wrapped_re2.h"
 
+#include <string>
+
+using std::string;
 
 using v8::Integer;
 
@@ -14,6 +17,30 @@ NAN_GETTER(WrappedRE2::GetSource) {
 	info.GetReturnValue().Set(Nan::New(re2->regexp.pattern()).ToLocalChecked());
 }
 
+NAN_GETTER(WrappedRE2::GetFlags) {
+	if (!WrappedRE2::HasInstance(info.This())) {
+		info.GetReturnValue().Set(Nan::New("").ToLocalChecked());
+		return;
+	}
+
+	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
+
+	string flags;
+	if (re2->global) {
+		flags = "g";
+	}
+	if (re2->ignoreCase) {
+		flags += "i";
+	}
+	if (re2->multiline) {
+		flags += "m";
+	}
+	if (re2->sticky) {
+		flags += "y";
+	}
+
+	info.GetReturnValue().Set(Nan::New(flags).ToLocalChecked());
+}
 
 NAN_GETTER(WrappedRE2::GetGlobal) {
 	if (!WrappedRE2::HasInstance(info.This())) {

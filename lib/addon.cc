@@ -57,6 +57,7 @@ void WrappedRE2::Initialize(Handle<Object> exports, Handle<Object> module) {
 
 	Local<ObjectTemplate> proto = tpl->PrototypeTemplate();
 	Nan::SetAccessor(proto, Nan::New("source").ToLocalChecked(),     GetSource);
+	Nan::SetAccessor(proto, Nan::New("flags").ToLocalChecked(),      GetFlags);
 	Nan::SetAccessor(proto, Nan::New("global").ToLocalChecked(),     GetGlobal);
 	Nan::SetAccessor(proto, Nan::New("ignoreCase").ToLocalChecked(), GetIgnoreCase);
 	Nan::SetAccessor(proto, Nan::New("multiline").ToLocalChecked(),  GetMultiline);
