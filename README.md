@@ -50,7 +50,9 @@ Supported properties:
 * [`re2.global`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global)
 * [`re2.ignoreCase`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/ignoreCase)
 * [`re2.multiline`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/multiline)
+* [`re2.sticky`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/sticky)
 * [`re2.source`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/source)
+* [`re2.flags`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/flags)
 
 Supported methods:
 
@@ -314,6 +316,7 @@ Or:
 
 ## Release history
 
+- 1.7.0 *Implemented `sticky` and `flags` + bug fixes + more tests. Thx [Exter-N](https://github.com/Exter-N)!*
 - 1.6.2 *Bug fix for a prototype access. Thx [Exter-N](https://github.com/Exter-N)!*
 - 1.6.1 *Returned support for node 4 LTS. Thx [Kannan Goundan](https://github.com/cakoose)!*
 - 1.6.0 *Added well-known symbol-based methods of ES6. Refreshed NAN.*
