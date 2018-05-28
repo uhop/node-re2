@@ -6,8 +6,10 @@
 using v8::FunctionTemplate;
 using v8::Integer;
 using v8::Local;
+using v8::MaybeLocal;
 using v8::ObjectTemplate;
 using v8::String;
+using v8::Isolate;
 
 
 Nan::Persistent<Function>         WrappedRE2::constructor;
@@ -15,7 +17,11 @@ Nan::Persistent<FunctionTemplate> WrappedRE2::ctorTemplate;
 
 
 static NAN_METHOD(GetUtf8Length) {
-	Local<String> s(info[0]->ToString());
+	MaybeLocal<String> t(info[0]->ToString(Isolate::GetCurrent()->GetCurrentContext()));
+	if (t.IsEmpty()) {
+		return;
+	}
+	Local<String> s(t.ToLocalChecked());
 	info.GetReturnValue().Set(static_cast<int>(s->Utf8Length()));
 }
 

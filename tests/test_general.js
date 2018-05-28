@@ -82,6 +82,13 @@ unit.add(module, [
 		} catch(e) {
 			eval(t.TEST("e instanceof TypeError"));
 		}
+
+		try {
+			var re = RE2({ toString() { throw "corner"; } });
+			t.test(false); // shouldn't be here
+		} catch(e) {
+			eval(t.TEST("e instanceof TypeError"));
+		}
 	},
 	function test_generalIn(t) {
 		"use strict";
@@ -98,6 +105,7 @@ unit.add(module, [
 		eval(t.TEST("'global' in re"));
 		eval(t.TEST("'ignoreCase' in re"));
 		eval(t.TEST("'multiline' in re"));
+		eval(t.TEST("'sticky' in re"));
 		eval(t.TEST("'lastIndex' in re"));
 	},
 	function test_generalPresent(t) {
@@ -115,6 +123,7 @@ unit.add(module, [
 		eval(t.TEST("typeof re.global == 'boolean'"));
 		eval(t.TEST("typeof re.ignoreCase == 'boolean'"));
 		eval(t.TEST("typeof re.multiline == 'boolean'"));
+		eval(t.TEST("typeof re.sticky == 'boolean'"));
 		eval(t.TEST("typeof re.lastIndex == 'number'"));
 	},
 	function test_generalLastIndex(t) {
@@ -204,6 +213,15 @@ unit.add(module, [
 
 		eval(t.TEST("b3.length === 1"));
 		eval(t.TEST("RE2.getUtf16Length(b3) === 2"));
+
+		try {
+			RE2.getUtf8Length({ toString() { throw "corner"; } });
+			t.test(false); // shouldn't be here
+		} catch(e) {
+			eval(t.TEST("e === 'corner'"));
+		}
+
+		eval(t.TEST("RE2.getUtf16Length({ toString() { throw 'corner'; } }) === -1"));
 	},
 	function test_sourceTranslation(t) {
 		"use strict";
@@ -234,4 +252,5 @@ function compare(re1, re2, t) {
 	eval(t.TEST("re1.global === re2.global"));
 	eval(t.TEST("re1.ignoreCase === re2.ignoreCase"));
 	eval(t.TEST("re1.multiline  === re2.multiline"));
+	eval(t.TEST("re1.sticky     === re2.sticky"));
 }
