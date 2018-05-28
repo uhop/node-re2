@@ -49,12 +49,9 @@ NAN_METHOD(WrappedRE2::Split) {
 	const StringPiece& match = groups[0];
 	size_t lastIndex = 0;
 
-	while (lastIndex < a.size && re2->regexp.Match(str, lastIndex, a.size, RE2::UNANCHORED,
-			&groups[0], groups.size())) {
+	while (lastIndex < a.size && re2->regexp.Match(str, lastIndex, a.size, RE2::UNANCHORED, &groups[0], groups.size())) {
 		if (match.size()) {
-			if (match.data() == a.data || match.data() - a.data > lastIndex) {
-				pieces.push_back(StringPiece(a.data + lastIndex, match.data() - a.data - lastIndex));
-			}
+			pieces.push_back(StringPiece(a.data + lastIndex, match.data() - a.data - lastIndex));
 			lastIndex = match.data() - a.data + match.size();
 			pieces.insert(pieces.end(), groups.begin() + 1, groups.end());
 		} else {

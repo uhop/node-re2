@@ -23,6 +23,10 @@ unit.add(module, [
 		result = re.split("Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec");
 		eval(t.TEST("t.unify(result, ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'])"));
 
+		re = new RE2(",");
+		result = re.split(",Jan,Feb,Mar,Apr,May,Jun,,Jul,Aug,Sep,Oct,Nov,Dec,");
+		eval(t.TEST("t.unify(result, ['','Jan','Feb','Mar','Apr','May','Jun','','Jul','Aug','Sep','Oct','Nov','Dec',''])"));
+
 		re = new RE2(/\s*;\s*/);
 		result = re.split("Harry Trump ;Fred Barney; Helen Rigby ; Bill Abel ;Chris Hand ");
 		eval(t.TEST("t.unify(result, ['Harry Trump', 'Fred Barney', 'Helen Rigby', 'Bill Abel', 'Chris Hand '])"));
@@ -36,6 +40,18 @@ unit.add(module, [
 		eval(t.TEST("t.unify(result, ['Hello ', '1', ' word. Sentence number ', '2', '.'])"));
 
 		eval(t.TEST("RE2(/[x-z]*/).split('asdfghjkl').reverse().join('') === 'lkjhgfdsa'"));
+	},
+	function test_splitInvalid(t) {
+		"use strict";
+
+		var re = RE2('');
+
+		try {
+			re.split({ toString() { throw "corner"; } });
+			t.test(false); // shouldn't be here
+		} catch(e) {
+			eval(t.TEST("e === 'corner'"));
+		}
 	},
 
 	function test_cornerCases(t) {
@@ -100,6 +116,20 @@ unit.add(module, [
 		eval(t.TEST("t.unify(verifyBuffer(result, t), ['Привет ', '1', ' слово. Предложение номер ', '2', '.'])"));
 
 		eval(t.TEST("RE2(/[э-я]*/).split(new Buffer('фывапролд')).map(function(x) { return x.toString(); }).reverse().join('') === 'длорпавыф'"));
+	},
+
+	// Sticky tests
+
+	function test_splitSticky(t) {
+		"use strict";
+
+		var re = new RE2(/\s+/y); // sticky is ignored
+
+		var result = re.split("Oh brave new world that has such people in it.");
+		eval(t.TEST("t.unify(result, ['Oh', 'brave', 'new', 'world', 'that', 'has', 'such', 'people', 'in', 'it.'])"));
+
+		var result2 = re.split(" Oh brave new world that has such people in it.");
+		eval(t.TEST("t.unify(result2, ['', 'Oh', 'brave', 'new', 'world', 'that', 'has', 'such', 'people', 'in', 'it.'])"));
 	}
 ]);
 
