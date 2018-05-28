@@ -11,6 +11,7 @@
 using std::min;
 using std::string;
 using std::vector;
+using std::unique_ptr;
 
 using v8::Array;
 using v8::Integer;
@@ -18,10 +19,6 @@ using v8::Local;
 using v8::MaybeLocal;
 using v8::String;
 using v8::Value;
-
-using Nan::Just;
-using Nan::Maybe;
-using Nan::Nothing;
 
 
 inline int getMaxSubmatch(const char* data, size_t size) {
@@ -147,7 +144,7 @@ inline string replace(const char* data, size_t size, const vector<StringPiece>& 
 }
 
 
-static Maybe<string> replace(WrappedRE2* re2, const StrVal& replacee, const char* replacer, size_t replacer_size) {
+static Nan::Maybe<string> replace(WrappedRE2* re2, const StrVal& replacee, const char* replacer, size_t replacer_size) {
 	const StringPiece str(replacee);
 	const char* data = str.data();
 	size_t      size = str.size();
@@ -213,11 +210,11 @@ static Maybe<string> replace(WrappedRE2* re2, const StrVal& replacee, const char
 		}
 	}
 
-	return Just(result);
+	return Nan::Just(result);
 }
 
 
-inline Maybe<string> replace(const Nan::Callback* replacer, const vector<StringPiece>& groups, const StringPiece& str, const Local<Value>& input, bool useBuffers) {
+inline Nan::Maybe<string> replace(const Nan::Callback* replacer, const vector<StringPiece>& groups, const StringPiece& str, const Local<Value>& input, bool useBuffers) {
 	vector< Local<Value> >	argv;
 
 	if (useBuffers) {
@@ -238,21 +235,21 @@ inline Maybe<string> replace(const Nan::Callback* replacer, const vector<StringP
 	MaybeLocal<Value> maybeResult(Nan::Call(replacer->GetFunction(), v8::Isolate::GetCurrent()->GetCurrentContext()->Global(), static_cast<int>(argv.size()), &argv[0]));
 
 	if (maybeResult.IsEmpty()) {
-		return Nothing<string>();
+		return Nan::Nothing<string>();
 	}
 
 	Local<Value> result = maybeResult.ToLocalChecked();
 
 	if (node::Buffer::HasInstance(result)) {
-		return Just(string(node::Buffer::Data(result), node::Buffer::Length(result)));
+		return Nan::Just(string(node::Buffer::Data(result), node::Buffer::Length(result)));
 	}
 
 	Nan::Utf8String val(result->ToString());
-	return Just(string(*val, val.length()));
+	return Nan::Just(string(*val, val.length()));
 }
 
 
-static Maybe<string> replace(WrappedRE2* re2, const StrVal& replacee, const Nan::Callback* replacer, const Local<Value>& input, bool useBuffers) {
+static Nan::Maybe<string> replace(WrappedRE2* re2, const StrVal& replacee, const Nan::Callback* replacer, const Local<Value>& input, bool useBuffers) {
 	const StringPiece str(replacee);
 	const char* data = str.data();
 	size_t      size = str.size();
@@ -292,14 +289,14 @@ static Maybe<string> replace(WrappedRE2* re2, const StrVal& replacee, const Nan:
 			if (match.data() == data || match.data() - data > lastIndex) {
 				result += string(data + lastIndex, match.data() - data - lastIndex);
 			}
-			const Maybe<string> part(replace(replacer, groups, str, input, useBuffers));
+			const Nan::Maybe<string> part(replace(replacer, groups, str, input, useBuffers));
 			if (part.IsNothing()) {
 				return part;
 			}
 			result += part.FromJust();
 			lastIndex = match.data() - data + match.size();
 		} else {
-			const Maybe<string> part(replace(replacer, groups, str, input, useBuffers));
+			const Nan::Maybe<string> part(replace(replacer, groups, str, input, useBuffers));
 			if (part.IsNothing()) {
 				return part;
 			}
@@ -326,7 +323,7 @@ static Maybe<string> replace(WrappedRE2* re2, const StrVal& replacee, const Nan:
 		}
 	}
 
-	return Just(result);
+	return Nan::Just(result);
 }
 
 
@@ -362,9 +359,8 @@ NAN_METHOD(WrappedRE2::Replace) {
 
 	if (info[1]->IsFunction()) {
 		Local<Function> fun(info[1].As<Function>());
-		const Nan::Callback* cb = new Nan::Callback(fun);
-		const Maybe<string> replaced(replace(re2, replacee, cb, info[0], requiresBuffers(fun)));
-		delete cb;
+		const unique_ptr<const Nan::Callback> cb(new Nan::Callback(fun));
+		const Nan::Maybe<string> replaced(replace(re2, replacee, cb.get(), info[0], requiresBuffers(fun)));
 		if (replaced.IsNothing()) {
 			return;
 		}
@@ -374,7 +370,7 @@ NAN_METHOD(WrappedRE2::Replace) {
 		if (!replacer.data) {
 			return;
 		}
-		const Maybe<string> replaced(replace(re2, replacee, replacer.data, replacer.size));
+		const Nan::Maybe<string> replaced(replace(re2, replacee, replacer.data, replacer.size));
 		if (replaced.IsNothing()) {
 			return;
 		}

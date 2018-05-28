@@ -6,6 +6,7 @@
 
 using std::string;
 using std::vector;
+using std::unique_ptr;
 
 using v8::Local;
 using v8::RegExp;
@@ -236,12 +237,12 @@ NAN_METHOD(WrappedRE2::New) {
 	options.set_one_line(!multiline);
 	options.set_log_errors(false); // inappropriate when embedding
 
-	WrappedRE2* re2 = new WrappedRE2(StringPiece(data, size), options, global, ignoreCase, multiline, sticky);
+	unique_ptr<WrappedRE2> re2(new WrappedRE2(StringPiece(data, size), options, global, ignoreCase, multiline, sticky));
 	if (!re2->regexp.ok()) {
-		delete re2;
 		return Nan::ThrowSyntaxError("Unsupported regular expression features (check for backreferences, lookahead assertions).");
 	}
-
 	re2->Wrap(info.This());
+	re2.release();
+
 	info.GetReturnValue().Set(info.This());
 }
