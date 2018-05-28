@@ -86,6 +86,49 @@ unit.add(module, [
 			{text: "on:  2"}
 		]
 	},
+	function test_replaceInvalid(t) {
+		"use strict";
+
+		var re = RE2('');
+
+		try {
+			re.replace({ toString() { throw "corner1"; } }, '');
+			t.test(false); // shouldn't be here
+		} catch(e) {
+			eval(t.TEST("e === 'corner1'"));
+		}
+
+		try {
+			re.replace('', { toString() { throw "corner2"; } });
+			t.test(false); // shouldn't be here
+		} catch(e) {
+			eval(t.TEST("e === 'corner2'"));
+		}
+
+		var arg2Stringified = false;
+
+		try {
+			re.replace({ toString() { throw "corner1"; } }, { toString() { arg2Stringified = true; throw "corner2"; } });
+			t.test(false); // shouldn't be here
+		} catch(e) {
+			eval(t.TEST("e === 'corner1'"));
+			eval(t.TEST("!arg2Stringified"));
+		}
+
+		try {
+			re.replace('', () => { throw "corner2"; });
+			t.test(false); // shouldn't be here
+		} catch(e) {
+			eval(t.TEST("e === 'corner2'"));
+		}
+
+		try {
+			re.replace('', () => ({ toString() { throw "corner2"; } }));
+			t.test(false); // shouldn't be here
+		} catch(e) {
+			eval(t.TEST("e === 'corner2'"));
+		}
+	},
 
 	// Unicode tests
 
@@ -160,5 +203,31 @@ unit.add(module, [
 		var result = re.replace("ИВАН и пЁтр", replacer);
 		eval(t.TEST("typeof result == 'string'"));
 		eval(t.TEST("result === 'Иван и Пётр'"));
+	},
+
+	// Sticky tests
+
+	function test_replaceSticky(t) {
+		"use strict";
+
+		var re = new RE2(/[A-E]/y);
+
+		eval(t.TEST("re.replace('ABCDEFABCDEF', '!') === '!BCDEFABCDEF'"));
+		eval(t.TEST("re.replace('ABCDEFABCDEF', '!') === 'A!CDEFABCDEF'"));
+		eval(t.TEST("re.replace('ABCDEFABCDEF', '!') === 'AB!DEFABCDEF'"));
+		eval(t.TEST("re.replace('ABCDEFABCDEF', '!') === 'ABC!EFABCDEF'"));
+		eval(t.TEST("re.replace('ABCDEFABCDEF', '!') === 'ABCD!FABCDEF'"));
+		eval(t.TEST("re.replace('ABCDEFABCDEF', '!') === 'ABCDEFABCDEF'"));
+		eval(t.TEST("re.replace('ABCDEFABCDEF', '!') === '!BCDEFABCDEF'"));
+
+		var re2 = new RE2(/[A-E]/gy);
+
+		eval(t.TEST("re2.replace('ABCDEFABCDEF', '!') === '!!!!!FABCDEF'"));
+		eval(t.TEST("re2.replace('FABCDEFABCDE', '!') === 'FABCDEFABCDE'"));
+
+		re2.lastIndex = 3;
+
+		eval(t.TEST("re2.replace('ABCDEFABCDEF', '!') === '!!!!!FABCDEF'"));
+		eval(t.TEST("re2.lastIndex === 0"));
 	}
 ]);
