@@ -1,5 +1,6 @@
 #include "./wrapped_re2.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
