@@ -23,15 +23,16 @@ NAN_METHOD(WrappedRE2::ToString) {
 	buffer += re2->regexp.pattern();
 	buffer += "/";
 
-	if (re2->ignoreCase) {
-		buffer += "i";
-	}
 	if (re2->global) {
 		buffer += "g";
+	}
+	if (re2->ignoreCase) {
+		buffer += "i";
 	}
 	if (re2->multiline) {
 		buffer += "m";
 	}
+	buffer += "u";
 	if (re2->sticky) {
 		buffer += "y";
 	}

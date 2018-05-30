@@ -15,15 +15,15 @@ unit.add(module, [
 	function test_replaceString(t) {
 		"use strict";
 
-		var re = new RE2(/apples/gi);
+		var re = new RE2(/apples/giu);
 		var result = re.replace("Apples are round, and apples are juicy.", "oranges");
 		eval(t.TEST("result === 'oranges are round, and oranges are juicy.'"));
 
-		re = new RE2(/xmas/i);
+		re = new RE2(/xmas/iu);
 		result = re.replace("Twas the night before Xmas...", "Christmas");
 		eval(t.TEST("result === 'Twas the night before Christmas...'"));
 
-		re = new RE2(/(\w+)\s(\w+)/);
+		re = new RE2(/(\w+)\s(\w+)/u);
 		result = re.replace("John Smith", "$2, $1");
 		eval(t.TEST("result === 'Smith, John'"));
 	},
@@ -35,7 +35,7 @@ unit.add(module, [
 			return [p1, p2, p3].join(' - ');
 		}
 
-		var re = new RE2(/([^\d]*)(\d*)([^\w]*)/);
+		var re = new RE2(/([^\d]*)(\d*)([^\w]*)/u);
 		var result = re.replace("abc12345#$*%", replacer);
 		eval(t.TEST("result === 'abc - 12345 - #$*%'"));
 	},
@@ -46,7 +46,7 @@ unit.add(module, [
 			return '-' + match.toLowerCase();
 		}
 
-		var re = new RE2(/[A-Z]/g);
+		var re = new RE2(/[A-Z]/gu);
 		var result = re.replace("borderTop", upperToHyphenLower);
 		eval(t.TEST("result === 'border-top'"));
 	},
@@ -57,7 +57,7 @@ unit.add(module, [
 			return ((p1 - 32) * 5/9) + 'C';
 		}
 
-		var re = new RE2(/(\d+(?:\.\d*)?)F\b/g);
+		var re = new RE2(/(\d+(?:\.\d*)?)F\b/gu);
 
 		eval(t.TEST("re.replace('32F', convert) === '0C'"));
 		eval(t.TEST("re.replace('41F', convert) === '5C'"));
@@ -75,7 +75,7 @@ unit.add(module, [
 		test: function test_replaceFunLoop(t) {
 			"use strict";
 
-			RE2(/(x_*)|(-)/g).replace("x-x_", function(match, p1, p2) {
+			RE2(/(x_*)|(-)/gu).replace("x-x_", function(match, p1, p2) {
 				if (p1) { t.info("on:  " + p1.length); }
 				if (p2) { t.info("off: 1"); }
 			});
@@ -89,7 +89,7 @@ unit.add(module, [
 	function test_replaceInvalid(t) {
 		"use strict";
 
-		var re = RE2('');
+		var re = RE2('', "u");
 
 		try {
 			re.replace({ toString() { throw "corner1"; } }, '');
@@ -135,19 +135,19 @@ unit.add(module, [
 	function test_replaceStrUnicode(t) {
 		"use strict";
 
-		var re = new RE2(/яблоки/gi);
+		var re = new RE2(/яблоки/giu);
 		var result = re.replace("Яблоки красны, яблоки сочны.", "апельсины");
 		eval(t.TEST("result === 'апельсины красны, апельсины сочны.'"));
 
-		re = new RE2(/иван/i);
+		re = new RE2(/иван/iu);
 		result = re.replace("Могуч Иван Иванов...", "Сидор");
 		eval(t.TEST("result === 'Могуч Сидор Иванов...'"));
 
-		re = new RE2(/иван/ig);
+		re = new RE2(/иван/igu);
 		result = re.replace("Могуч Иван Иванов...", "Сидор");
 		eval(t.TEST("result === 'Могуч Сидор Сидоров...'"));
 
-		re = new RE2(/([а-яё]+)\s+([а-яё]+)/i);
+		re = new RE2(/([а-яё]+)\s+([а-яё]+)/iu);
 		result = re.replace("Пётр Петров", "$2, $1");
 		eval(t.TEST("result === 'Петров, Пётр'"));
 	},
@@ -162,7 +162,7 @@ unit.add(module, [
 			return match.charAt(0).toUpperCase() + match.substr(1).toLowerCase();
 		}
 
-		var re = new RE2(/(?:иван|пётр|сидор)/ig);
+		var re = new RE2(/(?:иван|пётр|сидор)/igu);
 		var result = re.replace("ИВАН и пЁтр", replacer);
 		eval(t.TEST("result === 'Иван и Пётр'"));
 	},
@@ -172,7 +172,7 @@ unit.add(module, [
 	function test_replaceStrBuffer(t) {
 		"use strict";
 
-		var re = new RE2(/яблоки/gi);
+		var re = new RE2(/яблоки/giu);
 		var result = re.replace(new Buffer("Яблоки красны, яблоки сочны."), "апельсины");
 		eval(t.TEST("result instanceof Buffer"));
 		eval(t.TEST("result.toString() === 'апельсины красны, апельсины сочны.'"));
@@ -199,7 +199,7 @@ unit.add(module, [
 		}
 		replacer.useBuffers = true;
 
-		var re = new RE2(/(?:иван|пётр|сидор)/ig);
+		var re = new RE2(/(?:иван|пётр|сидор)/igu);
 		var result = re.replace("ИВАН и пЁтр", replacer);
 		eval(t.TEST("typeof result == 'string'"));
 		eval(t.TEST("result === 'Иван и Пётр'"));
@@ -210,7 +210,7 @@ unit.add(module, [
 	function test_replaceSticky(t) {
 		"use strict";
 
-		var re = new RE2(/[A-E]/y);
+		var re = new RE2(/[A-E]/yu);
 
 		eval(t.TEST("re.replace('ABCDEFABCDEF', '!') === '!BCDEFABCDEF'"));
 		eval(t.TEST("re.replace('ABCDEFABCDEF', '!') === 'A!CDEFABCDEF'"));
@@ -220,7 +220,7 @@ unit.add(module, [
 		eval(t.TEST("re.replace('ABCDEFABCDEF', '!') === 'ABCDEFABCDEF'"));
 		eval(t.TEST("re.replace('ABCDEFABCDEF', '!') === '!BCDEFABCDEF'"));
 
-		var re2 = new RE2(/[A-E]/gy);
+		var re2 = new RE2(/[A-E]/gyu);
 
 		eval(t.TEST("re2.replace('ABCDEFABCDEF', '!') === '!!!!!FABCDEF'"));
 		eval(t.TEST("re2.replace('FABCDEFABCDE', '!') === 'FABCDEFABCDE'"));

@@ -1,4 +1,5 @@
 #include "./wrapped_re2.h"
+#include "./util.h"
 
 #include <memory>
 #include <string>
@@ -16,6 +17,8 @@ using v8::Value;
 
 
 static char hex[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+
+bool alreadyPrintedBmpDeprecation = false;
 
 inline bool isUpperCaseAlpha(char ch) {
 	return 'A' <= ch && ch <= 'Z';
@@ -141,9 +144,10 @@ NAN_METHOD(WrappedRE2::New) {
 	char*  data = NULL;
 	size_t size = 0;
 
+	bool global = false;
 	bool ignoreCase = false;
 	bool multiline = false;
-	bool global = false;
+	bool unicode = false;
 	bool sticky = false;
 
 	if (info.Length() > 1) {
@@ -159,14 +163,17 @@ NAN_METHOD(WrappedRE2::New) {
 		}
 		for (size_t i = 0; i < size; ++i) {
 			switch (data[i]) {
+				case 'g':
+					global = true;
+					break;
 				case 'i':
 					ignoreCase = true;
 					break;
 				case 'm':
 					multiline = true;
 					break;
-				case 'g':
-					global = true;
+				case 'u':
+					unicode = true;
 					break;
 				case 'y':
 					sticky = true;
@@ -191,9 +198,10 @@ NAN_METHOD(WrappedRE2::New) {
 		data = &buffer[0];
 
 		RegExp::Flags flags = re->GetFlags();
+		global     = bool(flags & RegExp::kGlobal);
 		ignoreCase = bool(flags & RegExp::kIgnoreCase);
 		multiline  = bool(flags & RegExp::kMultiline);
-		global     = bool(flags & RegExp::kGlobal);
+		unicode    = bool(flags & RegExp::kUnicode);
 		sticky     = bool(flags & RegExp::kSticky);
 	} else if (info[0]->IsObject() && !info[0]->IsString()) {
 		WrappedRE2* re2 = NULL;
@@ -209,9 +217,10 @@ NAN_METHOD(WrappedRE2::New) {
 			memcpy(data, pattern.data(), size);
 			needConversion = false;
 
+			global     = re2->global;
 			ignoreCase = re2->ignoreCase;
 			multiline  = re2->multiline;
-			global     = re2->global;
+			unicode    = true;
 			sticky     = re2->sticky;
 		}
 	} else if (info[0]->IsString()) {
@@ -224,6 +233,11 @@ NAN_METHOD(WrappedRE2::New) {
 
 	if (!data) {
 		return Nan::ThrowTypeError("Expected string, Buffer, RegExp, or RE2 as the 1st argument.");
+	}
+
+	if (!unicode && !alreadyPrintedBmpDeprecation) {
+		printDeprecationWarning("BMP patterns aren't supported by node-re2. An implicit \"u\" flag is assumed by the RE2 constructor. In a future major version, calling the RE2 constructor without the \"u\" flag may become forbidden, or cause a different behavior. Please see https://github.com/uhop/node-re2/issues/21 for more information.");
+		alreadyPrintedBmpDeprecation = true;
 	}
 
 	if (needConversion && translateRegExp(data, size, buffer)) {

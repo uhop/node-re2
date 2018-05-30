@@ -5,6 +5,7 @@
       "sources": [
         "lib/addon.cc",
         "lib/new.cc",
+        "lib/console.cc",
         "lib/exec.cc",
         "lib/test.cc",
         "lib/match.cc",

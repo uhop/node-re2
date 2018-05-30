@@ -18,23 +18,23 @@ unit.add(module, [
 	function test_generalInst(t) {
 		"use strict";
 
-		var re1 = new RE2("\\d+");
+		var re1 = new RE2("\\d+", "u");
 
 		eval(t.TEST("!!re1"));
 		eval(t.TEST("re1 instanceof RE2"));
 
-		var re2 = RE2("\\d+");
+		var re2 = RE2("\\d+", "u");
 
 		eval(t.TEST("!!re2"));
 		eval(t.TEST("re2 instanceof RE2"));
 		compare(re1, re2, t);
 
-		re1 = new RE2("\\d+", "m");
+		re1 = new RE2("\\d+", "mu");
 
 		eval(t.TEST("!!re1"));
 		eval(t.TEST("re1 instanceof RE2"));
 
-		re2 = RE2("\\d+", "m");
+		re2 = RE2("\\d+", "mu");
 
 		eval(t.TEST("!!re2"));
 		eval(t.TEST("re2 instanceof RE2"));
@@ -93,7 +93,7 @@ unit.add(module, [
 	function test_generalIn(t) {
 		"use strict";
 
-		var re = new RE2("\\d+");
+		var re = new RE2("\\d+", "u");
 
 		eval(t.TEST("'exec' in re"));
 		eval(t.TEST("'test' in re"));
@@ -112,7 +112,7 @@ unit.add(module, [
 	function test_generalPresent(t) {
 		"use strict";
 
-		var re = new RE2("\\d+");
+		var re = new RE2("\\d+", "u");
 
 		eval(t.TEST("typeof re.exec == 'function'"));
 		eval(t.TEST("typeof re.test == 'function'"));
@@ -131,7 +131,7 @@ unit.add(module, [
 	function test_generalLastIndex(t) {
 		"use strict";
 
-		var re = new RE2("\\d+");
+		var re = new RE2("\\d+", "u");
 
 		eval(t.TEST("re.lastIndex === 0"));
 
@@ -146,8 +146,8 @@ unit.add(module, [
 	function test_generalRegExp(t) {
 		"use strict";
 
-		var re1 = new RegExp("\\d+");
-		var re2 = new RE2("\\d+");
+		var re1 = new RegExp("\\d+", "u");
+		var re2 = new RE2("\\d+", "u");
 
 		compare(re1, re2, t);
 
@@ -155,8 +155,8 @@ unit.add(module, [
 
 		compare(re1, re2, t);
 
-		re1 = new RegExp("a", "ig");
-		re2 = new RE2("a", "ig");
+		re1 = new RegExp("a", "igu");
+		re2 = new RE2("a", "igu");
 
 		compare(re1, re2, t);
 
@@ -164,8 +164,8 @@ unit.add(module, [
 
 		compare(re1, re2, t);
 
-		re1 = /\s/gm;
-		re2 = new RE2("\\s", "mg");
+		re1 = /\s/gmu;
+		re2 = new RE2("\\s", "mgu");
 
 		compare(re1, re2, t);
 
@@ -173,11 +173,11 @@ unit.add(module, [
 
 		compare(re1, re2, t);
 
-		re2 = new RE2(/\s/gm);
+		re2 = new RE2(/\s/gmu);
 
-		compare(/\s/gm, re2, t);
+		compare(/\s/gmu, re2, t);
 
-		re1 = new RE2("b", "gm");
+		re1 = new RE2("b", "gmu");
 		re2 = new RE2(re1);
 
 		compare(re1, re2, t);
@@ -228,56 +228,56 @@ unit.add(module, [
 	function test_sourceTranslation(t) {
 		"use strict";
 
-		var re = new RE2("a\\cM\\u34\\u1234\\u10abcdz");
+		var re = new RE2("a\\cM\\u34\\u1234\\u10abcdz", "u");
 		eval(t.TEST("re.source === 'a\\\\x0D\\\\x{34}\\\\x{1234}\\\\x{10ab}cdz'"));
 
-		var re = new RE2("a\\cM\\u34\\u1234\\u{10abcd}z");
+		var re = new RE2("a\\cM\\u34\\u1234\\u{10abcd}z", "u");
 		eval(t.TEST("re.source === 'a\\\\x0D\\\\x{34}\\\\x{1234}\\\\x{10abcd}z'"));
 
-		var re = new RE2("");
+		var re = new RE2("", "u");
 		eval(t.TEST("re.source === '(?:)'"));
 
-		var re = new RE2("foo/bar");
+		var re = new RE2("foo/bar", "u");
 		eval(t.TEST("re.source === 'foo\\\\/bar'"));
 
-		var re = new RE2("foo\\/bar");
+		var re = new RE2("foo\\/bar", "u");
 		eval(t.TEST("re.source === 'foo\\\\/bar'"));
 	},
 	function test_flags(t) {
 		"use strict";
 
-		var re = new RE2("a");
-		eval(t.TEST("re.flags === ''"));
+		var re = new RE2("a", "u");
+		eval(t.TEST("re.flags === 'u'"));
 
-		re = new RE2("a", "i");
-		eval(t.TEST("re.flags === 'i'"));
+		re = new RE2("a", "iu");
+		eval(t.TEST("re.flags === 'iu'"));
 
-		re = new RE2("a", "m");
-		eval(t.TEST("re.flags === 'm'"));
+		re = new RE2("a", "mu");
+		eval(t.TEST("re.flags === 'mu'"));
 
-		re = new RE2("a", "g");
-		eval(t.TEST("re.flags === 'g'"));
+		re = new RE2("a", "gu");
+		eval(t.TEST("re.flags === 'gu'"));
 
-		re = new RE2("a", "y");
-		eval(t.TEST("re.flags === 'y'"));
+		re = new RE2("a", "yu");
+		eval(t.TEST("re.flags === 'uy'"));
 
-		re = new RE2("a", "yi");
-		eval(t.TEST("re.flags === 'iy'"));
+		re = new RE2("a", "yiu");
+		eval(t.TEST("re.flags === 'iuy'"));
 
-		re = new RE2("a", "yig");
-		eval(t.TEST("re.flags === 'giy'"));
+		re = new RE2("a", "yigu");
+		eval(t.TEST("re.flags === 'giuy'"));
 
-		re = new RE2("a", "mi");
-		eval(t.TEST("re.flags === 'im'"));
+		re = new RE2("a", "miu");
+		eval(t.TEST("re.flags === 'imu'"));
 
-		re = new RE2("a", "yg");
-		eval(t.TEST("re.flags === 'gy'"));
+		re = new RE2("a", "ygu");
+		eval(t.TEST("re.flags === 'guy'"));
 
-		re = new RE2("a", "my");
-		eval(t.TEST("re.flags === 'my'"));
+		re = new RE2("a", "myu");
+		eval(t.TEST("re.flags === 'muy'"));
 
-		re = new RE2("a", "migy");
-		eval(t.TEST("re.flags === 'gimy'"));
+		re = new RE2("a", "migyu");
+		eval(t.TEST("re.flags === 'gimuy'"));
 	}
 ]);
 
@@ -290,5 +290,6 @@ function compare(re1, re2, t) {
 	eval(t.TEST("re1.global === re2.global"));
 	eval(t.TEST("re1.ignoreCase === re2.ignoreCase"));
 	eval(t.TEST("re1.multiline  === re2.multiline"));
+	eval(t.TEST("re1.unicode    === re2.unicode"));
 	eval(t.TEST("re1.sticky     === re2.sticky"));
 }

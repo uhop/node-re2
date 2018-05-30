@@ -15,7 +15,7 @@ unit.add(module, [
 	function test_testFromExec(t) {
 		"use strict";
 
-		var re = new RE2("quick\\s(brown).+?(jumps)", "i");
+		var re = new RE2("quick\\s(brown).+?(jumps)", "iu");
 
 		eval(t.TEST("re.test('The Quick Brown Fox Jumps Over The Lazy Dog')"));
 		eval(t.TEST("re.test('tHE qUICK bROWN fOX jUMPS oVER tHE lAZY dOG')"));
@@ -23,12 +23,12 @@ unit.add(module, [
 		eval(t.TEST("re.test('THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG')"));
 		eval(t.TEST("!re.test('THE KWIK BROWN FOX JUMPS OVER THE LAZY DOG')"));
 
-		re = new RE2("ab*", "g");
+		re = new RE2("ab*", "gu");
 
 		eval(t.TEST("re.test('abbcdefabh')"));
 		eval(t.TEST("!re.test('qwerty')"));
 
-		re = new RE2("(hello \\S+)");
+		re = new RE2("(hello \\S+)", "u");
 
 		eval(t.TEST("re.test('This is a hello world!')"));
 		eval(t.TEST("!re.test('This is a Hello world!')"));
@@ -38,7 +38,7 @@ unit.add(module, [
 
 		var str = "abbcdefabh";
 
-		var re = new RE2("ab*", "g");
+		var re = new RE2("ab*", "gu");
 		var result = re.test(str);
 
 		eval(t.TEST("result"));
@@ -58,22 +58,22 @@ unit.add(module, [
 
 		var str = "abbcdefabh";
 
-		var re1 = new RE2("ab*", "g");
+		var re1 = new RE2("ab*", "gu");
 
 		eval(t.TEST("re1.test(str)"));
 
-		var re2 = new RE2("ab*");
+		var re2 = new RE2("ab*", "u");
 
 		eval(t.TEST("re2.test(str)"));
 
-		var re3 = new RE2("abc");
+		var re3 = new RE2("abc", "u");
 
 		eval(t.TEST("!re3.test(str)"));
 	},
 	function test_testAnchoredToBeginning(t) {
 		"use strict";
 
-		var re = RE2('^hello', 'g');
+		var re = RE2('^hello', 'gu');
 
 		eval(t.TEST("re.test('hellohello')"));
 		eval(t.TEST("!re.test('hellohello')"));
@@ -81,7 +81,7 @@ unit.add(module, [
 	function test_testInvalid(t) {
 		"use strict";
 
-		var re = RE2('');
+		var re = RE2('', "u");
 
 		try {
 			re.test({ toString() { throw "corner"; } });
@@ -93,7 +93,7 @@ unit.add(module, [
 	function test_testAnchor1(t) {
 		"use strict";
 
-		var re = new RE2("b|^a", "g");
+		var re = new RE2("b|^a", "gu");
 
 		var result = re.test("aabc");
 		eval(t.TEST("result"));
@@ -109,7 +109,7 @@ unit.add(module, [
 	function test_testAnchor2(t) {
 		"use strict";
 
-		var re = new RE2("(?:^a)", "g");
+		var re = new RE2("(?:^a)", "gu");
 
 		var result = re.test("aabc");
 		eval(t.TEST("result"));
@@ -124,7 +124,7 @@ unit.add(module, [
 	function test_testUnicode(t) {
 		"use strict";
 
-		var re = new RE2("охотник\\s(желает).+?(где)", "i");
+		var re = new RE2("охотник\\s(желает).+?(где)", "iu");
 
 		eval(t.TEST("re.test('Каждый Охотник Желает Знать Где Сидит Фазан')"));
 		eval(t.TEST("re.test('кАЖДЫЙ оХОТНИК жЕЛАЕТ зНАТЬ гДЕ сИДИТ фАЗАН')"));
@@ -132,12 +132,12 @@ unit.add(module, [
 		eval(t.TEST("re.test('КАЖДЫЙ ОХОТНИК ЖЕЛАЕТ ЗНАТЬ ГДЕ СИДИТ ФАЗАН')"));
 		eval(t.TEST("!re.test('Кажный Стрелок Хочет Найти Иде Прячется Птица')"));
 
-		re = new RE2("аб*", "g");
+		re = new RE2("аб*", "gu");
 
 		eval(t.TEST("re.test('аббвгдеабё')"));
 		eval(t.TEST("!re.test('йцукен')"));
 
-		re = new RE2("(привет \\S+)");
+		re = new RE2("(привет \\S+)", "u");
 
 		eval(t.TEST("re.test('Это просто привет всем.')"));
 		eval(t.TEST("!re.test('Это просто Привет всем.')"));
@@ -147,7 +147,7 @@ unit.add(module, [
 
 		var str = "аббвгдеабё";
 
-		var re = new RE2("аб*", "g");
+		var re = new RE2("аб*", "gu");
 		var result = re.test(str);
 
 		eval(t.TEST("result"));
@@ -168,7 +168,7 @@ unit.add(module, [
 	function test_testBuffer(t) {
 		"use strict";
 
-		var re = new RE2("охотник\\s(желает).+?(где)", "i");
+		var re = new RE2("охотник\\s(желает).+?(где)", "iu");
 
 		eval(t.TEST("re.test(new Buffer('Каждый Охотник Желает Знать Где Сидит Фазан'))"));
 		eval(t.TEST("re.test(new Buffer('кАЖДЫЙ оХОТНИК жЕЛАЕТ зНАТЬ гДЕ сИДИТ фАЗАН'))"));
@@ -176,12 +176,12 @@ unit.add(module, [
 		eval(t.TEST("re.test(new Buffer('КАЖДЫЙ ОХОТНИК ЖЕЛАЕТ ЗНАТЬ ГДЕ СИДИТ ФАЗАН'))"));
 		eval(t.TEST("!re.test(new Buffer('Кажный Стрелок Хочет Найти Иде Прячется Птица'))"));
 
-		re = new RE2("аб*", "g");
+		re = new RE2("аб*", "gu");
 
 		eval(t.TEST("re.test(new Buffer('аббвгдеабё'))"));
 		eval(t.TEST("!re.test(new Buffer('йцукен'))"));
 
-		re = new RE2("(привет \\S+)");
+		re = new RE2("(привет \\S+)", "u");
 
 		eval(t.TEST("re.test(new Buffer('Это просто привет всем.'))"));
 		eval(t.TEST("!re.test(new Buffer('Это просто Привет всем.'))"));
@@ -192,7 +192,7 @@ unit.add(module, [
 	function test_testSticky(t) {
 		"use strict";
 
-		var re = new RE2("\\s+", "y");
+		var re = new RE2("\\s+", "yu");
 
 		eval(t.TEST("!re.test('Hello world, how are you?')"));
 
@@ -201,7 +201,7 @@ unit.add(module, [
 		eval(t.TEST("re.test('Hello world, how are you?')"));
 		eval(t.TEST("re.lastIndex === 6"));
 
-		var re2 = new RE2("\\s+", "gy");
+		var re2 = new RE2("\\s+", "gyu");
 
 		eval(t.TEST("!re2.test('Hello world, how are you?')"));
 

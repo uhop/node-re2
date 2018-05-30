@@ -61,6 +61,7 @@ void WrappedRE2::Initialize(Handle<Object> exports, Handle<Object> module) {
 	Nan::SetAccessor(proto, Nan::New("global").ToLocalChecked(),     GetGlobal);
 	Nan::SetAccessor(proto, Nan::New("ignoreCase").ToLocalChecked(), GetIgnoreCase);
 	Nan::SetAccessor(proto, Nan::New("multiline").ToLocalChecked(),  GetMultiline);
+	Nan::SetAccessor(proto, Nan::New("unicode").ToLocalChecked(),    GetUnicode);
 	Nan::SetAccessor(proto, Nan::New("sticky").ToLocalChecked(),     GetSticky);
 	Nan::SetAccessor(proto, Nan::New("lastIndex").ToLocalChecked(),  GetLastIndex, SetLastIndex);
 
