@@ -21,6 +21,7 @@ unit.add(module, [
 		} catch (e) {
 			threw = true;
 			eval(t.TEST("e instanceof SyntaxError"));
+			eval(t.TEST("e.message === 'invalid escape sequence: \\\\1'"));
 		}
 		t.test(threw);
 
@@ -33,6 +34,7 @@ unit.add(module, [
 		} catch (e) {
 			threw = true;
 			eval(t.TEST("e instanceof SyntaxError"));
+			eval(t.TEST("e.message === 'invalid perl operator: (?='"));
 		}
 		t.test(threw);
 
@@ -43,6 +45,7 @@ unit.add(module, [
 		} catch (e) {
 			threw = true;
 			eval(t.TEST("e instanceof SyntaxError"));
+			eval(t.TEST("e.message === 'invalid perl operator: (?!'"));
 		}
 		t.test(threw);
 	},
