@@ -154,7 +154,7 @@ inline string replace(const char* data, size_t size, const vector<StringPiece>& 
 						result += ch;
 						continue;
 					case '<':
-						if (namedGroups.size()) {
+						if (!namedGroups.empty()) {
 							nameBegin = data + i + 2;
 							nameEnd = (const char*)memchr(nameBegin, '>', size - i - 2);
 							if (nameEnd) {
@@ -278,9 +278,9 @@ inline Nan::Maybe<string> replace(const Nan::Callback* replacer, const vector<St
 	}
 	argv.push_back(input);
 
-	if (namedGroups.size()) {
+	if (!namedGroups.empty()) {
 		Local<Object> groups = Nan::New<Object>();
-		groups->SetPrototype(v8::Isolate::GetCurrent()->GetCurrentContext(), Nan::Null());
+		auto ignore(groups->SetPrototype(v8::Isolate::GetCurrent()->GetCurrentContext(), Nan::Null()));
 
 		for (pair<string, int> group: namedGroups) {
 			Nan::Set(groups, Nan::New(group.first).ToLocalChecked(), argv[group.second]);

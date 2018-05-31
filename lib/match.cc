@@ -113,9 +113,9 @@ NAN_METHOD(WrappedRE2::Match) {
 
 	if (!re2->global) {
 		const map<int, string>& groupNames = re2->regexp.CapturingGroupNames();
-		if (groupNames.size()) {
+		if (!groupNames.empty()) {
 			Local<Object> groups = Nan::New<Object>();
-			groups->SetPrototype(v8::Isolate::GetCurrent()->GetCurrentContext(), Nan::Null());
+			auto ignore(groups->SetPrototype(v8::Isolate::GetCurrent()->GetCurrentContext(), Nan::Null()));
 
 			for (pair<int, string> group: groupNames) {
 				Nan::MaybeLocal<Value> value = Nan::Get(result, group.first);
