@@ -3,17 +3,17 @@
 
 var unit = require("heya-unit");
 
-var testGeneral   = require("./test_general");
-var testExec      = require("./test_exec");
-var testTest      = require("./test_test");
-var testToString  = require("./test_toString");
-var testMatch     = require("./test_match");
-var testReplace   = require("./test_replace");
-var testSearch    = require("./test_search");
-var testSplit     = require("./test_split");
-var testInvalid   = require("./test_invalid");
-var testSymbols   = require("./test_symbols");
-var testPrototype = require("./test_prototype");
-
+require("./test_general");
+require("./test_exec");
+require("./test_test");
+require("./test_toString");
+require("./test_match");
+require("./test_replace");
+require("./test_search");
+require("./test_split");
+require("./test_invalid");
+require("./test_symbols");
+require("./test_prototype");
+require("./test_new");
 
 unit.run();

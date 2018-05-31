@@ -15,7 +15,7 @@ unit.add(module, [
 	function test_execBasic(t) {
 		"use strict";
 
-		var re = new RE2("quick\\s(brown).+?(jumps)", "igu");
+		var re = new RE2("quick\\s(brown).+?(jumps)", "ig");
 
 		eval(t.TEST("re.source === 'quick\\\\s(brown).+?(jumps)'"));
 		eval(t.TEST("re.ignoreCase"));
@@ -34,7 +34,7 @@ unit.add(module, [
 
 		var str = "abbcdefabh";
 
-		var re = new RE2("ab*", "gu");
+		var re = new RE2("ab*", "g");
 		var result = re.exec(str);
 
 		eval(t.TEST("!!result"));
@@ -56,7 +56,7 @@ unit.add(module, [
 	function test_execSimple(t) {
 		"use strict";
 
-		var re = new RE2("(hello \\S+)", "u");
+		var re = new RE2("(hello \\S+)");
 		var result = re.exec("This is a hello world!");
 
 		eval(t.TEST("result[1] === 'hello world!'"));
@@ -64,7 +64,7 @@ unit.add(module, [
 	function test_execFail(t) {
 		"use strict";
 
-		var re = new RE2("(a+)?(b+)?", "u");
+		var re = new RE2("(a+)?(b+)?");
 		var result = re.exec("aaabb");
 
 		eval(t.TEST("result[1] === 'aaa'"));
@@ -78,7 +78,7 @@ unit.add(module, [
 	function test_execAnchoredToBeginning(t) {
 		"use strict";
 
-		var re = RE2('^hello', 'gu');
+		var re = RE2('^hello', 'g');
 
 		var result = re.exec("hellohello");
 
@@ -91,7 +91,7 @@ unit.add(module, [
 	function test_execInvalid(t) {
 		"use strict";
 
-		var re = RE2('', "u");
+		var re = RE2('');
 
 		try {
 			re.exec({ toString() { throw "corner"; } });
@@ -103,7 +103,7 @@ unit.add(module, [
 	function test_execAnchor1(t) {
 		"use strict";
 
-		var re = new RE2("b|^a", "gu");
+		var re = new RE2("b|^a", "g");
 
 		var result = re.exec("aabc");
 		eval(t.TEST("!!result"));
@@ -121,7 +121,7 @@ unit.add(module, [
 	function test_execAnchor2(t) {
 		"use strict";
 
-		var re = new RE2("(?:^a)", "gu");
+		var re = new RE2("(?:^a)", "g");
 
 		var result = re.exec("aabc");
 		eval(t.TEST("!!result"));
@@ -137,7 +137,7 @@ unit.add(module, [
 	function test_execUnicode(t) {
 		"use strict";
 
-		var re = new RE2("охотник\\s(желает).+?(где)", "igu");
+		var re = new RE2("охотник\\s(желает).+?(где)", "ig");
 
 		eval(t.TEST("re.source === 'охотник\\\\s(желает).+?(где)'"));
 		eval(t.TEST("re.ignoreCase"));
@@ -159,7 +159,7 @@ unit.add(module, [
 
 		var str = "аббвгдеабё";
 
-		var re = new RE2("аб*", "gu");
+		var re = new RE2("аб*", "g");
 		var result = re.exec(str);
 
 		eval(t.TEST("!!result"));
@@ -181,7 +181,7 @@ unit.add(module, [
 	function test_execUnicodeSupplementary(t) {
 		"use strict";
 
-		var re = new RE2("\\u{1F603}", "gu");
+		var re = new RE2("\\u{1F603}", "g");
 
 		eval(t.TEST("re.source === '\\\\x{1F603}'"));
 		eval(t.TEST("!re.ignoreCase"));
@@ -195,7 +195,7 @@ unit.add(module, [
 		eval(t.TEST("result.input === '\\u{1F603}'"));
 		eval(t.TEST("re.lastIndex === 2"));
 
-		var re2 = new RE2(".", "gu");
+		var re2 = new RE2(".", "g");
 
 		eval(t.TEST("re2.source === '.'"));
 		eval(t.TEST("!re2.ignoreCase"));
@@ -209,7 +209,7 @@ unit.add(module, [
 		eval(t.TEST("result2.input === '\\u{1F603}'"));
 		eval(t.TEST("re2.lastIndex === 2"));
 
-		var re3 = new RE2("[\u{1F603}-\u{1F605}]", "gu");
+		var re3 = new RE2("[\u{1F603}-\u{1F605}]", "g");
 
 		eval(t.TEST("re3.source === '[\u{1F603}-\u{1F605}]'"));
 		eval(t.TEST("!re3.ignoreCase"));
@@ -229,7 +229,7 @@ unit.add(module, [
 	function test_execBuffer(t) {
 		"use strict";
 
-		var re  = new RE2("охотник\\s(желает).+?(где)", "igu");
+		var re  = new RE2("охотник\\s(желает).+?(где)", "ig");
 		var buf = new Buffer("Каждый Охотник Желает Знать Где Сидит Фазан");
 
 		var result = re.exec(buf);
@@ -257,7 +257,7 @@ unit.add(module, [
 	function test_execSticky(t) {
 		"use strict";
 
-		var re = new RE2("\\s+", "yu");
+		var re = new RE2("\\s+", "y");
 
 		eval(t.TEST("re.exec('Hello world, how are you?') === null"));
 
@@ -269,7 +269,7 @@ unit.add(module, [
 		eval(t.TEST("result.index === 5"));
 		eval(t.TEST("re.lastIndex === 6"));
 
-		var re2 = new RE2("\\s+", "gyu");
+		var re2 = new RE2("\\s+", "gy");
 
 		eval(t.TEST("re2.exec('Hello world, how are you?') === null"));
 

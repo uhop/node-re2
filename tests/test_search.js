@@ -13,26 +13,26 @@ unit.add(module, [
 
 		var str = "Total is 42 units.";
 
-		var re = new RE2(/\d+/iu);
+		var re = new RE2(/\d+/i);
 		var result = re.search(str);
 		eval(t.TEST("result === 9"));
 
-		re = new RE2("\\b[a-z]+\\b", "u");
+		re = new RE2("\\b[a-z]+\\b");
 		result = re.search(str);
 		eval(t.TEST("result === 6"));
 
-		re = new RE2("\\b\\w+\\b", "u");
+		re = new RE2("\\b\\w+\\b");
 		result = re.search(str);
 		eval(t.TEST("result === 0"));
 
-		re = new RE2("z", "gmu");
+		re = new RE2("z", "gm");
 		result = re.search(str);
 		eval(t.TEST("result === -1"));
 	},
 	function test_searchInvalid(t) {
 		"use strict";
 
-		var re = RE2('', "u");
+		var re = RE2('');
 
 		try {
 			re.search({ toString() { throw "corner"; } });
@@ -46,19 +46,19 @@ unit.add(module, [
 
 		var str = "Всего 42 штуки.";
 
-		var re = new RE2(/\d+/iu);
+		var re = new RE2(/\d+/i);
 		var result = re.search(str);
 		eval(t.TEST("result === 6"));
 
-		re = new RE2("\\s[а-я]+", "u");
+		re = new RE2("\\s[а-я]+");
 		result = re.search(str);
 		eval(t.TEST("result === 8"));
 
-		re = new RE2("[а-яА-Я]+", "u");
+		re = new RE2("[а-яА-Я]+");
 		result = re.search(str);
 		eval(t.TEST("result === 0"));
 
-		re = new RE2("z", "gmu");
+		re = new RE2("z", "gm");
 		result = re.search(str);
 		eval(t.TEST("result === -1"));
 	},
@@ -67,19 +67,19 @@ unit.add(module, [
 
 		var buf = new Buffer("Всего 42 штуки.");
 
-		var re = new RE2(/\d+/iu);
+		var re = new RE2(/\d+/i);
 		var result = re.search(buf);
 		eval(t.TEST("result === 11"));
 
-		re = new RE2("\\s[а-я]+", "u");
+		re = new RE2("\\s[а-я]+");
 		result = re.search(buf);
 		eval(t.TEST("result === 13"));
 
-		re = new RE2("[а-яА-Я]+", "u");
+		re = new RE2("[а-яА-Я]+");
 		result = re.search(buf);
 		eval(t.TEST("result === 0"));
 
-		re = new RE2("z", "gmu");
+		re = new RE2("z", "gm");
 		result = re.search(buf);
 		eval(t.TEST("result === -1"));
 	},
@@ -88,19 +88,19 @@ unit.add(module, [
 
 		var str = "Total is 42 units.";
 
-		var re = new RE2(/\d+/yu);
+		var re = new RE2(/\d+/y);
 		var result = re.search(str);
 		eval(t.TEST("result === -1"));
 
-		re = new RE2("\\b[a-z]+\\b", "yu");
+		re = new RE2("\\b[a-z]+\\b", "y");
 		result = re.search(str);
 		eval(t.TEST("result === -1"));
 
-		re = new RE2("\\b\\w+\\b", "yu");
+		re = new RE2("\\b\\w+\\b", "y");
 		result = re.search(str);
 		eval(t.TEST("result === 0"));
 
-		re = new RE2("z", "gmyu");
+		re = new RE2("z", "gmy");
 		result = re.search(str);
 		eval(t.TEST("result === -1"));
 	}
