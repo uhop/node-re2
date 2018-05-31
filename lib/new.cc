@@ -240,7 +240,7 @@ NAN_METHOD(WrappedRE2::New) {
 
 	unique_ptr<WrappedRE2> re2(new WrappedRE2(StringPiece(data, size), options, global, ignoreCase, multiline, sticky));
 	if (!re2->regexp.ok()) {
-		return Nan::ThrowSyntaxError("Unsupported regular expression features (check for backreferences, lookahead assertions).");
+		return Nan::ThrowSyntaxError(re2->regexp.error().c_str());
 	}
 	re2->Wrap(info.This());
 	re2.release();
