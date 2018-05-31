@@ -17,7 +17,7 @@ unit.add(module, [
 
 		var str = "For more information, see Chapter 3.4.5.1";
 
-		var re = new RE2(/(chapter \d+(\.\d)*)/i);
+		var re = new RE2(/(chapter \d+(\.\d)*)/iu);
 		var result = re.match(str);
 
 		eval(t.TEST("result.input === str"));
@@ -30,7 +30,7 @@ unit.add(module, [
 	function test_matchGlobal(t) {
 		"use strict";
 
-		var re = new RE2(/[A-E]/gi);
+		var re = new RE2(/[A-E]/giu);
 		var result = re.match("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
 
 		eval(t.TEST("t.unify(result, ['A', 'B', 'C', 'D', 'E', 'a', 'b', 'c', 'd', 'e'])"));
@@ -38,7 +38,7 @@ unit.add(module, [
 	function test_matchFail(t) {
 		"use strict";
 
-		var re = new RE2("(a+)?(b+)?");
+		var re = new RE2("(a+)?(b+)?", "u");
 		var result = re.match("aaabb");
 
 		eval(t.TEST("result[1] === 'aaa'"));
@@ -52,7 +52,7 @@ unit.add(module, [
 	function test_matchInvalid(t) {
 		"use strict";
 
-		var re = RE2('');
+		var re = RE2('', "u");
 
 		try {
 			re.match({ toString() { throw "corner"; } });
@@ -69,7 +69,7 @@ unit.add(module, [
 
 		var str = "Это ГЛАВА 3.4.5.1";
 
-		var re = new RE2(/(глава \d+(\.\d)*)/i);
+		var re = new RE2(/(глава \d+(\.\d)*)/iu);
 		var result = re.match(str);
 
 		eval(t.TEST("result.input === str"));
@@ -87,7 +87,7 @@ unit.add(module, [
 
 		var buf = new Buffer("Это ГЛАВА 3.4.5.1");
 
-		var re = new RE2(/(глава \d+(\.\d)*)/i);
+		var re = new RE2(/(глава \d+(\.\d)*)/iu);
 		var result = re.match(buf);
 
 		eval(t.TEST("result.input instanceof Buffer"));
@@ -109,7 +109,7 @@ unit.add(module, [
 	function test_matchSticky(t) {
 		"use strict";
 
-		var re = new RE2("\\s+", "y");
+		var re = new RE2("\\s+", "yu");
 
 		eval(t.TEST("re.match('Hello world, how are you?') === null"));
 
@@ -121,7 +121,7 @@ unit.add(module, [
 		eval(t.TEST("result.index === 5"));
 		eval(t.TEST("re.lastIndex === 6"));
 
-		var re2 = new RE2("\\s+", "gy");
+		var re2 = new RE2("\\s+", "gyu");
 
 		eval(t.TEST("re2.match('Hello world, how are you?') === null"));
 
@@ -129,7 +129,7 @@ unit.add(module, [
 
 		eval(t.TEST("re2.match('Hello world, how are you?') === null"));
 
-		var re3 = new RE2(/[A-E]/giy);
+		var re3 = new RE2(/[A-E]/giyu);
 		var result3 = re3.match("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
 
 		eval(t.TEST("t.unify(result3, ['A', 'B', 'C', 'D', 'E'])"));

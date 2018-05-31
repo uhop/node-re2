@@ -17,7 +17,7 @@ unit.add(module, [
 		// Backreferences
 		threw = false;
 		try {
-			new RE2(/(a)\1/);
+			new RE2(/(a)\1/u);
 		} catch (e) {
 			threw = true;
 			eval(t.TEST("e instanceof SyntaxError"));
@@ -30,7 +30,7 @@ unit.add(module, [
 		// Positive
 		threw = false;
 		try {
-			new RE2(/a(?=b)/);
+			new RE2(/a(?=b)/u);
 		} catch (e) {
 			threw = true;
 			eval(t.TEST("e instanceof SyntaxError"));
@@ -41,7 +41,7 @@ unit.add(module, [
 		// Negative
 		threw = false;
 		try {
-			new RE2(/a(?!b)/);
+			new RE2(/a(?!b)/u);
 		} catch (e) {
 			threw = true;
 			eval(t.TEST("e instanceof SyntaxError"));

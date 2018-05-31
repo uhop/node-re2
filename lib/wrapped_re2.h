@@ -33,6 +33,7 @@ class WrappedRE2 : public Nan::ObjectWrap {
 		static NAN_GETTER(GetGlobal);
 		static NAN_GETTER(GetIgnoreCase);
 		static NAN_GETTER(GetMultiline);
+		static NAN_GETTER(GetUnicode);
 		static NAN_GETTER(GetSticky);
 		static NAN_GETTER(GetLastIndex);
 		static NAN_SETTER(SetLastIndex);
