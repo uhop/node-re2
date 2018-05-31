@@ -22,6 +22,10 @@ unit.add(module, [
 		a = new RE2(".?");
 		eval(t.TEST("errorMessage === null"));
 
+		RE2.unicodeWarningLevel = "warnOnce";
+		a = new RE2(".+");
+		eval(t.TEST("errorMessage"));
+
 		RE2.unicodeWarningLevel = "nothing";
 		console.error = consoleError;
 	},

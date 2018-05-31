@@ -124,7 +124,9 @@ NAN_SETTER(WrappedRE2::SetLastIndex) {
 	}
 }
 
+
 WrappedRE2::UnicodeWarningLevels WrappedRE2::unicodeWarningLevel;
+
 
 NAN_GETTER(WrappedRE2::GetUnicodeWarningLevel) {
 	string level;
@@ -161,6 +163,7 @@ NAN_SETTER(WrappedRE2::SetUnicodeWarningLevel) {
 		}
 		if (!strcmp(&buffer[0], "warnOnce")) {
 			unicodeWarningLevel = WARN_ONCE;
+			alreadyWarnedAboutUnicode = false;
 			return;
 		}
 		if (!strcmp(&buffer[0], "nothing")) {
