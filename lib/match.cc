@@ -4,12 +4,16 @@
 #include <vector>
 
 
+using std::map;
+using std::pair;
+using std::string;
 using std::vector;
 
 using v8::Array;
 using v8::Integer;
 using v8::Local;
 using v8::String;
+using v8::Value;
 
 
 NAN_METHOD(WrappedRE2::Match) {
@@ -105,6 +109,25 @@ NAN_METHOD(WrappedRE2::Match) {
 	} else if (re2->sticky) {
 		re2->lastIndex += a.isBuffer ? groups[0].data() - a.data + groups[0].size() - lastIndex :
 			getUtf16Length(a.data + lastIndex, groups[0].data() + groups[0].size());
+	}
+
+	if (!re2->global) {
+		const map<int, string>& groupNames = re2->regexp.CapturingGroupNames();
+		if (groupNames.size()) {
+			Local<Object> groups = Nan::New<Object>();
+			groups->SetPrototype(v8::Isolate::GetCurrent()->GetCurrentContext(), Nan::Null());
+
+			for (pair<int, string> group: groupNames) {
+				Nan::MaybeLocal<Value> value = Nan::Get(result, group.first);
+				if (!value.IsEmpty()) {
+					Nan::Set(groups, Nan::New(group.second).ToLocalChecked(), value.ToLocalChecked());
+				}
+			}
+
+			Nan::Set(result, Nan::New("groups").ToLocalChecked(), groups);
+		} else {
+			Nan::Set(result, Nan::New("groups").ToLocalChecked(), Nan::Undefined());
+		}
 	}
 
 	info.GetReturnValue().Set(result);
