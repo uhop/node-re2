@@ -68,6 +68,7 @@ void WrappedRE2::Initialize(Handle<Object> exports, Handle<Object> module) {
 	Local<Function> fun = Nan::GetFunction(tpl).ToLocalChecked();
 	Nan::Export(fun, "getUtf8Length",  GetUtf8Length);
 	Nan::Export(fun, "getUtf16Length", GetUtf16Length);
+	Nan::SetAccessor(Local<Object>(fun), Nan::New("unicodeWarningLevel").ToLocalChecked(), GetUnicodeWarningLevel, SetUnicodeWarningLevel);
 	constructor.Reset(fun);
 	ctorTemplate.Reset(tpl);
 

@@ -1,10 +1,14 @@
 #include "./wrapped_re2.h"
 
+#include <cstring>
 #include <string>
+#include <vector>
 
 using std::string;
+using std::vector;
 
-using v8::Integer;
+using v8::Local;
+using v8::String;
 
 
 NAN_GETTER(WrappedRE2::GetSource) {
@@ -117,5 +121,51 @@ NAN_SETTER(WrappedRE2::SetLastIndex) {
 	if (value->IsNumber()) {
 		int n = value->NumberValue();
 		re2->lastIndex = n <= 0 ? 0 : n;
+	}
+}
+
+WrappedRE2::UnicodeWarningLevels WrappedRE2::unicodeWarningLevel;
+
+NAN_GETTER(WrappedRE2::GetUnicodeWarningLevel) {
+	string level;
+	switch (unicodeWarningLevel) {
+		case THROW:
+			level = "throw";
+			break;
+		case WARN:
+			level = "warn";
+			break;
+		case WARN_ONCE:
+			level = "warnOnce";
+			break;
+		default:
+			level = "nothing";
+			break;
+	}
+	info.GetReturnValue().Set(Nan::New(level).ToLocalChecked());
+}
+
+
+NAN_SETTER(WrappedRE2::SetUnicodeWarningLevel) {
+	if (value->IsString()) {
+		Local<String> t(value->ToString());
+		vector<char> buffer(t->Utf8Length() + 1);
+		t->WriteUtf8(&buffer[0]);
+		if (!strcmp(&buffer[0], "throw")) {
+			unicodeWarningLevel = THROW;
+			return;
+		}
+		if (!strcmp(&buffer[0], "warn")) {
+			unicodeWarningLevel = WARN;
+			return;
+		}
+		if (!strcmp(&buffer[0], "warnOnce")) {
+			unicodeWarningLevel = WARN_ONCE;
+			return;
+		}
+		if (!strcmp(&buffer[0], "nothing")) {
+			unicodeWarningLevel = NOTHING;
+			return;
+		}
 	}
 }

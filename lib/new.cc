@@ -18,8 +18,6 @@ using v8::Value;
 
 static char hex[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
-bool alreadyPrintedBmpDeprecation = false;
-
 inline bool isUpperCaseAlpha(char ch) {
 	return 'A' <= ch && ch <= 'Z';
 }
@@ -119,6 +117,9 @@ inline bool translateRegExp(const char* data, size_t size, vector<char>& buffer)
 	return true;
 }
 
+bool WrappedRE2::alreadyWarnedAboutUnicode = false;
+
+static const char* depricationMessage = "BMP patterns aren't supported by node-re2. An implicit \"u\" flag is assumed by the RE2 constructor. In a future major version, calling the RE2 constructor without the \"u\" flag may become forbidden, or cause a different behavior. Please see https://github.com/uhop/node-re2/issues/21 for more information.";
 
 NAN_METHOD(WrappedRE2::New) {
 
@@ -235,9 +236,22 @@ NAN_METHOD(WrappedRE2::New) {
 		return Nan::ThrowTypeError("Expected string, Buffer, RegExp, or RE2 as the 1st argument.");
 	}
 
-	if (!unicode && !alreadyPrintedBmpDeprecation) {
-		printDeprecationWarning("BMP patterns aren't supported by node-re2. An implicit \"u\" flag is assumed by the RE2 constructor. In a future major version, calling the RE2 constructor without the \"u\" flag may become forbidden, or cause a different behavior. Please see https://github.com/uhop/node-re2/issues/21 for more information.");
-		alreadyPrintedBmpDeprecation = true;
+	if (!unicode) {
+		switch(unicodeWarningLevel) {
+			case THROW:
+				return Nan::ThrowSyntaxError(depricationMessage);
+			case WARN:
+				printDeprecationWarning(depricationMessage);
+				break;
+			case WARN_ONCE:
+				if (!alreadyWarnedAboutUnicode) {
+					printDeprecationWarning(depricationMessage);
+					alreadyWarnedAboutUnicode = true;
+				}
+				break;
+			default:
+				break;
+		}
 	}
 
 	if (needConversion && translateRegExp(data, size, buffer)) {

@@ -48,6 +48,13 @@ class WrappedRE2 : public Nan::ObjectWrap {
 		static NAN_METHOD(Search);
 		static NAN_METHOD(Split);
 
+		// strict Unicode warning support
+		enum UnicodeWarningLevels { NOTHING, WARN_ONCE, WARN, THROW };
+		static UnicodeWarningLevels unicodeWarningLevel;
+		static bool alreadyWarnedAboutUnicode;
+		static NAN_GETTER(GetUnicodeWarningLevel);
+		static NAN_SETTER(SetUnicodeWarningLevel);
+
 		static Nan::Persistent<Function>			constructor;
 		static Nan::Persistent<FunctionTemplate>	ctorTemplate;
 
