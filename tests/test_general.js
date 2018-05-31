@@ -242,6 +242,9 @@ unit.add(module, [
 
 		var re = new RE2("foo\\/bar");
 		eval(t.TEST("re.source === 'foo\\\\/bar'"));
+
+		var re = new RE2("(?<foo>bar)", "u");
+		eval(t.TEST("re.source === '(?P<foo>bar)'"));
 	},
 	function test_flags(t) {
 		"use strict";

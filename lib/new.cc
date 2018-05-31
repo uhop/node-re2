@@ -2,12 +2,16 @@
 
 #include <memory>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 
+using std::map;
+using std::pair;
 using std::string;
-using std::vector;
 using std::unique_ptr;
+using std::unordered_set;
+using std::vector;
 
 using v8::Local;
 using v8::RegExp;
@@ -99,6 +103,13 @@ inline bool translateRegExp(const char* data, size_t size, vector<char>& buffer)
 			i += 1;
 			changed = true;
 			continue;
+		} else if (ch == '(' && i + 2 < size && data[i + 1] == '?' && data[i + 2] == '<') {
+			if (i + 3 >= size || (data[i + 3] != '=' && data[i + 3] != '!')) {
+				result += "(?P<";
+				i += 3;
+				changed = true;
+				continue;
+			}
 		}
 		size_t sym_size = getUtf8CharSize(ch);
 		result.append(data + i, sym_size);
@@ -112,6 +123,18 @@ inline bool translateRegExp(const char* data, size_t size, vector<char>& buffer)
 	buffer.resize(0);
 	buffer.insert(buffer.end(), result.data(), result.data() + result.size());
 	buffer.push_back('\0');
+
+	return true;
+}
+
+inline bool ensureUniqueNamedGroups(const map<int, string>& groups) {
+	unordered_set<string> names;
+
+	for (pair<int, string> group: groups) {
+		if (!names.insert(group.second).second) {
+			return false;
+		}
+	}
 
 	return true;
 }
@@ -241,6 +264,9 @@ NAN_METHOD(WrappedRE2::New) {
 	unique_ptr<WrappedRE2> re2(new WrappedRE2(StringPiece(data, size), options, global, ignoreCase, multiline, sticky));
 	if (!re2->regexp.ok()) {
 		return Nan::ThrowSyntaxError(re2->regexp.error().c_str());
+	}
+	if (!ensureUniqueNamedGroups(re2->regexp.CapturingGroupNames())) {
+		return Nan::ThrowSyntaxError("duplicate capture group name");
 	}
 	re2->Wrap(info.This());
 	re2.release();

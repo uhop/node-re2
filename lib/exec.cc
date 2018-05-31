@@ -6,12 +6,16 @@
 #include <node_buffer.h>
 
 
+using std::map;
+using std::pair;
+using std::string;
 using std::vector;
 
 using v8::Array;
 using v8::Integer;
 using v8::Local;
 using v8::String;
+using v8::Value;
 
 
 NAN_METHOD(WrappedRE2::Exec) {
@@ -92,6 +96,23 @@ NAN_METHOD(WrappedRE2::Exec) {
 	}
 
 	Nan::Set(result, Nan::New("input").ToLocalChecked(), info[0]);
+
+	const map<int, string>& groupNames = re2->regexp.CapturingGroupNames();
+	if (groupNames.size()) {
+		Local<Object> groups = Nan::New<Object>();
+		groups->SetPrototype(v8::Isolate::GetCurrent()->GetCurrentContext(), Nan::Null());
+
+		for (pair<int, string> group: groupNames) {
+			Nan::MaybeLocal<Value> value = Nan::Get(result, group.first);
+			if (!value.IsEmpty()) {
+				Nan::Set(groups, Nan::New(group.second).ToLocalChecked(), value.ToLocalChecked());
+			}
+		}
+
+		Nan::Set(result, Nan::New("groups").ToLocalChecked(), groups);
+	} else {
+		Nan::Set(result, Nan::New("groups").ToLocalChecked(), Nan::Undefined());
+	}
 
 	if (re2->global || re2->sticky) {
 		re2->lastIndex += str.isBuffer ? groups[0].data() - str.data + groups[0].size() - lastIndex :
