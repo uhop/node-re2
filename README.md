@@ -50,6 +50,8 @@ Supported properties:
 * [`re2.global`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global)
 * [`re2.ignoreCase`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/ignoreCase)
 * [`re2.multiline`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/multiline)
+* [`re2.unicode`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/unicode)
+  * `RE2` engine always works in the Unicode mode. See details below.
 * [`re2.sticky`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/sticky)
 * [`re2.source`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/source)
 * [`re2.flags`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/flags)
@@ -165,12 +167,36 @@ Two functions to calculate string sizes between
 JavaScript supports UCS-2 strings with 16-bit characters, while node.js 0.11 supports full UTF-16 as
 a default string.
 
+### Unicode warning level
+
+`RE2` engine always works in the Unicode mode. In most cases either there is no difference or the Unicode mode is actually preferred. But sometimes a user want a tight control over her regular expressions. For those cases, there is a static string property `RE2.unicodeWarningLevel`.
+
+Regular expressions in the Unicode mode work as usual. But if a regular expression lacks the Unicode flag, it is always added silently.
+
+```js
+const x = /./;
+x.flags; // ''
+const y = new RE2(x);
+y.flags; // 'u'
+```
+
+In the latter case `RE2` can do following actions depending on `RE2.unicodeWarningLevel`:
+
+* `'nothing'` (the default): no warnings or notifications of any kind, a regular expression will be created with `'u'` flag.
+* `'warnOnce'`: warns exactly once the very first time, a regular expression will be created with `'u'` flag.
+  * Assigning this value resets an internal flag, so `RE2` will warn once again.
+* `'warn'`: warns every time, a regular expression will be created with `'u'` flag.
+* `'throw'`: throws a `SyntaxError` every time.
+* All other warning level values are silently ignored on asignment leaving the previous value unchanged.
+
+Warnings and exceptions help to audit an application for stray non-Unicode regular expressions.
+
 ## How to install
 
 Installation:
 
 ```
-npm install re2
+npm install --save re2
 ```
 
 ## How to use
@@ -274,9 +300,7 @@ matched groups, like so: `\1`, `\2`, and so on. Example of backrefrences:
 
 ### Mismatched behavior
 
-`RE2` and the built-in regex engines disagree a bit.
-Before you switch to `RE2`, verify that your regular expressions continue to work as expected.
-They should do so in the vast majority of cases.
+`RE2` and the built-in regex engines disagree a bit. Before you switch to `RE2`, verify that your regular expressions continue to work as expected. They should do so in the vast majority of cases.
 
 Here is an example of a case where they may not:
 
@@ -296,6 +320,10 @@ var re2_res = re2.exec(input);
 console.log('bi_res: ' + bi_res);    // prints: bi_res: abc,,,c
 console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 ```
+
+### Unicode
+
+`RE2` always works in the Unicode mode. See `RE2.unicodeWarningLevel` above for more details on how to control warnings about this feature.
 
 ## Working on this project
 
