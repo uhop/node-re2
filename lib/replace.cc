@@ -280,7 +280,6 @@ inline Nan::Maybe<string> replace(const Nan::Callback* replacer, const vector<St
 
 	if (!namedGroups.empty()) {
 		Local<Object> groups = Nan::New<Object>();
-		auto ignore(groups->SetPrototype(v8::Isolate::GetCurrent()->GetCurrentContext(), Nan::Null()));
 
 		for (pair<string, int> group: namedGroups) {
 			Nan::Set(groups, Nan::New(group.first).ToLocalChecked(), argv[group.second]);
