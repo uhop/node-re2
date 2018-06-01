@@ -69,5 +69,30 @@ unit.add(module, [
 		function replacerByNames(match, group1, group2, index, source, groups) {
 			return groups.d + groups.w;
 		}
+	},
+	function test_groupsInvalid(t) {
+		"use strict";
+
+		try {
+			RE2('(?<>.)');
+			t.test(false); // shouldn'be here
+		} catch(e) {
+			eval(t.TEST("e instanceof SyntaxError"));
+		}
+
+		// TODO: do we need to enforce the correct id?
+		// try {
+		// 	RE2('(?<1>.)');
+		// 	t.test(false); // shouldn'be here
+		// } catch(e) {
+		// 	eval(t.TEST("e instanceof SyntaxError"));
+		// }
+
+		try {
+			RE2('(?<a>.)(?<a>.)');
+			t.test(false); // shouldn'be here
+		} catch(e) {
+			eval(t.TEST("e instanceof SyntaxError"));
+		}
 	}
 ]);

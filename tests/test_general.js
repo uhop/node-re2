@@ -200,16 +200,14 @@ unit.add(module, [
 		eval(t.TEST("RE2.getUtf8Length(s2) === 4"));
 
 		var b2 = new Buffer(s2);
+
 		eval(t.TEST("b2.length === 4"));
 		eval(t.TEST("RE2.getUtf16Length(b2) === 2"));
 
-		// TODO: now it uses the built-in Nan function to calculate the size,
-		// and it fails on the incorrect input. We should fixNan.
+		var s3 = "\uD83D";
 
-		// var s3 = "\uD83D";
-
-		// eval(t.TEST("s3.length === 1"));
-		// eval(t.TEST("RE2.getUtf8Length(s3) === 4"));
+		eval(t.TEST("s3.length === 1"));
+		eval(t.TEST("RE2.getUtf8Length(s3) === 3"));
 
 		var b3 = new Buffer([0xF0]);
 
