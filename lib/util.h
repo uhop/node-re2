@@ -15,8 +15,7 @@ struct StrVal {
 	StrVal() : data(NULL), size(0), length(0), isBuffer(false) {}
 	StrVal(const v8::Local<v8::Value>& arg);
 
-	operator StringPiece () { return StringPiece(data, size); }
-	operator const StringPiece () const { return StringPiece(data, size); }
+	operator StringPiece () const { return StringPiece(data, size); }
 };
 
 
