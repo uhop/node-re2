@@ -49,9 +49,6 @@ class WrappedRE2 : public Nan::ObjectWrap {
 		static NAN_METHOD(Split);
 
 		// strict Unicode warning support
-		enum UnicodeWarningLevels { NOTHING, WARN_ONCE, WARN, THROW };
-		static UnicodeWarningLevels unicodeWarningLevel;
-		static bool alreadyWarnedAboutUnicode;
 		static NAN_GETTER(GetUnicodeWarningLevel);
 		static NAN_SETTER(SetUnicodeWarningLevel);
 
@@ -64,6 +61,10 @@ class WrappedRE2 : public Nan::ObjectWrap {
 		static inline bool HasInstance(Local<Object> object) {
 			return Nan::New(ctorTemplate)->HasInstance(object);
 		}
+
+		enum UnicodeWarningLevels { NOTHING, WARN_ONCE, WARN, THROW };
+		static UnicodeWarningLevels unicodeWarningLevel;
+		static bool alreadyWarnedAboutUnicode;
 
 		RE2		regexp;
 		bool	global;
