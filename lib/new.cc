@@ -192,11 +192,12 @@ NAN_METHOD(WrappedRE2::New) {
 	char*  data = NULL;
 	size_t size = 0;
 
-	bool global = false;
-	bool ignoreCase = false;
-	bool multiline = false;
-	bool unicode = false;
-	bool sticky = false;
+	string source;
+	bool   global = false;
+	bool   ignoreCase = false;
+	bool   multiline = false;
+	bool   unicode = false;
+	bool   sticky = false;
 
 	if (info.Length() > 1) {
 		if (info[1]->IsString()) {
@@ -236,6 +237,7 @@ NAN_METHOD(WrappedRE2::New) {
 	if (node::Buffer::HasInstance(info[0])) {
 		size = node::Buffer::Length(info[0]);
 		data = node::Buffer::Data(info[0]);
+		source = escapeRegExp(data, size);
 	} else if (info[0]->IsRegExp()) {
 		const RegExp* re = RegExp::Cast(*info[0]);
 
@@ -244,6 +246,7 @@ NAN_METHOD(WrappedRE2::New) {
 		t->WriteUtf8(&buffer[0]);
 		size = buffer.size() - 1;
 		data = &buffer[0];
+		source = escapeRegExp(data, size);
 
 		RegExp::Flags flags = re->GetFlags();
 		global     = bool(flags & RegExp::kGlobal);
@@ -265,6 +268,7 @@ NAN_METHOD(WrappedRE2::New) {
 			memcpy(data, pattern.data(), size);
 			needConversion = false;
 
+			source     = re2->source;
 			global     = re2->global;
 			ignoreCase = re2->ignoreCase;
 			multiline  = re2->multiline;
@@ -277,6 +281,7 @@ NAN_METHOD(WrappedRE2::New) {
 		t->WriteUtf8(&buffer[0]);
 		size = buffer.size() - 1;
 		data = &buffer[0];
+		source = escapeRegExp(data, size);
 	}
 
 	if (!data) {
@@ -301,7 +306,6 @@ NAN_METHOD(WrappedRE2::New) {
 		}
 	}
 
-	string source(escapeRegExp(data, size));
 	if (needConversion && translateRegExp(data, size, buffer)) {
 		size = buffer.size() - 1;
 		data = &buffer[0];

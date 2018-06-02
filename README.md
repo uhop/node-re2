@@ -169,6 +169,10 @@ Two functions to calculate string sizes between
 JavaScript supports UCS-2 strings with 16-bit characters, while node.js 0.11 supports full UTF-16 as
 a default string.
 
+### Property: `internalSource`
+
+Starting 1.8.0 property `source` emulates the same property of `RegExp`, meaning that it can be used to create an identical `RE2` or `RegExp` instance. Sometimes, for troubleshooting purposes, a user wants to inspect a `RE2` translated source. It is available as a read-only property called `internalSource`.
+
 ### Unicode warning level
 
 `RE2` engine always works in the Unicode mode. In most cases either there is no difference or the Unicode mode is actually preferred. But sometimes a user want a tight control over her regular expressions. For those cases, there is a static string property `RE2.unicodeWarningLevel`.
