@@ -350,7 +350,7 @@ Or:
 
 ## Release history
 
-- 1.8.0 *Clarified Unicode support, added `unicode` flag, added named groups. Thx [Exter-N](https://github.com/Exter-N)!*
+- 1.8.0 *Clarified Unicode support, added `unicode` flag, added named groups &mdash; thx [Exter-N](https://github.com/Exter-N)! Bugfixes &mdash; thx [Barak Amar](https://github.com/nopcoder)!*
 - 1.7.0 *Implemented `sticky` and `flags` + bug fixes + more tests. Thx [Exter-N](https://github.com/Exter-N)!*
 - 1.6.2 *Bug fix for a prototype access. Thx [Exter-N](https://github.com/Exter-N)!*
 - 1.6.1 *Returned support for node 4 LTS. Thx [Kannan Goundan](https://github.com/cakoose)!*
