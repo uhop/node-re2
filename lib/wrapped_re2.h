@@ -7,6 +7,8 @@
 
 #include <re2/re2.h>
 
+#include <string>
+
 
 using v8::Function;
 using v8::Handle;
@@ -21,9 +23,9 @@ using re2::StringPiece;
 class WrappedRE2 : public Nan::ObjectWrap {
 
 	private:
-		WrappedRE2(const StringPiece& pattern, const RE2::Options& options,
+		WrappedRE2(const StringPiece& pattern, const RE2::Options& options, const std::string& s,
 			const bool& g, const bool& i, const bool& m, const bool& y) : regexp(pattern, options),
-				global(g), ignoreCase(i), multiline(m), sticky(y), lastIndex(0) {}
+				source(s), global(g), ignoreCase(i), multiline(m), sticky(y), lastIndex(0) {}
 
 		static NAN_METHOD(New);
 		static NAN_METHOD(ToString);
@@ -37,6 +39,7 @@ class WrappedRE2 : public Nan::ObjectWrap {
 		static NAN_GETTER(GetSticky);
 		static NAN_GETTER(GetLastIndex);
 		static NAN_SETTER(SetLastIndex);
+		static NAN_GETTER(GetInternalSource);
 
 		// RegExp methods
 		static NAN_METHOD(Exec);
@@ -66,12 +69,13 @@ class WrappedRE2 : public Nan::ObjectWrap {
 		static UnicodeWarningLevels unicodeWarningLevel;
 		static bool alreadyWarnedAboutUnicode;
 
-		RE2		regexp;
-		bool	global;
-		bool	ignoreCase;
-		bool	multiline;
-		bool	sticky;
-		size_t	lastIndex;
+		RE2		    regexp;
+		std::string source;
+		bool	    global;
+		bool	    ignoreCase;
+		bool	    multiline;
+		bool	    sticky;
+		size_t	    lastIndex;
 };
 
 

@@ -18,6 +18,16 @@ NAN_GETTER(WrappedRE2::GetSource) {
 	}
 
 	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
+	info.GetReturnValue().Set(Nan::New(re2->source).ToLocalChecked());
+}
+
+NAN_GETTER(WrappedRE2::GetInternalSource) {
+	if (!WrappedRE2::HasInstance(info.This())) {
+		info.GetReturnValue().Set(Nan::New("(?:)").ToLocalChecked());
+		return;
+	}
+
+	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	info.GetReturnValue().Set(Nan::New(re2->regexp.pattern()).ToLocalChecked());
 }
 

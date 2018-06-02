@@ -30,7 +30,7 @@ inline bool isHexadecimal(char ch) {
 	return ('0' <= ch && ch <= '9') || ('A' <= ch && ch <= 'Z') || ('a' <= ch && ch <= 'z');
 }
 
-inline bool translateRegExp(const char* data, size_t size, vector<char>& buffer) {
+static bool translateRegExp(const char* data, size_t size, vector<char>& buffer) {
 	string result;
 	bool changed = false;
 
@@ -126,6 +126,28 @@ inline bool translateRegExp(const char* data, size_t size, vector<char>& buffer)
 	buffer.push_back('\0');
 
 	return true;
+}
+
+static string escapeRegExp(const char* data, size_t size) {
+	string result;
+
+	if (!size) {
+		result = "(?:)";
+	}
+
+	for (size_t i = 0; i < size;) {
+		char ch = data[i];
+		if (ch == '/' && (result.empty() || result.back() != '\\')) {
+			result += "\\/";
+			i += 1;
+			continue;
+		}
+		size_t sym_size = getUtf8CharSize(ch);
+		result.append(data + i, sym_size);
+		i += sym_size;
+	}
+
+	return result;
 }
 
 
@@ -279,6 +301,7 @@ NAN_METHOD(WrappedRE2::New) {
 		}
 	}
 
+	string source(escapeRegExp(data, size));
 	if (needConversion && translateRegExp(data, size, buffer)) {
 		size = buffer.size() - 1;
 		data = &buffer[0];
@@ -291,7 +314,7 @@ NAN_METHOD(WrappedRE2::New) {
 	options.set_one_line(!multiline);
 	options.set_log_errors(false); // inappropriate when embedding
 
-	unique_ptr<WrappedRE2> re2(new WrappedRE2(StringPiece(data, size), options, global, ignoreCase, multiline, sticky));
+	unique_ptr<WrappedRE2> re2(new WrappedRE2(StringPiece(data, size), options, source, global, ignoreCase, multiline, sticky));
 	if (!re2->regexp.ok()) {
 		return Nan::ThrowSyntaxError(re2->regexp.error().c_str());
 	}

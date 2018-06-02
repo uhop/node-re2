@@ -56,14 +56,15 @@ void WrappedRE2::Initialize(Handle<Object> exports, Handle<Object> module) {
 	Nan::SetPrototypeMethod(tpl, "split",    Split);
 
 	Local<ObjectTemplate> proto = tpl->PrototypeTemplate();
-	Nan::SetAccessor(proto, Nan::New("source").ToLocalChecked(),     GetSource);
-	Nan::SetAccessor(proto, Nan::New("flags").ToLocalChecked(),      GetFlags);
-	Nan::SetAccessor(proto, Nan::New("global").ToLocalChecked(),     GetGlobal);
-	Nan::SetAccessor(proto, Nan::New("ignoreCase").ToLocalChecked(), GetIgnoreCase);
-	Nan::SetAccessor(proto, Nan::New("multiline").ToLocalChecked(),  GetMultiline);
-	Nan::SetAccessor(proto, Nan::New("unicode").ToLocalChecked(),    GetUnicode);
-	Nan::SetAccessor(proto, Nan::New("sticky").ToLocalChecked(),     GetSticky);
-	Nan::SetAccessor(proto, Nan::New("lastIndex").ToLocalChecked(),  GetLastIndex, SetLastIndex);
+	Nan::SetAccessor(proto, Nan::New("source").ToLocalChecked(),         GetSource);
+	Nan::SetAccessor(proto, Nan::New("flags").ToLocalChecked(),          GetFlags);
+	Nan::SetAccessor(proto, Nan::New("global").ToLocalChecked(),         GetGlobal);
+	Nan::SetAccessor(proto, Nan::New("ignoreCase").ToLocalChecked(),     GetIgnoreCase);
+	Nan::SetAccessor(proto, Nan::New("multiline").ToLocalChecked(),      GetMultiline);
+	Nan::SetAccessor(proto, Nan::New("unicode").ToLocalChecked(),        GetUnicode);
+	Nan::SetAccessor(proto, Nan::New("sticky").ToLocalChecked(),         GetSticky);
+	Nan::SetAccessor(proto, Nan::New("lastIndex").ToLocalChecked(),      GetLastIndex, SetLastIndex);
+	Nan::SetAccessor(proto, Nan::New("internalSource").ToLocalChecked(), GetInternalSource);
 
 	Local<Function> fun = Nan::GetFunction(tpl).ToLocalChecked();
 	Nan::Export(fun, "getUtf8Length",  GetUtf8Length);

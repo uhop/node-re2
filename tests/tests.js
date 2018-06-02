@@ -4,6 +4,7 @@
 var unit = require("heya-unit");
 
 require("./test_general");
+require("./test_source");
 require("./test_exec");
 require("./test_test");
 require("./test_toString");

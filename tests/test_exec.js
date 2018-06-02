@@ -183,7 +183,8 @@ unit.add(module, [
 
 		var re = new RE2("\\u{1F603}", "g");
 
-		eval(t.TEST("re.source === '\\\\x{1F603}'"));
+		eval(t.TEST("re.source === '\\\\u{1F603}'"));
+		eval(t.TEST("re.internalSource === '\\\\x{1F603}'"));
 		eval(t.TEST("!re.ignoreCase"));
 		eval(t.TEST("re.global"));
 		eval(t.TEST("!re.multiline"));

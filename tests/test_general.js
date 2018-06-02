@@ -223,27 +223,6 @@ unit.add(module, [
 
 		eval(t.TEST("RE2.getUtf16Length({ toString() { throw 'corner'; } }) === -1"));
 	},
-	function test_sourceTranslation(t) {
-		"use strict";
-
-		var re = new RE2("a\\cM\\u34\\u1234\\u10abcdz");
-		eval(t.TEST("re.source === 'a\\\\x0D\\\\x{34}\\\\x{1234}\\\\x{10ab}cdz'"));
-
-		var re = new RE2("a\\cM\\u34\\u1234\\u{10abcd}z");
-		eval(t.TEST("re.source === 'a\\\\x0D\\\\x{34}\\\\x{1234}\\\\x{10abcd}z'"));
-
-		var re = new RE2("");
-		eval(t.TEST("re.source === '(?:)'"));
-
-		var re = new RE2("foo/bar");
-		eval(t.TEST("re.source === 'foo\\\\/bar'"));
-
-		var re = new RE2("foo\\/bar");
-		eval(t.TEST("re.source === 'foo\\\\/bar'"));
-
-		var re = new RE2("(?<foo>bar)", "u");
-		eval(t.TEST("re.source === '(?P<foo>bar)'"));
-	},
 	function test_flags(t) {
 		"use strict";
 
