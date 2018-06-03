@@ -135,12 +135,18 @@ static string escapeRegExp(const char* data, size_t size) {
 		result = "(?:)";
 	}
 
+	size_t prevBackSlashes = 0;
 	for (size_t i = 0; i < size;) {
 		char ch = data[i];
-		if (ch == '/' && (result.empty() || result.back() != '\\')) {
+		if (ch == '\\') {
+			++prevBackSlashes;
+		} else if (ch == '/' && !(prevBackSlashes & 1)) {
 			result += "\\/";
 			i += 1;
+			prevBackSlashes = 0;
 			continue;
+		} else {
+			prevBackSlashes = 0;
 		}
 		size_t sym_size = getUtf8CharSize(ch);
 		result.append(data + i, sym_size);

@@ -49,5 +49,26 @@ unit.add(module, [
 
 		re = new RE2("(?<foo>bar)", "u");
 		eval(t.TEST("re.internalSource === '(?P<foo>bar)'"));
+	},
+	function test_sourceBackSlashes(t) {
+		"use strict";
+
+		function compare(source) {
+			var s1 = new RegExp(source).source;
+			var s2 = new RE2(source).source;
+			eval(t.TEST("s1 === s2"));
+		}
+
+		compare("a/b");
+		compare("a\/b");
+		compare("a\\/b");
+		compare("a\\\/b");
+		compare("a\\\\/b");
+		compare("a\\\\\/b");
+
+		compare("/a/b");
+		compare("\\/a/b");
+		compare("\\/a\\/b");
+		compare("\\/a\\\\/b");
 	}
 ]);
