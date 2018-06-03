@@ -53,22 +53,21 @@ unit.add(module, [
 	function test_sourceBackSlashes(t) {
 		"use strict";
 
-		function compare(source) {
-			var s1 = new RegExp(source).source;
-			var s2 = new RE2(source).source;
-			eval(t.TEST("s1 === s2"));
+		function compare(source, expected) {
+			var s = new RE2(source).source;
+			eval(t.TEST("s === expected"));
 		}
 
-		compare("a/b");
-		compare("a\/b");
-		compare("a\\/b");
-		compare("a\\\/b");
-		compare("a\\\\/b");
-		compare("a\\\\\/b");
+		compare("a/b",        "a\\/b");
+		compare("a\/b",       "a\\/b");
+		compare("a\\/b",      "a\\/b");
+		compare("a\\\/b",     "a\\/b");
+		compare("a\\\\/b",    "a\\\\\\/b");
+		compare("a\\\\\/b",   "a\\\\\\/b");
 
-		compare("/a/b");
-		compare("\\/a/b");
-		compare("\\/a\\/b");
-		compare("\\/a\\\\/b");
+		compare("/a/b",       "\\/a\\/b");
+		compare("\\/a/b",     "\\/a\\/b");
+		compare("\\/a\\/b",   "\\/a\\/b");
+		compare("\\/a\\\\/b", "\\/a\\\\\\/b");
 	}
 ]);
