@@ -350,12 +350,13 @@ Or:
 
 ## Release history
 
+- 1.8.1 *Bugfix for better source escaping.*
 - 1.8.0 *Clarified Unicode support, added `unicode` flag, added named groups &mdash; thx [Exter-N](https://github.com/Exter-N)! Bugfixes &mdash; thx [Barak Amar](https://github.com/nopcoder)!*
 - 1.7.0 *Implemented `sticky` and `flags` + bug fixes + more tests. Thx [Exter-N](https://github.com/Exter-N)!*
-- 1.6.2 *Bug fix for a prototype access. Thx [Exter-N](https://github.com/Exter-N)!*
+- 1.6.2 *Bugfix for a prototype access. Thx [Exter-N](https://github.com/Exter-N)!*
 - 1.6.1 *Returned support for node 4 LTS. Thx [Kannan Goundan](https://github.com/cakoose)!*
 - 1.6.0 *Added well-known symbol-based methods of ES6. Refreshed NAN.*
-- 1.5.0 *Bug fixes, error checks, better docs. Thx [Jamie Davis](https://github.com/davisjam), and [omg](https://github.com/omg)!*
+- 1.5.0 *Bugfixes, error checks, better docs. Thx [Jamie Davis](https://github.com/davisjam), and [omg](https://github.com/omg)!*
 - 1.4.1 *Minor corrections in README.*
 - 1.4.0 *Use re2 as a git submodule. Thx [Ben James](https://github.com/benhjames)!*
 - 1.3.3 *Refreshed dependencies.*
