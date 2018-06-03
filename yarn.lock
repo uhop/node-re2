@@ -2,15 +2,15 @@
 # yarn lockfile v1
 
 
-heya-ice@>=0.1:
+heya-ice@>=0.1, heya-ice@^0.1.11:
   version "0.1.11"
   resolved "https://registry.yarnpkg.com/heya-ice/-/heya-ice-0.1.11.tgz#5d6da59c60b59c7023a83470fb6e9771d7705849"
 
 heya-unify@>=0.2:
-  version "0.2.5"
-  resolved "https://registry.yarnpkg.com/heya-unify/-/heya-unify-0.2.5.tgz#16c34fd426c44eeb32f89cab234daaaf29afc49b"
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/heya-unify/-/heya-unify-0.2.6.tgz#f3760bc9c4577aa7798bf0d9c3a73f7b5f7f5fc0"
   dependencies:
-    heya-ice ">=0.1"
+    heya-ice "^0.1.11"
 
 heya-unit@^0.3.0:
   version "0.3.0"
