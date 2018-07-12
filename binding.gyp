@@ -43,12 +43,9 @@
         "-std=c++11",
         "-Wall",
         "-Wextra",
-        "-Wno-unknown-warning",
-        "-Wno-unknown-warning-option",
         "-Wno-sign-compare",
-		"-Wunknown-warning=implicit-fallthrough",
-		"-Wunknown-warning-option=implicit-fallthrough",
-		"-Wimplicit-fallthrough=0",
+		"-Wno-unknown-warning",
+		"-Wno-unknown-warning-option",
         "-O3",
         "-g"
       ],
@@ -67,12 +64,9 @@
           "-std=c++11",
           "-Wall",
           "-Wextra",
-          "-Wunknown-warning=implicit-fallthrough",
-          "-Wunknown-warning-option=implicit-fallthrough",
           "-Wno-sign-compare",
           "-Wno-unused-parameter",
           "-Wno-missing-field-initializers",
-		  "-Wimplicit-fallthrough=0",
           "-O3",
           "-g"
         ]
