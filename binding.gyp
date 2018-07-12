@@ -44,8 +44,8 @@
         "-Wall",
         "-Wextra",
         "-Wno-sign-compare",
-		"-Wno-unknown-warning",
-		"-Wno-unknown-warning-option",
+        "-Wno-unused-parameter",
+        "-Wno-missing-field-initializers",
         "-O3",
         "-g"
       ],
