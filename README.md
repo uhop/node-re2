@@ -350,6 +350,7 @@ Or:
 
 ## Release history
 
+- 1.8.3 *Refreshed dependencies, removed suppression of some warnings.*
 - 1.8.2 *Bugfix to support the null prototype for groups. Thx [Exter-N](https://github.com/Exter-N)!*
 - 1.8.1 *Bugfix for better source escaping.*
 - 1.8.0 *Clarified Unicode support, added `unicode` flag, added named groups &mdash; thx [Exter-N](https://github.com/Exter-N)! Bugfixes &mdash; thx [Barak Amar](https://github.com/nopcoder)!*
