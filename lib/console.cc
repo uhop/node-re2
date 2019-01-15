@@ -3,7 +3,6 @@
 #include <string>
 
 #include <sys/types.h>
-#include <unistd.h>
 
 
 using v8::Local;
@@ -45,12 +44,7 @@ void consoleCall(const Local<String>& methodName, Local<Value> text) {
 
 
 void printDeprecationWarning(const char* warning) {
-	string prefixedWarning;
-	prefixedWarning.resize(29 + sizeof(pid_t) * 3 + strlen(warning));
-	prefixedWarning.resize(snprintf(
-		&prefixedWarning[0], prefixedWarning.size(),
-		"(node:%d) DeprecationWarning: %s",
-		getpid(), warning));
-
+	string prefixedWarning = "DeprecationWarning: ";
+	prefixedWarning += warning;
 	consoleCall(Nan::New("error").ToLocalChecked(), Nan::New(prefixedWarning).ToLocalChecked());
 }
