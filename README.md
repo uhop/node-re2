@@ -1,5 +1,7 @@
 # node-re2
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/uhop/node-re2.svg)](https://greenkeeper.io/)
+
 [![Build status][travis-image]][travis-url]
 [![Dependencies][deps-image]][deps-url]
 [![devDependencies][dev-deps-image]][dev-deps-url]
