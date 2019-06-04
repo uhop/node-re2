@@ -1,10 +1,6 @@
 #include "./wrapped_re2.h"
 
-
 #include <string>
-
-
-using std::string;
 
 
 NAN_METHOD(WrappedRE2::ToString) {
@@ -19,7 +15,7 @@ NAN_METHOD(WrappedRE2::ToString) {
 
 	// actual work
 
-	string buffer("/");
+	std::string buffer("/");
 	buffer += re2->regexp.pattern();
 	buffer += "/";
 

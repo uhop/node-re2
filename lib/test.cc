@@ -6,12 +6,6 @@
 #include <node_buffer.h>
 
 
-using std::vector;
-
-using v8::Local;
-using v8::String;
-
-
 NAN_METHOD(WrappedRE2::Test) {
 
 	// unpack arguments
@@ -54,8 +48,8 @@ NAN_METHOD(WrappedRE2::Test) {
 	// actual work
 
 	if (re2->global || re2->sticky) {
-		StringPiece match;
-		if (re2->regexp.Match(str, lastIndex, str.size, re2->sticky ? RE2::ANCHOR_START : RE2::UNANCHORED, &match, 1)) {
+		re2::StringPiece match;
+		if (re2->regexp.Match(str, lastIndex, str.size, re2->sticky ? re2::RE2::ANCHOR_START : re2::RE2::UNANCHORED, &match, 1)) {
 			re2->lastIndex += str.isBuffer ? match.data() - str.data + match.size() - lastIndex :
 				getUtf16Length(str.data + lastIndex, match.data() + match.size());
 			info.GetReturnValue().Set(true);
@@ -66,5 +60,5 @@ NAN_METHOD(WrappedRE2::Test) {
 		return;
 	}
 
-	info.GetReturnValue().Set(re2->regexp.Match(str, lastIndex, str.size, RE2::UNANCHORED, NULL, 0));
+	info.GetReturnValue().Set(re2->regexp.Match(str, lastIndex, str.size, re2::RE2::UNANCHORED, NULL, 0));
 }

@@ -4,18 +4,6 @@
 #include <vector>
 
 
-using std::map;
-using std::pair;
-using std::string;
-using std::vector;
-
-using v8::Array;
-using v8::Integer;
-using v8::Local;
-using v8::String;
-using v8::Value;
-
-
 NAN_METHOD(WrappedRE2::Match) {
 
 	// unpack arguments
@@ -31,20 +19,20 @@ NAN_METHOD(WrappedRE2::Match) {
 		return;
 	}
 
-	vector<StringPiece> groups;
-	StringPiece str(a);
+	std::vector<re2::StringPiece> groups;
+	re2::StringPiece str(a);
 	size_t lastIndex = 0;
-	RE2::Anchor anchor = RE2::UNANCHORED;
+	re2::RE2::Anchor anchor = re2::RE2::UNANCHORED;
 
 	// actual work
 
 	if (re2->global) {
 		// global: collect all matches
 
-		StringPiece match;
+		re2::StringPiece match;
 
 		if (re2->sticky) {
-			anchor = RE2::ANCHOR_START;
+			anchor = re2::RE2::ANCHOR_START;
 		}
 
 		while (re2->regexp.Match(str, lastIndex, a.size, anchor, &match, 1)) {
@@ -78,28 +66,28 @@ NAN_METHOD(WrappedRE2::Match) {
 
 	// form a result
 
-	Local<Array> result = Nan::New<Array>();
+	v8::Local<v8::Array> result = Nan::New<v8::Array>();
 
 	if (a.isBuffer) {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
-			const StringPiece& item = groups[i];
+			const re2::StringPiece& item = groups[i];
 			if (item.data() != NULL) {
 				Nan::Set(result, i, Nan::CopyBuffer(item.data(), item.size()).ToLocalChecked());
 			}
 		}
 		if (!re2->global) {
-			Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<Integer>(static_cast<int>(groups[0].data() - a.data)));
+			Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<v8::Integer>(static_cast<int>(groups[0].data() - a.data)));
 			Nan::Set(result, Nan::New("input").ToLocalChecked(), info[0]);
 		}
 	} else {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
-			const StringPiece& item = groups[i];
+			const re2::StringPiece& item = groups[i];
 			if (item.data() != NULL) {
 				Nan::Set(result, i, Nan::New(item.data(), item.size()).ToLocalChecked());
 			}
 		}
 		if (!re2->global) {
-			Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<Integer>(static_cast<int>(getUtf16Length(a.data, groups[0].data()))));
+			Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<v8::Integer>(static_cast<int>(getUtf16Length(a.data, groups[0].data()))));
 			Nan::Set(result, Nan::New("input").ToLocalChecked(), info[0]);
 		}
 	}
@@ -112,13 +100,13 @@ NAN_METHOD(WrappedRE2::Match) {
 	}
 
 	if (!re2->global) {
-		const map<int, string>& groupNames = re2->regexp.CapturingGroupNames();
+		const std::map<int, std::string>& groupNames = re2->regexp.CapturingGroupNames();
 		if (!groupNames.empty()) {
-			Local<Object> groups = Nan::New<Object>();
+			v8::Local<v8::Object> groups = Nan::New<v8::Object>();
 			(void)groups->SetPrototype(v8::Isolate::GetCurrent()->GetCurrentContext(), Nan::Null());
 
-			for (pair<int, string> group: groupNames) {
-				Nan::MaybeLocal<Value> value = Nan::Get(result, group.first);
+			for (std::pair<int, std::string> group: groupNames) {
+				Nan::MaybeLocal<v8::Value> value = Nan::Get(result, group.first);
 				if (!value.IsEmpty()) {
 					Nan::Set(groups, Nan::New(group.second).ToLocalChecked(), value.ToLocalChecked());
 				}

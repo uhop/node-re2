@@ -9,26 +9,8 @@
 
 #include <node_buffer.h>
 
-#include <iostream>
 
-
-using std::map;
-using std::min;
-using std::pair;
-using std::string;
-using std::vector;
-using std::unique_ptr;
-
-using v8::Array;
-using v8::Integer;
-using v8::MaybeLocal;
-using v8::String;
-using v8::Value;
-using v8::Isolate;
-using v8::Context;
-
-
-inline int getMaxSubmatch(const char* data, size_t size, const map<string, int>& namedGroups) {
+inline int getMaxSubmatch(const char* data, size_t size, const std::map<std::string, int>& namedGroups) {
 	int maxSubmatch = 0, index, index2;
 	const char* nameBegin;
 	const char* nameEnd;
@@ -71,8 +53,8 @@ inline int getMaxSubmatch(const char* data, size_t size, const map<string, int>&
 						nameBegin = data + i + 2;
 						nameEnd = (const char*)memchr(nameBegin, '>', size - i - 2);
 						if (nameEnd) {
-							string name(nameBegin, nameEnd - nameBegin);
-							map<string, int>::const_iterator group = namedGroups.find(name);
+							std::string name(nameBegin, nameEnd - nameBegin);
+							std::map<std::string, int>::const_iterator group = namedGroups.find(name);
 							if (group != namedGroups.end()) {
 								index = group->second;
 								if (maxSubmatch < index) maxSubmatch = index;
@@ -93,8 +75,8 @@ inline int getMaxSubmatch(const char* data, size_t size, const map<string, int>&
 }
 
 
-inline string replace(const char* data, size_t size, const vector<StringPiece>& groups, const StringPiece& str, const map<string, int>& namedGroups) {
-	string result;
+inline std::string replace(const char* data, size_t size, const std::vector<re2::StringPiece>& groups, const re2::StringPiece& str, const std::map<std::string, int>& namedGroups) {
+	std::string result;
 	size_t index, index2;
 	const char* nameBegin;
 	const char* nameEnd;
@@ -113,11 +95,11 @@ inline string replace(const char* data, size_t size, const vector<StringPiece>& 
 						i += 2;
 						continue;
 					case '`':
-						result += string(str.data(), groups[0].data() - str.data());
+						result += std::string(str.data(), groups[0].data() - str.data());
 						i += 2;
 						continue;
 					case '\'':
-						result += string(groups[0].data() + groups[0].size(),
+						result += std::string(groups[0].data() + groups[0].size(),
 							str.data() + str.size() - groups[0].data() - groups[0].size());
 						i += 2;
 						continue;
@@ -161,8 +143,8 @@ inline string replace(const char* data, size_t size, const vector<StringPiece>& 
 							nameBegin = data + i + 2;
 							nameEnd = (const char*)memchr(nameBegin, '>', size - i - 2);
 							if (nameEnd) {
-								string name(nameBegin, nameEnd - nameBegin);
-								map<string, int>::const_iterator group = namedGroups.find(name);
+								std::string name(nameBegin, nameEnd - nameBegin);
+								std::map<std::string, int>::const_iterator group = namedGroups.find(name);
 								if (group != namedGroups.end()) {
 									index = group->second;
 									result += groups[index].as_string();
@@ -191,19 +173,19 @@ inline string replace(const char* data, size_t size, const vector<StringPiece>& 
 }
 
 
-static Nan::Maybe<string> replace(WrappedRE2* re2, const StrVal& replacee, const char* replacer, size_t replacer_size) {
-	const StringPiece str(replacee);
+static Nan::Maybe<std::string> replace(WrappedRE2* re2, const StrVal& replacee, const char* replacer, size_t replacer_size) {
+	const re2::StringPiece str(replacee);
 	const char* data = str.data();
 	size_t      size = str.size();
 
-	const map<string, int>& namedGroups = re2->regexp.NamedCapturingGroups();
+	const std::map<std::string, int>& namedGroups = re2->regexp.NamedCapturingGroups();
 
-	vector<StringPiece> groups(min(re2->regexp.NumberOfCapturingGroups(), getMaxSubmatch(replacer, replacer_size, namedGroups)) + 1);
-	const StringPiece& match = groups[0];
+	std::vector<re2::StringPiece> groups(std::min(re2->regexp.NumberOfCapturingGroups(), getMaxSubmatch(replacer, replacer_size, namedGroups)) + 1);
+	const re2::StringPiece& match = groups[0];
 
 	size_t lastIndex = 0;
-	string result;
-	RE2::Anchor anchor = RE2::UNANCHORED;
+	std::string result;
+	re2::RE2::Anchor anchor = re2::RE2::UNANCHORED;
 
 	if (re2->sticky) {
 		if (!re2->global) {
@@ -215,11 +197,11 @@ static Nan::Maybe<string> replace(WrappedRE2* re2, const StrVal& replacee, const
 				}
 			}
 		}
-		anchor = RE2::ANCHOR_START;
+		anchor = re2::RE2::ANCHOR_START;
 	}
 
 	if (lastIndex) {
-		result = string(data, lastIndex);
+		result = std::string(data, lastIndex);
 	}
 
 	bool noMatch = true;
@@ -231,7 +213,7 @@ static Nan::Maybe<string> replace(WrappedRE2* re2, const StrVal& replacee, const
 		}
 		if (match.size()) {
 			if (match.data() == data || match.data() - data > lastIndex) {
-				result += string(data + lastIndex, match.data() - data - lastIndex);
+				result += std::string(data + lastIndex, match.data() - data - lastIndex);
 			}
 			result += replace(replacer, replacer_size, groups, str, namedGroups);
 			lastIndex = match.data() - data + match.size();
@@ -248,7 +230,7 @@ static Nan::Maybe<string> replace(WrappedRE2* re2, const StrVal& replacee, const
 		}
 	}
 	if (lastIndex < size) {
-		result += string(data + lastIndex, size - lastIndex);
+		result += std::string(data + lastIndex, size - lastIndex);
 	}
 
 	if (re2->global) {
@@ -263,21 +245,21 @@ static Nan::Maybe<string> replace(WrappedRE2* re2, const StrVal& replacee, const
 }
 
 
-inline Nan::Maybe<string> replace(const Nan::Callback* replacer, const vector<StringPiece>& groups, const StringPiece& str, const Local<Value>& input, bool useBuffers, const map<string, int>& namedGroups) {
-	vector< Local<Value> >	argv;
+inline Nan::Maybe<std::string> replace(const Nan::Callback* replacer, const std::vector<re2::StringPiece>& groups, const re2::StringPiece& str, const v8::Local<v8::Value>& input, bool useBuffers, const std::map<std::string, int>& namedGroups) {
+	std::vector< v8::Local<v8::Value> >	argv;
 
-	auto isolate = Isolate::GetCurrent();
+	auto isolate = v8::Isolate::GetCurrent();
 	auto context = isolate->GetCurrentContext();
 
 	if (useBuffers) {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
-			const StringPiece& item = groups[i];
+			const re2::StringPiece& item = groups[i];
 			argv.push_back(Nan::CopyBuffer(item.data(), item.size()).ToLocalChecked());
 		}
 		argv.push_back(Nan::New(static_cast<int>(groups[0].data() - str.data())));
 	} else {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
-			const StringPiece& item = groups[i];
+			const re2::StringPiece& item = groups[i];
 			argv.push_back(Nan::New(item.data(), item.size()).ToLocalChecked());
 		}
 		argv.push_back(Nan::New(static_cast<int>(getUtf16Length(str.data(), groups[0].data()))));
@@ -285,49 +267,49 @@ inline Nan::Maybe<string> replace(const Nan::Callback* replacer, const vector<St
 	argv.push_back(input);
 
 	if (!namedGroups.empty()) {
-		Local<Object> groups = Nan::New<Object>();
+		v8::Local<v8::Object> groups = Nan::New<v8::Object>();
 		(void)groups->SetPrototype(context, Nan::Null());
 
-		for (pair<string, int> group: namedGroups) {
+		for (std::pair<std::string, int> group: namedGroups) {
 			Nan::Set(groups, Nan::New(group.first).ToLocalChecked(), argv[group.second]);
 		}
 
 		argv.push_back(groups);
 	}
 
-	MaybeLocal<Value> maybeResult(Nan::Call(replacer->GetFunction(), context->Global(), static_cast<int>(argv.size()), &argv[0]));
+	v8::MaybeLocal<v8::Value> maybeResult(Nan::Call(replacer->GetFunction(), context->Global(), static_cast<int>(argv.size()), &argv[0]));
 
 	if (maybeResult.IsEmpty()) {
-		return Nan::Nothing<string>();
+		return Nan::Nothing<std::string>();
 	}
 
-	Local<Value> result = maybeResult.ToLocalChecked();
+	v8::Local<v8::Value> result = maybeResult.ToLocalChecked();
 
 	if (node::Buffer::HasInstance(result)) {
-		return Nan::Just(string(node::Buffer::Data(result), node::Buffer::Length(result)));
+		return Nan::Just(std::string(node::Buffer::Data(result), node::Buffer::Length(result)));
 	}
 
 	if (result->IsObject()) {
 		Nan::Utf8String val(callToString(result->ToObject(context).ToLocalChecked()));
-		return Nan::Just(string(*val, val.length()));
+		return Nan::Just(std::string(*val, val.length()));
 	}
 
 	Nan::Utf8String val(result->ToString(context).ToLocalChecked());
-	return Nan::Just(string(*val, val.length()));
+	return Nan::Just(std::string(*val, val.length()));
 }
 
 
-static Nan::Maybe<string> replace(WrappedRE2* re2, const StrVal& replacee, const Nan::Callback* replacer, const Local<Value>& input, bool useBuffers) {
-	const StringPiece str(replacee);
+static Nan::Maybe<std::string> replace(WrappedRE2* re2, const StrVal& replacee, const Nan::Callback* replacer, const v8::Local<v8::Value>& input, bool useBuffers) {
+	const re2::StringPiece str(replacee);
 	const char* data = str.data();
 	size_t      size = str.size();
 
-	vector<StringPiece> groups(re2->regexp.NumberOfCapturingGroups() + 1);
-	const StringPiece& match = groups[0];
+	std::vector<re2::StringPiece> groups(re2->regexp.NumberOfCapturingGroups() + 1);
+	const re2::StringPiece& match = groups[0];
 
 	size_t lastIndex = 0;
-	string result;
-	RE2::Anchor anchor = RE2::UNANCHORED;
+	std::string result;
+	re2::RE2::Anchor anchor = re2::RE2::UNANCHORED;
 
 	if (re2->sticky) {
 		if (!re2->global) {
@@ -343,10 +325,10 @@ static Nan::Maybe<string> replace(WrappedRE2* re2, const StrVal& replacee, const
 	}
 
 	if (lastIndex) {
-		result = string(data, lastIndex);
+		result = std::string(data, lastIndex);
 	}
 
-	const map<string, int>& namedGroups = re2->regexp.NamedCapturingGroups();
+	const std::map<std::string, int>& namedGroups = re2->regexp.NamedCapturingGroups();
 
 	bool noMatch = true;
 	while (lastIndex <= size && re2->regexp.Match(str, lastIndex, size, anchor, &groups[0], groups.size())) {
@@ -357,16 +339,16 @@ static Nan::Maybe<string> replace(WrappedRE2* re2, const StrVal& replacee, const
 		}
 		if (match.size()) {
 			if (match.data() == data || match.data() - data > lastIndex) {
-				result += string(data + lastIndex, match.data() - data - lastIndex);
+				result += std::string(data + lastIndex, match.data() - data - lastIndex);
 			}
-			const Nan::Maybe<string> part(replace(replacer, groups, str, input, useBuffers, namedGroups));
+			const Nan::Maybe<std::string> part(replace(replacer, groups, str, input, useBuffers, namedGroups));
 			if (part.IsNothing()) {
 				return part;
 			}
 			result += part.FromJust();
 			lastIndex = match.data() - data + match.size();
 		} else {
-			const Nan::Maybe<string> part(replace(replacer, groups, str, input, useBuffers, namedGroups));
+			const Nan::Maybe<std::string> part(replace(replacer, groups, str, input, useBuffers, namedGroups));
 			if (part.IsNothing()) {
 				return part;
 			}
@@ -382,7 +364,7 @@ static Nan::Maybe<string> replace(WrappedRE2* re2, const StrVal& replacee, const
 		}
 	}
 	if (lastIndex < size) {
-		result += string(data + lastIndex, size - lastIndex);
+		result += std::string(data + lastIndex, size - lastIndex);
 	}
 
 	if (re2->global) {
@@ -397,7 +379,7 @@ static Nan::Maybe<string> replace(WrappedRE2* re2, const StrVal& replacee, const
 }
 
 
-static bool requiresBuffers(const Local<Function>& f, const Local<Context>& ctx) {
+static bool requiresBuffers(const v8::Local<v8::Function>& f, const v8::Local<v8::Context>& ctx) {
 	auto flag(Nan::Get(f, Nan::New("useBuffers").ToLocalChecked()).ToLocalChecked());
 	if (flag->IsUndefined() || flag->IsNull() || flag->IsFalse()) {
 		return false;
@@ -425,12 +407,12 @@ NAN_METHOD(WrappedRE2::Replace) {
 		return;
 	}
 
-	string result;
+	std::string result;
 
 	if (info[1]->IsFunction()) {
-		Local<Function> fun(info[1].As<Function>());
-		const unique_ptr<const Nan::Callback> cb(new Nan::Callback(fun));
-		const Nan::Maybe<string> replaced(replace(re2, replacee, cb.get(), info[0], requiresBuffers(fun, Isolate::GetCurrent()->GetCurrentContext())));
+		v8::Local<v8::Function> fun(info[1].As<v8::Function>());
+		const std::unique_ptr<const Nan::Callback> cb(new Nan::Callback(fun));
+		const Nan::Maybe<std::string> replaced(replace(re2, replacee, cb.get(), info[0], requiresBuffers(fun, v8::Isolate::GetCurrent()->GetCurrentContext())));
 		if (replaced.IsNothing()) {
 			return;
 		}
@@ -440,7 +422,7 @@ NAN_METHOD(WrappedRE2::Replace) {
 		if (!replacer.data) {
 			return;
 		}
-		const Nan::Maybe<string> replaced(replace(re2, replacee, replacer.data, replacer.size));
+		const Nan::Maybe<std::string> replaced(replace(re2, replacee, replacer.data, replacer.size));
 		if (replaced.IsNothing()) {
 			return;
 		}

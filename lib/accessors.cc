@@ -4,12 +4,6 @@
 #include <string>
 #include <vector>
 
-using std::string;
-using std::vector;
-
-using v8::String;
-using v8::Isolate;
-
 
 NAN_GETTER(WrappedRE2::GetSource) {
 	if (!WrappedRE2::HasInstance(info.This())) {
@@ -39,7 +33,7 @@ NAN_GETTER(WrappedRE2::GetFlags) {
 
 	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 
-	string flags;
+	std::string flags;
 	if (re2->global) {
 		flags = "g";
 	}
@@ -129,7 +123,7 @@ NAN_SETTER(WrappedRE2::SetLastIndex) {
 
 	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	if (value->IsNumber()) {
-		int n = value->NumberValue(Isolate::GetCurrent()->GetCurrentContext()).ToChecked();
+		int n = value->NumberValue(v8::Isolate::GetCurrent()->GetCurrentContext()).ToChecked();
 		re2->lastIndex = n <= 0 ? 0 : n;
 	}
 }
@@ -139,7 +133,7 @@ WrappedRE2::UnicodeWarningLevels WrappedRE2::unicodeWarningLevel;
 
 
 NAN_GETTER(WrappedRE2::GetUnicodeWarningLevel) {
-	string level;
+	std::string level;
 	switch (unicodeWarningLevel) {
 		case THROW:
 			level = "throw";
@@ -159,11 +153,11 @@ NAN_GETTER(WrappedRE2::GetUnicodeWarningLevel) {
 
 
 NAN_SETTER(WrappedRE2::SetUnicodeWarningLevel) {
-	auto isolate = Isolate::GetCurrent();
+	auto isolate = v8::Isolate::GetCurrent();
 	auto ctx = isolate->GetCurrentContext();
 	if (value->IsString()) {
-		Local<String> t(value->ToString(ctx).ToLocalChecked());
-		vector<char> buffer(t->Utf8Length(isolate) + 1);
+		v8::Local<v8::String> t(value->ToString(ctx).ToLocalChecked());
+		std::vector<char> buffer(t->Utf8Length(isolate) + 1);
 		t->WriteUtf8(isolate, &buffer[0]);
 		if (!strcmp(&buffer[0], "throw")) {
 			unicodeWarningLevel = THROW;

@@ -6,18 +6,9 @@
 #include <vector>
 
 
-using std::min;
-using std::numeric_limits;
-using std::vector;
-
-using v8::Array;
-using v8::String;
-using v8::Isolate;
-
-
 NAN_METHOD(WrappedRE2::Split) {
 
-	Local<Array> result = Nan::New<Array>();
+	v8::Local<v8::Array> result = Nan::New<v8::Array>();
 
 	// unpack arguments
 
@@ -33,11 +24,11 @@ NAN_METHOD(WrappedRE2::Split) {
 		return;
 	}
 
-	StringPiece str(a);
+	re2::StringPiece str(a);
 
-	size_t limit = numeric_limits<size_t>::max();
+	size_t limit = std::numeric_limits<size_t>::max();
 	if (info.Length() > 1 && info[1]->IsNumber()) {
-		size_t lim = info[1]->NumberValue(Isolate::GetCurrent()->GetCurrentContext()).ToChecked();
+		size_t lim = info[1]->NumberValue(v8::Isolate::GetCurrent()->GetCurrentContext()).ToChecked();
 		if (lim > 0) {
 			limit = lim;
 		}
@@ -45,18 +36,18 @@ NAN_METHOD(WrappedRE2::Split) {
 
 	// actual work
 
-	vector<StringPiece> groups(re2->regexp.NumberOfCapturingGroups() + 1), pieces;
-	const StringPiece& match = groups[0];
+	std::vector<re2::StringPiece> groups(re2->regexp.NumberOfCapturingGroups() + 1), pieces;
+	const re2::StringPiece& match = groups[0];
 	size_t lastIndex = 0;
 
 	while (lastIndex < a.size && re2->regexp.Match(str, lastIndex, a.size, RE2::UNANCHORED, &groups[0], groups.size())) {
 		if (match.size()) {
-			pieces.push_back(StringPiece(a.data + lastIndex, match.data() - a.data - lastIndex));
+			pieces.push_back(re2::StringPiece(a.data + lastIndex, match.data() - a.data - lastIndex));
 			lastIndex = match.data() - a.data + match.size();
 			pieces.insert(pieces.end(), groups.begin() + 1, groups.end());
 		} else {
 			size_t sym_size = getUtf8CharSize(a.data[lastIndex]);
-			pieces.push_back(StringPiece(a.data + lastIndex, sym_size));
+			pieces.push_back(re2::StringPiece(a.data + lastIndex, sym_size));
 			lastIndex += sym_size;
 		}
 		if (pieces.size() >= limit) {
@@ -64,7 +55,7 @@ NAN_METHOD(WrappedRE2::Split) {
 		}
 	}
 	if (pieces.size() < limit && (lastIndex < a.size || (lastIndex == a.size && match.size()))) {
-		pieces.push_back(StringPiece(a.data + lastIndex, a.size - lastIndex));
+		pieces.push_back(re2::StringPiece(a.data + lastIndex, a.size - lastIndex));
 	}
 
 	if (pieces.empty()) {
@@ -76,13 +67,13 @@ NAN_METHOD(WrappedRE2::Split) {
 	// form a result
 
 	if (a.isBuffer) {
-		for (size_t i = 0, n = min(pieces.size(), limit); i < n; ++i) {
-			const StringPiece& item = pieces[i];
+		for (size_t i = 0, n = std::min(pieces.size(), limit); i < n; ++i) {
+			const re2::StringPiece& item = pieces[i];
 			Nan::Set(result, i, Nan::CopyBuffer(item.data(), item.size()).ToLocalChecked());
 		}
 	} else {
-		for (size_t i = 0, n = min(pieces.size(), limit); i < n; ++i) {
-			const StringPiece& item = pieces[i];
+		for (size_t i = 0, n = std::min(pieces.size(), limit); i < n; ++i) {
+			const re2::StringPiece& item = pieces[i];
 			Nan::Set(result, i, Nan::New(item.data(), item.size()).ToLocalChecked());
 		}
 	}

@@ -10,19 +10,10 @@
 #include <string>
 
 
-using v8::Function;
-using v8::Local;
-using v8::Object;
-using v8::FunctionTemplate;
-
-using re2::RE2;
-using re2::StringPiece;
-
-
 class WrappedRE2 : public Nan::ObjectWrap {
 
 	private:
-		WrappedRE2(const StringPiece& pattern, const RE2::Options& options, const std::string& s,
+		WrappedRE2(const re2::StringPiece& pattern, const re2::RE2::Options& options, const std::string& s,
 			const bool& g, const bool& i, const bool& m, const bool& y) : regexp(pattern, options),
 				source(s), global(g), ignoreCase(i), multiline(m), sticky(y), lastIndex(0) {}
 
@@ -54,13 +45,13 @@ class WrappedRE2 : public Nan::ObjectWrap {
 		static NAN_GETTER(GetUnicodeWarningLevel);
 		static NAN_SETTER(SetUnicodeWarningLevel);
 
-		static Nan::Persistent<Function>			constructor;
-		static Nan::Persistent<FunctionTemplate>	ctorTemplate;
+		static Nan::Persistent<v8::Function>			constructor;
+		static Nan::Persistent<v8::FunctionTemplate>	ctorTemplate;
 
 	public:
-		static void Initialize(Local<Object> exports, Local<Object> module);
+		static void Initialize(v8::Local<v8::Object> exports, v8::Local<v8::Object> module);
 
-		static inline bool HasInstance(Local<Object> object) {
+		static inline bool HasInstance(v8::Local<v8::Object> object) {
 			return Nan::New(ctorTemplate)->HasInstance(object);
 		}
 
@@ -68,7 +59,7 @@ class WrappedRE2 : public Nan::ObjectWrap {
 		static UnicodeWarningLevels unicodeWarningLevel;
 		static bool alreadyWarnedAboutUnicode;
 
-		RE2		    regexp;
+		re2::RE2    regexp;
 		std::string source;
 		bool	    global;
 		bool	    ignoreCase;

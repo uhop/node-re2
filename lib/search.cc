@@ -2,9 +2,6 @@
 #include "./util.h"
 
 
-using v8::Integer;
-
-
 NAN_METHOD(WrappedRE2::Search) {
 
 	// unpack arguments
@@ -22,9 +19,9 @@ NAN_METHOD(WrappedRE2::Search) {
 
 	// actual work
 
-	StringPiece match;
+	re2::StringPiece match;
 
-	if (re2->regexp.Match(a, 0, a.size, re2->sticky ? RE2::ANCHOR_START : RE2::UNANCHORED, &match, 1)) {
+	if (re2->regexp.Match(a, 0, a.size, re2->sticky ? re2::RE2::ANCHOR_START : re2::RE2::UNANCHORED, &match, 1)) {
 		info.GetReturnValue().Set(static_cast<int>(a.isBuffer ? match.data() - a.data :
 			getUtf16Length(a.data, match.data())));
 		return;
