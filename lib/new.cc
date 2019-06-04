@@ -14,10 +14,10 @@ using std::unique_ptr;
 using std::unordered_set;
 using std::vector;
 
-using v8::Local;
 using v8::RegExp;
 using v8::String;
 using v8::Value;
+using v8::Isolate;
 
 
 static char hex[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
@@ -205,11 +205,14 @@ NAN_METHOD(WrappedRE2::New) {
 	bool   unicode = false;
 	bool   sticky = false;
 
+	auto isolate = Isolate::GetCurrent();
+	auto ctx = isolate->GetCurrentContext();
+
 	if (info.Length() > 1) {
 		if (info[1]->IsString()) {
-			Local<String> t(info[1]->ToString());
-			buffer.resize(t->Utf8Length() + 1);
-			t->WriteUtf8(&buffer[0]);
+			Local<String> t(info[1]->ToString(ctx).ToLocalChecked());
+			buffer.resize(t->Utf8Length(isolate) + 1);
+			t->WriteUtf8(isolate, &buffer[0]);
 			size = buffer.size() - 1;
 			data = &buffer[0];
 		} else if (node::Buffer::HasInstance(info[1])) {
@@ -248,8 +251,8 @@ NAN_METHOD(WrappedRE2::New) {
 		const RegExp* re = RegExp::Cast(*info[0]);
 
 		Local<String> t(re->GetSource());
-		buffer.resize(t->Utf8Length() + 1);
-		t->WriteUtf8(&buffer[0]);
+		buffer.resize(t->Utf8Length(isolate) + 1);
+		t->WriteUtf8(isolate, &buffer[0]);
 		size = buffer.size() - 1;
 		data = &buffer[0];
 		source = escapeRegExp(data, size);
@@ -262,7 +265,7 @@ NAN_METHOD(WrappedRE2::New) {
 		sticky     = bool(flags & RegExp::kSticky);
 	} else if (info[0]->IsObject() && !info[0]->IsString()) {
 		WrappedRE2* re2 = NULL;
-		auto object = info[0]->ToObject();
+		auto object = info[0]->ToObject(ctx).ToLocalChecked();
 		if (!object.IsEmpty() && object->InternalFieldCount() > 0) {
 			re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(object);
 		}
@@ -282,9 +285,9 @@ NAN_METHOD(WrappedRE2::New) {
 			sticky     = re2->sticky;
 		}
 	} else if (info[0]->IsString()) {
-		Local<String> t(info[0]->ToString());
-		buffer.resize(t->Utf8Length() + 1);
-		t->WriteUtf8(&buffer[0]);
+		Local<String> t(info[0]->ToString(ctx).ToLocalChecked());
+		buffer.resize(t->Utf8Length(isolate) + 1);
+		t->WriteUtf8(isolate, &buffer[0]);
 		size = buffer.size() - 1;
 		data = &buffer[0];
 		source = escapeRegExp(data, size);

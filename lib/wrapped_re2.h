@@ -11,7 +11,6 @@
 
 
 using v8::Function;
-using v8::Handle;
 using v8::Local;
 using v8::Object;
 using v8::FunctionTemplate;
@@ -59,7 +58,7 @@ class WrappedRE2 : public Nan::ObjectWrap {
 		static Nan::Persistent<FunctionTemplate>	ctorTemplate;
 
 	public:
-		static void Initialize(Handle<Object> exports, Handle<Object> module);
+		static void Initialize(Local<Object> exports, Local<Object> module);
 
 		static inline bool HasInstance(Local<Object> object) {
 			return Nan::New(ctorTemplate)->HasInstance(object);

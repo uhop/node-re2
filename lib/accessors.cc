@@ -7,8 +7,8 @@
 using std::string;
 using std::vector;
 
-using v8::Local;
 using v8::String;
+using v8::Isolate;
 
 
 NAN_GETTER(WrappedRE2::GetSource) {
@@ -129,7 +129,7 @@ NAN_SETTER(WrappedRE2::SetLastIndex) {
 
 	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	if (value->IsNumber()) {
-		int n = value->NumberValue();
+		int n = value->NumberValue(Isolate::GetCurrent()->GetCurrentContext()).ToChecked();
 		re2->lastIndex = n <= 0 ? 0 : n;
 	}
 }
@@ -159,10 +159,12 @@ NAN_GETTER(WrappedRE2::GetUnicodeWarningLevel) {
 
 
 NAN_SETTER(WrappedRE2::SetUnicodeWarningLevel) {
+	auto isolate = Isolate::GetCurrent();
+	auto ctx = isolate->GetCurrentContext();
 	if (value->IsString()) {
-		Local<String> t(value->ToString());
-		vector<char> buffer(t->Utf8Length() + 1);
-		t->WriteUtf8(&buffer[0]);
+		Local<String> t(value->ToString(ctx).ToLocalChecked());
+		vector<char> buffer(t->Utf8Length(isolate) + 1);
+		t->WriteUtf8(isolate, &buffer[0]);
 		if (!strcmp(&buffer[0], "throw")) {
 			unicodeWarningLevel = THROW;
 			return;

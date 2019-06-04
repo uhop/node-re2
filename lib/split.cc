@@ -11,8 +11,8 @@ using std::numeric_limits;
 using std::vector;
 
 using v8::Array;
-using v8::Local;
 using v8::String;
+using v8::Isolate;
 
 
 NAN_METHOD(WrappedRE2::Split) {
@@ -37,7 +37,7 @@ NAN_METHOD(WrappedRE2::Split) {
 
 	size_t limit = numeric_limits<size_t>::max();
 	if (info.Length() > 1 && info[1]->IsNumber()) {
-		size_t lim = info[1]->NumberValue();
+		size_t lim = info[1]->NumberValue(Isolate::GetCurrent()->GetCurrentContext()).ToChecked();
 		if (lim > 0) {
 			limit = lim;
 		}

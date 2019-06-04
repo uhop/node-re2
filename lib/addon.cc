@@ -5,7 +5,6 @@
 
 using v8::FunctionTemplate;
 using v8::Integer;
-using v8::Local;
 using v8::MaybeLocal;
 using v8::ObjectTemplate;
 using v8::String;
@@ -17,12 +16,13 @@ Nan::Persistent<FunctionTemplate> WrappedRE2::ctorTemplate;
 
 
 static NAN_METHOD(GetUtf8Length) {
-	MaybeLocal<String> t(info[0]->ToString(Isolate::GetCurrent()->GetCurrentContext()));
+	auto isolate = Isolate::GetCurrent();
+	MaybeLocal<String> t(info[0]->ToString(isolate->GetCurrentContext()));
 	if (t.IsEmpty()) {
 		return;
 	}
 	Local<String> s(t.ToLocalChecked());
-	info.GetReturnValue().Set(static_cast<int>(s->Utf8Length()));
+	info.GetReturnValue().Set(static_cast<int>(s->Utf8Length(isolate)));
 }
 
 
@@ -36,7 +36,7 @@ static NAN_METHOD(GetUtf16Length) {
 }
 
 
-void WrappedRE2::Initialize(Handle<Object> exports, Handle<Object> module) {
+void WrappedRE2::Initialize(Local<Object> exports, Local<Object> module) {
 
 	// prepare constructor template
 	Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
@@ -78,7 +78,7 @@ void WrappedRE2::Initialize(Handle<Object> exports, Handle<Object> module) {
 }
 
 
-void Initialize(Handle<Object> exports, Handle<Object> module) {
+void Initialize(Local<Object> exports, Local<Object> module) {
 	WrappedRE2::Initialize(exports, module);
 }
 

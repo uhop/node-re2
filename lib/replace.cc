@@ -9,6 +9,8 @@
 
 #include <node_buffer.h>
 
+#include <iostream>
+
 
 using std::map;
 using std::min;
@@ -19,10 +21,11 @@ using std::unique_ptr;
 
 using v8::Array;
 using v8::Integer;
-using v8::Local;
 using v8::MaybeLocal;
 using v8::String;
 using v8::Value;
+using v8::Isolate;
+using v8::Context;
 
 
 inline int getMaxSubmatch(const char* data, size_t size, const map<string, int>& namedGroups) {
@@ -263,6 +266,9 @@ static Nan::Maybe<string> replace(WrappedRE2* re2, const StrVal& replacee, const
 inline Nan::Maybe<string> replace(const Nan::Callback* replacer, const vector<StringPiece>& groups, const StringPiece& str, const Local<Value>& input, bool useBuffers, const map<string, int>& namedGroups) {
 	vector< Local<Value> >	argv;
 
+	auto isolate = Isolate::GetCurrent();
+	auto context = isolate->GetCurrentContext();
+
 	if (useBuffers) {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
 			const StringPiece& item = groups[i];
@@ -280,7 +286,7 @@ inline Nan::Maybe<string> replace(const Nan::Callback* replacer, const vector<St
 
 	if (!namedGroups.empty()) {
 		Local<Object> groups = Nan::New<Object>();
-		auto ignore(groups->SetPrototype(v8::Isolate::GetCurrent()->GetCurrentContext(), Nan::Null()));
+		(void)groups->SetPrototype(context, Nan::Null());
 
 		for (pair<string, int> group: namedGroups) {
 			Nan::Set(groups, Nan::New(group.first).ToLocalChecked(), argv[group.second]);
@@ -289,7 +295,7 @@ inline Nan::Maybe<string> replace(const Nan::Callback* replacer, const vector<St
 		argv.push_back(groups);
 	}
 
-	MaybeLocal<Value> maybeResult(Nan::Call(replacer->GetFunction(), v8::Isolate::GetCurrent()->GetCurrentContext()->Global(), static_cast<int>(argv.size()), &argv[0]));
+	MaybeLocal<Value> maybeResult(Nan::Call(replacer->GetFunction(), context->Global(), static_cast<int>(argv.size()), &argv[0]));
 
 	if (maybeResult.IsEmpty()) {
 		return Nan::Nothing<string>();
@@ -301,7 +307,12 @@ inline Nan::Maybe<string> replace(const Nan::Callback* replacer, const vector<St
 		return Nan::Just(string(node::Buffer::Data(result), node::Buffer::Length(result)));
 	}
 
-	Nan::Utf8String val(result->ToString());
+	if (result->IsObject()) {
+		Nan::Utf8String val(callToString(result->ToObject(context).ToLocalChecked()));
+		return Nan::Just(string(*val, val.length()));
+	}
+
+	Nan::Utf8String val(result->ToString(context).ToLocalChecked());
 	return Nan::Just(string(*val, val.length()));
 }
 
@@ -386,16 +397,16 @@ static Nan::Maybe<string> replace(WrappedRE2* re2, const StrVal& replacee, const
 }
 
 
-static bool requiresBuffers(const Local<Function>& f) {
-	Local<Value> flag(Nan::Get(f, Nan::New("useBuffers").ToLocalChecked()).ToLocalChecked());
+static bool requiresBuffers(const Local<Function>& f, const Local<Context>& ctx) {
+	auto flag(Nan::Get(f, Nan::New("useBuffers").ToLocalChecked()).ToLocalChecked());
 	if (flag->IsUndefined() || flag->IsNull() || flag->IsFalse()) {
 		return false;
 	}
 	if (flag->IsNumber()){
-		return flag->NumberValue() != 0;
+		return flag->NumberValue(ctx).ToChecked() != 0;
 	}
 	if (flag->IsString()){
-		return flag->ToString()->Length() > 0;
+		return flag->ToString(ctx).ToLocalChecked()->Length() > 0;
 	}
 	return true;
 }
@@ -419,7 +430,7 @@ NAN_METHOD(WrappedRE2::Replace) {
 	if (info[1]->IsFunction()) {
 		Local<Function> fun(info[1].As<Function>());
 		const unique_ptr<const Nan::Callback> cb(new Nan::Callback(fun));
-		const Nan::Maybe<string> replaced(replace(re2, replacee, cb.get(), info[0], requiresBuffers(fun)));
+		const Nan::Maybe<string> replaced(replace(re2, replacee, cb.get(), info[0], requiresBuffers(fun, Isolate::GetCurrent()->GetCurrentContext())));
 		if (replaced.IsNothing()) {
 			return;
 		}

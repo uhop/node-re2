@@ -350,6 +350,7 @@ Or:
 
 ## Release history
 
+- 1.9.0 *Refreshed dependencies to support Node 12. Only versions 10-12 are supported now (`v8` restrictions). For older versions use `node-re2@1.8`.*
 - 1.8.4 *Refreshed dependencies, removed `unistd.h` to compile on Windows.*
 - 1.8.3 *Refreshed dependencies, removed suppression of some warnings.*
 - 1.8.2 *Bugfix to support the null prototype for groups. Thx [Exter-N](https://github.com/Exter-N)!*
