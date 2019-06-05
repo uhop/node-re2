@@ -3,32 +3,24 @@
 #include <node_buffer.h>
 
 
-using v8::FunctionTemplate;
-using v8::Integer;
-using v8::Local;
-using v8::MaybeLocal;
-using v8::ObjectTemplate;
-using v8::String;
-using v8::Isolate;
-
-
-Nan::Persistent<Function>         WrappedRE2::constructor;
-Nan::Persistent<FunctionTemplate> WrappedRE2::ctorTemplate;
+Nan::Persistent<v8::Function>         WrappedRE2::constructor;
+Nan::Persistent<v8::FunctionTemplate> WrappedRE2::ctorTemplate;
 
 
 static NAN_METHOD(GetUtf8Length) {
-	MaybeLocal<String> t(info[0]->ToString(Isolate::GetCurrent()->GetCurrentContext()));
+	auto isolate = v8::Isolate::GetCurrent();
+	auto t = info[0]->ToString(isolate->GetCurrentContext());
 	if (t.IsEmpty()) {
 		return;
 	}
-	Local<String> s(t.ToLocalChecked());
-	info.GetReturnValue().Set(static_cast<int>(s->Utf8Length()));
+	auto s =t.ToLocalChecked();
+	info.GetReturnValue().Set(static_cast<int>(s->Utf8Length(isolate)));
 }
 
 
 static NAN_METHOD(GetUtf16Length) {
 	if (node::Buffer::HasInstance(info[0])) {
-		char* s = node::Buffer::Data(info[0]);
+		const auto* s = node::Buffer::Data(info[0]);
 		info.GetReturnValue().Set(static_cast<int>(getUtf16Length(s, s + node::Buffer::Length(info[0]))));
 		return;
 	}
@@ -36,10 +28,10 @@ static NAN_METHOD(GetUtf16Length) {
 }
 
 
-void WrappedRE2::Initialize(Handle<Object> exports, Handle<Object> module) {
+void WrappedRE2::Initialize(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) {
 
 	// prepare constructor template
-	Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
+	auto tpl = Nan::New<v8::FunctionTemplate>(New);
 	tpl->SetClassName(Nan::New("RE2").ToLocalChecked());
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
@@ -55,7 +47,7 @@ void WrappedRE2::Initialize(Handle<Object> exports, Handle<Object> module) {
 	Nan::SetPrototypeMethod(tpl, "search",   Search);
 	Nan::SetPrototypeMethod(tpl, "split",    Split);
 
-	Local<ObjectTemplate> proto = tpl->PrototypeTemplate();
+	auto proto = tpl->PrototypeTemplate();
 	Nan::SetAccessor(proto, Nan::New("source").ToLocalChecked(),         GetSource);
 	Nan::SetAccessor(proto, Nan::New("flags").ToLocalChecked(),          GetFlags);
 	Nan::SetAccessor(proto, Nan::New("global").ToLocalChecked(),         GetGlobal);
@@ -66,10 +58,10 @@ void WrappedRE2::Initialize(Handle<Object> exports, Handle<Object> module) {
 	Nan::SetAccessor(proto, Nan::New("lastIndex").ToLocalChecked(),      GetLastIndex, SetLastIndex);
 	Nan::SetAccessor(proto, Nan::New("internalSource").ToLocalChecked(), GetInternalSource);
 
-	Local<Function> fun = Nan::GetFunction(tpl).ToLocalChecked();
+	auto fun = Nan::GetFunction(tpl).ToLocalChecked();
 	Nan::Export(fun, "getUtf8Length",  GetUtf8Length);
 	Nan::Export(fun, "getUtf16Length", GetUtf16Length);
-	Nan::SetAccessor(Local<Object>(fun), Nan::New("unicodeWarningLevel").ToLocalChecked(), GetUnicodeWarningLevel, SetUnicodeWarningLevel);
+	Nan::SetAccessor(v8::Local<v8::Object>(fun), Nan::New("unicodeWarningLevel").ToLocalChecked(), GetUnicodeWarningLevel, SetUnicodeWarningLevel);
 	constructor.Reset(fun);
 	ctorTemplate.Reset(tpl);
 
@@ -78,7 +70,7 @@ void WrappedRE2::Initialize(Handle<Object> exports, Handle<Object> module) {
 }
 
 
-void Initialize(Handle<Object> exports, Handle<Object> module) {
+void Initialize(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) {
 	WrappedRE2::Initialize(exports, module);
 }
 

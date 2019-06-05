@@ -7,19 +7,6 @@
 #include <vector>
 
 
-using std::map;
-using std::pair;
-using std::string;
-using std::unique_ptr;
-using std::unordered_set;
-using std::vector;
-
-using v8::Local;
-using v8::RegExp;
-using v8::String;
-using v8::Value;
-
-
 static char hex[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
 inline bool isUpperCaseAlpha(char ch) {
@@ -30,8 +17,8 @@ inline bool isHexadecimal(char ch) {
 	return ('0' <= ch && ch <= '9') || ('A' <= ch && ch <= 'Z') || ('a' <= ch && ch <= 'z');
 }
 
-static bool translateRegExp(const char* data, size_t size, vector<char>& buffer) {
-	string result;
+static bool translateRegExp(const char* data, size_t size, std::vector<char>& buffer) {
+	std::string result;
 	bool changed = false;
 
 	if (!size) {
@@ -128,8 +115,8 @@ static bool translateRegExp(const char* data, size_t size, vector<char>& buffer)
 	return true;
 }
 
-static string escapeRegExp(const char* data, size_t size) {
-	string result;
+static std::string escapeRegExp(const char* data, size_t size) {
+	std::string result;
 
 	if (!size) {
 		result = "(?:)";
@@ -162,10 +149,10 @@ bool WrappedRE2::alreadyWarnedAboutUnicode = false;
 static const char* depricationMessage = "BMP patterns aren't supported by node-re2. An implicit \"u\" flag is assumed by the RE2 constructor. In a future major version, calling the RE2 constructor without the \"u\" flag may become forbidden, or cause a different behavior. Please see https://github.com/uhop/node-re2/issues/21 for more information.";
 
 
-inline bool ensureUniqueNamedGroups(const map<int, string>& groups) {
-	unordered_set<string> names;
+inline bool ensureUniqueNamedGroups(const std::map<int, std::string>& groups) {
+	std::unordered_set<std::string> names;
 
-	for (pair<int, string> group: groups) {
+	for (auto group: groups) {
 		if (!names.insert(group.second).second) {
 			return false;
 		}
@@ -180,11 +167,11 @@ NAN_METHOD(WrappedRE2::New) {
 	if (!info.IsConstructCall()) {
 		// call a constructor and return the result
 
-		vector< Local<Value> > parameters(info.Length());
+		std::vector< v8::Local<v8::Value> > parameters(info.Length());
 		for (size_t i = 0, n = info.Length(); i < n; ++i) {
 			parameters[i] = info[i];
 		}
-		auto newObject = Nan::NewInstance(Nan::New<Function>(constructor), parameters.size(), &parameters[0]);
+		auto newObject = Nan::NewInstance(Nan::New<v8::Function>(constructor), parameters.size(), &parameters[0]);
 		if (!newObject.IsEmpty()) {
 			info.GetReturnValue().Set(newObject.ToLocalChecked());
 		}
@@ -193,23 +180,26 @@ NAN_METHOD(WrappedRE2::New) {
 
 	// process arguments
 
-	vector<char> buffer;
+	std::vector<char> buffer;
 
 	char*  data = NULL;
 	size_t size = 0;
 
-	string source;
+	std::string source;
 	bool   global = false;
 	bool   ignoreCase = false;
 	bool   multiline = false;
 	bool   unicode = false;
 	bool   sticky = false;
 
+	auto isolate = v8::Isolate::GetCurrent();
+	auto ctx = isolate->GetCurrentContext();
+
 	if (info.Length() > 1) {
 		if (info[1]->IsString()) {
-			Local<String> t(info[1]->ToString());
-			buffer.resize(t->Utf8Length() + 1);
-			t->WriteUtf8(&buffer[0]);
+			auto t = info[1]->ToString(ctx).ToLocalChecked();
+			buffer.resize(t->Utf8Length(isolate) + 1);
+			t->WriteUtf8(isolate, &buffer[0]);
 			size = buffer.size() - 1;
 			data = &buffer[0];
 		} else if (node::Buffer::HasInstance(info[1])) {
@@ -245,29 +235,29 @@ NAN_METHOD(WrappedRE2::New) {
 		data = node::Buffer::Data(info[0]);
 		source = escapeRegExp(data, size);
 	} else if (info[0]->IsRegExp()) {
-		const RegExp* re = RegExp::Cast(*info[0]);
+		const auto* re = v8::RegExp::Cast(*info[0]);
 
-		Local<String> t(re->GetSource());
-		buffer.resize(t->Utf8Length() + 1);
-		t->WriteUtf8(&buffer[0]);
+		auto t = re->GetSource();
+		buffer.resize(t->Utf8Length(isolate) + 1);
+		t->WriteUtf8(isolate, &buffer[0]);
 		size = buffer.size() - 1;
 		data = &buffer[0];
 		source = escapeRegExp(data, size);
 
-		RegExp::Flags flags = re->GetFlags();
-		global     = bool(flags & RegExp::kGlobal);
-		ignoreCase = bool(flags & RegExp::kIgnoreCase);
-		multiline  = bool(flags & RegExp::kMultiline);
-		unicode    = bool(flags & RegExp::kUnicode);
-		sticky     = bool(flags & RegExp::kSticky);
+		v8::RegExp::Flags flags = re->GetFlags();
+		global     = bool(flags & v8::RegExp::kGlobal);
+		ignoreCase = bool(flags & v8::RegExp::kIgnoreCase);
+		multiline  = bool(flags & v8::RegExp::kMultiline);
+		unicode    = bool(flags & v8::RegExp::kUnicode);
+		sticky     = bool(flags & v8::RegExp::kSticky);
 	} else if (info[0]->IsObject() && !info[0]->IsString()) {
 		WrappedRE2* re2 = NULL;
-		auto object = info[0]->ToObject();
+		auto object = info[0]->ToObject(ctx).ToLocalChecked();
 		if (!object.IsEmpty() && object->InternalFieldCount() > 0) {
 			re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(object);
 		}
 		if (re2) {
-			const string& pattern = re2->regexp.pattern();
+			const auto& pattern = re2->regexp.pattern();
 			size = pattern.size();
 			buffer.resize(size);
 			data = &buffer[0];
@@ -282,9 +272,9 @@ NAN_METHOD(WrappedRE2::New) {
 			sticky     = re2->sticky;
 		}
 	} else if (info[0]->IsString()) {
-		Local<String> t(info[0]->ToString());
-		buffer.resize(t->Utf8Length() + 1);
-		t->WriteUtf8(&buffer[0]);
+		auto t = info[0]->ToString(ctx).ToLocalChecked();
+		buffer.resize(t->Utf8Length(isolate) + 1);
+		t->WriteUtf8(isolate, &buffer[0]);
 		size = buffer.size() - 1;
 		data = &buffer[0];
 		source = escapeRegExp(data, size);
@@ -319,12 +309,12 @@ NAN_METHOD(WrappedRE2::New) {
 
 	// create and return an object
 
-	RE2::Options options;
+	re2::RE2::Options options;
 	options.set_case_sensitive(!ignoreCase);
 	options.set_one_line(!multiline);
 	options.set_log_errors(false); // inappropriate when embedding
 
-	unique_ptr<WrappedRE2> re2(new WrappedRE2(StringPiece(data, size), options, source, global, ignoreCase, multiline, sticky));
+	std::unique_ptr<WrappedRE2> re2(new WrappedRE2(re2::StringPiece(data, size), options, source, global, ignoreCase, multiline, sticky));
 	if (!re2->regexp.ok()) {
 		return Nan::ThrowSyntaxError(re2->regexp.error().c_str());
 	}

@@ -1,17 +1,13 @@
 #include "./wrapped_re2.h"
 
-
 #include <string>
-
-
-using std::string;
 
 
 NAN_METHOD(WrappedRE2::ToString) {
 
 	// unpack arguments
 
-	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
+	auto re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	if (!re2) {
 		info.GetReturnValue().SetEmptyString();
 		return;
@@ -19,7 +15,7 @@ NAN_METHOD(WrappedRE2::ToString) {
 
 	// actual work
 
-	string buffer("/");
+	std::string buffer("/");
 	buffer += re2->regexp.pattern();
 	buffer += "/";
 
