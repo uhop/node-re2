@@ -15,24 +15,21 @@ StrVal::StrVal(const v8::Local<v8::Value> &arg) : data(NULL), size(0), isBuffer(
 	}
 	else
 	{
-		auto isolate = v8::Isolate::GetCurrent();
-		auto ctx = isolate->GetCurrentContext();
-		auto t(arg->ToString(ctx));
-		if (!t.IsEmpty())
+		Nan::Utf8String t(arg);
+		if (t.length())
 		{
-			auto s = t.ToLocalChecked();
-			length = s->Length();
-			size = s->Utf8Length(isolate);
+			size = length = t.length();
 			buffer.resize(size + 1);
 			data = &buffer[0];
-			s->WriteUtf8(isolate, data);
+			memcpy(data, *t, size);
+			buffer[size] = '\0';
 		}
 	}
 }
 
 void consoleCall(const v8::Local<v8::String> &methodName, v8::Local<v8::Value> text)
 {
-	auto context = v8::Isolate::GetCurrent()->GetCurrentContext();
+	auto context = Nan::GetCurrentContext();
 
 	auto maybeConsole = bind<v8::Object>(
 		Nan::Get(context->Global(), Nan::New("console").ToLocalChecked()),
@@ -64,7 +61,7 @@ void printDeprecationWarning(const char *warning)
 
 v8::Local<v8::String> callToString(const v8::Local<v8::Object> &object)
 {
-	auto context = v8::Isolate::GetCurrent()->GetCurrentContext();
+	auto context = Nan::GetCurrentContext();
 
 	auto maybeMethod = bind<v8::Object>(
 		Nan::Get(object, Nan::New("toString").ToLocalChecked()),

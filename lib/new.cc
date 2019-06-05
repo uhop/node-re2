@@ -225,18 +225,18 @@ NAN_METHOD(WrappedRE2::New)
 	bool unicode = false;
 	bool sticky = false;
 
-	auto isolate = v8::Isolate::GetCurrent();
-	auto ctx = isolate->GetCurrentContext();
+	auto context = Nan::GetCurrentContext();
 
 	if (info.Length() > 1)
 	{
 		if (info[1]->IsString())
 		{
-			auto t = info[1]->ToString(ctx).ToLocalChecked();
-			buffer.resize(t->Utf8Length(isolate) + 1);
-			t->WriteUtf8(isolate, &buffer[0]);
+			Nan::Utf8String t(info[1]);
+			buffer.resize(t.length() + 1);
 			size = buffer.size() - 1;
 			data = &buffer[0];
+			memcpy(data, *t, size);
+			buffer[size] = '\0';
 		}
 		else if (node::Buffer::HasInstance(info[1]))
 		{
@@ -279,11 +279,12 @@ NAN_METHOD(WrappedRE2::New)
 	{
 		const auto *re = v8::RegExp::Cast(*info[0]);
 
-		auto t = re->GetSource();
-		buffer.resize(t->Utf8Length(isolate) + 1);
-		t->WriteUtf8(isolate, &buffer[0]);
+		Nan::Utf8String t(re->GetSource());
+		buffer.resize(t.length() + 1);
 		size = buffer.size() - 1;
 		data = &buffer[0];
+		memcpy(data, *t, size);
+		buffer[size] = '\0';
 		source = escapeRegExp(data, size);
 
 		v8::RegExp::Flags flags = re->GetFlags();
@@ -295,8 +296,8 @@ NAN_METHOD(WrappedRE2::New)
 	}
 	else if (info[0]->IsObject() && !info[0]->IsString())
 	{
-		WrappedRE2 *re2 = NULL;
-		auto object = info[0]->ToObject(ctx).ToLocalChecked();
+		WrappedRE2 *re2 = nullptr;
+		auto object = info[0]->ToObject(context).ToLocalChecked();
 		if (!object.IsEmpty() && object->InternalFieldCount() > 0)
 		{
 			re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(object);
@@ -320,11 +321,12 @@ NAN_METHOD(WrappedRE2::New)
 	}
 	else if (info[0]->IsString())
 	{
-		auto t = info[0]->ToString(ctx).ToLocalChecked();
-		buffer.resize(t->Utf8Length(isolate) + 1);
-		t->WriteUtf8(isolate, &buffer[0]);
+		Nan::Utf8String t(info[0]);
+		buffer.resize(t.length() + 1);
 		size = buffer.size() - 1;
 		data = &buffer[0];
+		memcpy(data, *t, size);
+		buffer[size] = '\0';
 		source = escapeRegExp(data, size);
 	}
 

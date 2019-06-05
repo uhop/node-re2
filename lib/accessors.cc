@@ -171,13 +171,13 @@ NAN_GETTER(WrappedRE2::GetUnicodeWarningLevel)
 
 NAN_SETTER(WrappedRE2::SetUnicodeWarningLevel)
 {
-	auto isolate = v8::Isolate::GetCurrent();
-	auto ctx = isolate->GetCurrentContext();
 	if (value->IsString())
 	{
-		auto t = value->ToString(ctx).ToLocalChecked();
-		std::vector<char> buffer(t->Utf8Length(isolate) + 1);
-		t->WriteUtf8(isolate, &buffer[0]);
+		Nan::Utf8String t(value);
+		auto size = t.length();
+		std::vector<char> buffer(t.length() + 1);
+		memcpy(&buffer[0], *t, size);
+		buffer[size] = '\0';
 		if (!strcmp(&buffer[0], "throw"))
 		{
 			unicodeWarningLevel = THROW;

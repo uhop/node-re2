@@ -13,8 +13,7 @@ static NAN_METHOD(GetUtf8Length)
 	{
 		return;
 	}
-	auto s = t.ToLocalChecked();
-	info.GetReturnValue().Set(static_cast<int>(s->Utf8Length(isolate)));
+	info.GetReturnValue().Set(static_cast<int>(Nan::Utf8String(t.ToLocalChecked()).length()));
 }
 
 static NAN_METHOD(GetUtf16Length)
