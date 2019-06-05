@@ -5,17 +5,21 @@
 
 #include <node_buffer.h>
 
-
-StrVal::StrVal(const v8::Local<v8::Value>& arg) : data(NULL), size(0), isBuffer(false) {
-	if (node::Buffer::HasInstance(arg)) {
+StrVal::StrVal(const v8::Local<v8::Value> &arg) : data(NULL), size(0), isBuffer(false)
+{
+	if (node::Buffer::HasInstance(arg))
+	{
 		isBuffer = true;
 		size = length = node::Buffer::Length(arg);
 		data = node::Buffer::Data(arg);
-	} else {
+	}
+	else
+	{
 		auto isolate = v8::Isolate::GetCurrent();
 		auto ctx = isolate->GetCurrentContext();
 		auto t(arg->ToString(ctx));
-		if (!t.IsEmpty()) {
+		if (!t.IsEmpty())
+		{
 			auto s = t.ToLocalChecked();
 			length = s->Length();
 			size = s->Utf8Length(isolate);
@@ -26,53 +30,62 @@ StrVal::StrVal(const v8::Local<v8::Value>& arg) : data(NULL), size(0), isBuffer(
 	}
 }
 
-void consoleCall(const v8::Local<v8::String>& methodName, v8::Local<v8::Value> text) {
+void consoleCall(const v8::Local<v8::String> &methodName, v8::Local<v8::Value> text)
+{
 	auto context = v8::Isolate::GetCurrent()->GetCurrentContext();
 
 	auto maybeConsole = bind<v8::Object>(
 		Nan::Get(context->Global(), Nan::New("console").ToLocalChecked()),
-		[context] (v8::Local<v8::Value> console) { return console->ToObject(context); });
-	if (maybeConsole.IsEmpty()) return;
+		[context](v8::Local<v8::Value> console) { return console->ToObject(context); });
+	if (maybeConsole.IsEmpty())
+		return;
 
 	auto console = maybeConsole.ToLocalChecked();
 
 	auto maybeMethod = bind<v8::Object>(
 		Nan::Get(console, methodName),
-		[context] (v8::Local<v8::Value> method) { return method->ToObject(context); });
-	if (maybeMethod.IsEmpty()) return;
+		[context](v8::Local<v8::Value> method) { return method->ToObject(context); });
+	if (maybeMethod.IsEmpty())
+		return;
 
 	auto method = maybeMethod.ToLocalChecked();
-	if (!method->IsFunction()) return;
+	if (!method->IsFunction())
+		return;
 
 	Nan::Call(method.As<v8::Function>(), console, 1, &text);
 }
 
-
-void printDeprecationWarning(const char* warning) {
+void printDeprecationWarning(const char *warning)
+{
 	std::string prefixedWarning = "DeprecationWarning: ";
 	prefixedWarning += warning;
 	consoleCall(Nan::New("error").ToLocalChecked(), Nan::New(prefixedWarning).ToLocalChecked());
 }
 
-v8::Local<v8::String> callToString(const v8::Local<v8::Object>& object) {
+v8::Local<v8::String> callToString(const v8::Local<v8::Object> &object)
+{
 	auto context = v8::Isolate::GetCurrent()->GetCurrentContext();
 
 	auto maybeMethod = bind<v8::Object>(
 		Nan::Get(object, Nan::New("toString").ToLocalChecked()),
-		[context] (v8::Local<v8::Value> method) { return method->ToObject(context); });
-	if (maybeMethod.IsEmpty()) return Nan::New("No toString() is found").ToLocalChecked();
+		[context](v8::Local<v8::Value> method) { return method->ToObject(context); });
+	if (maybeMethod.IsEmpty())
+		return Nan::New("No toString() is found").ToLocalChecked();
 
 	auto method = maybeMethod.ToLocalChecked();
-	if (!method->IsFunction()) return Nan::New("No toString() is found").ToLocalChecked();
+	if (!method->IsFunction())
+		return Nan::New("No toString() is found").ToLocalChecked();
 
 	auto maybeResult = Nan::Call(method.As<v8::Function>(), object, 0, nullptr);
-	if (maybeResult.IsEmpty()) {
+	if (maybeResult.IsEmpty())
+	{
 		return Nan::New("nothing was returned").ToLocalChecked();
 	}
 
 	auto result = maybeResult.ToLocalChecked();
 
-	if (result->IsObject()) {
+	if (result->IsObject())
+	{
 		return callToString(result->ToObject(context).ToLocalChecked());
 	}
 

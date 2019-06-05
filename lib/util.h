@@ -5,31 +5,31 @@
 
 #include <vector>
 
-
-struct StrVal {
+struct StrVal
+{
 	std::vector<char> buffer;
-	char*  data;
+	char *data;
 	size_t size, length;
-	bool   isBuffer;
+	bool isBuffer;
 
 	StrVal() : data(NULL), size(0), length(0), isBuffer(false) {}
-	StrVal(const v8::Local<v8::Value>& arg);
+	StrVal(const v8::Local<v8::Value> &arg);
 
-	operator re2::StringPiece () const { return re2::StringPiece(data, size); }
+	operator re2::StringPiece() const { return re2::StringPiece(data, size); }
 };
 
-
-template<typename R, typename P, typename L>
-inline v8::MaybeLocal<R> bind(v8::MaybeLocal<P> param, L lambda) {
-	if (param.IsEmpty()) return v8::MaybeLocal<R>();
+template <typename R, typename P, typename L>
+inline v8::MaybeLocal<R> bind(v8::MaybeLocal<P> param, L lambda)
+{
+	if (param.IsEmpty())
+		return v8::MaybeLocal<R>();
 
 	return lambda(param.ToLocalChecked());
 }
 
-void consoleCall(const v8::Local<v8::String>& methodName, v8::Local<v8::Value> text);
-void printDeprecationWarning(const char* warning);
+void consoleCall(const v8::Local<v8::String> &methodName, v8::Local<v8::Value> text);
+void printDeprecationWarning(const char *warning);
 
-v8::Local<v8::String> callToString(const v8::Local<v8::Object>& object);
-
+v8::Local<v8::String> callToString(const v8::Local<v8::Object> &object);
 
 #endif
