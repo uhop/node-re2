@@ -6,13 +6,13 @@ NAN_METHOD(WrappedRE2::Search) {
 
 	// unpack arguments
 
-	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
+	auto re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	if (!re2) {
 		info.GetReturnValue().Set(-1);
 		return;
 	}
 
-	StrVal a(info[0]);
+	StrVal a =info[0];
 	if (!a.data) {
 		return;
 	}

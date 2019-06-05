@@ -10,13 +10,13 @@ NAN_METHOD(WrappedRE2::Test) {
 
 	// unpack arguments
 
-	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
+	auto re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	if (!re2) {
 		info.GetReturnValue().Set(false);
 		return;
 	}
 
-	StrVal str(info[0]);
+	StrVal str = info[0];
 	if (!str.data) {
 		return;
 	}

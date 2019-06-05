@@ -70,7 +70,7 @@ v8::Local<v8::String> callToString(const v8::Local<v8::Object>& object) {
 		return Nan::New("nothing was returned").ToLocalChecked();
 	}
 
-	v8::Local<v8::Value> result = maybeResult.ToLocalChecked();
+	auto result = maybeResult.ToLocalChecked();
 
 	if (result->IsObject()) {
 		return callToString(result->ToObject(context).ToLocalChecked());

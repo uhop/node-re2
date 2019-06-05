@@ -7,7 +7,7 @@ NAN_METHOD(WrappedRE2::ToString) {
 
 	// unpack arguments
 
-	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
+	auto re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	if (!re2) {
 		info.GetReturnValue().SetEmptyString();
 		return;
