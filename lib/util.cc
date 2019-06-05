@@ -16,7 +16,8 @@ StrVal::StrVal(const v8::Local<v8::Value> &arg) : data(NULL), size(0), isBuffer(
 	else
 	{
 		auto t = arg->ToString(Nan::GetCurrentContext());
-		if (!t.IsEmpty()) {
+		if (!t.IsEmpty())
+		{
 			auto s = t.ToLocalChecked();
 			length = Nan::DecodeBytes(s);
 			size = Nan::DecodeBytes(s, Nan::UTF8);
