@@ -49,7 +49,7 @@ void consoleCall(const v8::Local<v8::String> &methodName, v8::Local<v8::Value> t
 	if (!method->IsFunction())
 		return;
 
-	Nan::Call(method.As<v8::Function>(), console, 1, &text);
+	Nan::CallAsFunction(method, console, 1, &text);
 }
 
 void printDeprecationWarning(const char *warning)
@@ -73,7 +73,7 @@ v8::Local<v8::String> callToString(const v8::Local<v8::Object> &object)
 	if (!method->IsFunction())
 		return Nan::New("No toString() is found").ToLocalChecked();
 
-	auto maybeResult = Nan::Call(method.As<v8::Function>(), object, 0, nullptr);
+	auto maybeResult = Nan::CallAsFunction(method, object, 0, nullptr);
 	if (maybeResult.IsEmpty())
 	{
 		return Nan::New("nothing was returned").ToLocalChecked();

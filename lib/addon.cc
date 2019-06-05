@@ -7,8 +7,7 @@ Nan::Persistent<v8::FunctionTemplate> WrappedRE2::ctorTemplate;
 
 static NAN_METHOD(GetUtf8Length)
 {
-	auto isolate = v8::Isolate::GetCurrent();
-	auto t = info[0]->ToString(isolate->GetCurrentContext());
+	auto t = info[0]->ToString(Nan::GetCurrentContext());
 	if (t.IsEmpty())
 	{
 		return;

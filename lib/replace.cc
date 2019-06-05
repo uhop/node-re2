@@ -295,8 +295,7 @@ inline Nan::Maybe<std::string> replace(const Nan::Callback *replacer, const std:
 {
 	std::vector<v8::Local<v8::Value>> argv;
 
-	auto isolate = v8::Isolate::GetCurrent();
-	auto context = isolate->GetCurrentContext();
+	auto context = Nan::GetCurrentContext();
 
 	if (useBuffers)
 	{
@@ -331,7 +330,7 @@ inline Nan::Maybe<std::string> replace(const Nan::Callback *replacer, const std:
 		argv.push_back(groups);
 	}
 
-	auto maybeResult(Nan::Call(replacer->GetFunction(), context->Global(), static_cast<int>(argv.size()), &argv[0]));
+	auto maybeResult = Nan::CallAsFunction(replacer->GetFunction(), context->Global(), static_cast<int>(argv.size()), &argv[0]);
 
 	if (maybeResult.IsEmpty())
 	{
@@ -456,7 +455,7 @@ static Nan::Maybe<std::string> replace(WrappedRE2 *re2, const StrVal &replacee, 
 	return Nan::Just(result);
 }
 
-static bool requiresBuffers(const v8::Local<v8::Function> &f, const v8::Local<v8::Context> &ctx)
+static bool requiresBuffers(const v8::Local<v8::Function> &f)
 {
 	auto flag(Nan::Get(f, Nan::New("useBuffers").ToLocalChecked()).ToLocalChecked());
 	if (flag->IsUndefined() || flag->IsNull() || flag->IsFalse())
@@ -465,11 +464,11 @@ static bool requiresBuffers(const v8::Local<v8::Function> &f, const v8::Local<v8
 	}
 	if (flag->IsNumber())
 	{
-		return flag->NumberValue(ctx).ToChecked() != 0;
+		return flag->NumberValue(Nan::GetCurrentContext()).ToChecked() != 0;
 	}
 	if (flag->IsString())
 	{
-		return flag->ToString(ctx).ToLocalChecked()->Length() > 0;
+		return flag->ToString(Nan::GetCurrentContext()).ToLocalChecked()->Length() > 0;
 	}
 	return true;
 }
@@ -496,7 +495,7 @@ NAN_METHOD(WrappedRE2::Replace)
 	{
 		auto fun = info[1].As<v8::Function>();
 		const std::unique_ptr<const Nan::Callback> cb(new Nan::Callback(fun));
-		const auto replaced = replace(re2, replacee, cb.get(), info[0], requiresBuffers(fun, v8::Isolate::GetCurrent()->GetCurrentContext()));
+		const auto replaced = replace(re2, replacee, cb.get(), info[0], requiresBuffers(fun));
 		if (replaced.IsNothing())
 		{
 			return;

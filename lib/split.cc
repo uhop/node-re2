@@ -31,7 +31,7 @@ NAN_METHOD(WrappedRE2::Split)
 	size_t limit = std::numeric_limits<size_t>::max();
 	if (info.Length() > 1 && info[1]->IsNumber())
 	{
-		size_t lim = info[1]->NumberValue(v8::Isolate::GetCurrent()->GetCurrentContext()).ToChecked();
+		size_t lim = info[1]->NumberValue(Nan::GetCurrentContext()).ToChecked();
 		if (lim > 0)
 		{
 			limit = lim;
