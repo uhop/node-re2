@@ -21,10 +21,7 @@ struct StrVal
 template <typename R, typename P, typename L>
 inline v8::MaybeLocal<R> bind(v8::MaybeLocal<P> param, L lambda)
 {
-	if (param.IsEmpty())
-		return v8::MaybeLocal<R>();
-
-	return lambda(param.ToLocalChecked());
+	return param.IsEmpty() ? v8::MaybeLocal<R>() : lambda(param.ToLocalChecked());
 }
 
 void consoleCall(const v8::Local<v8::String> &methodName, v8::Local<v8::Value> text);

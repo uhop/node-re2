@@ -5,7 +5,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <iostream>
 
 #include <node_buffer.h>
 
@@ -344,14 +343,8 @@ inline Nan::Maybe<std::string> replace(const Nan::Callback *replacer, const std:
 		return Nan::Just(std::string(node::Buffer::Data(result), node::Buffer::Length(result)));
 	}
 
-	if (result->IsObject())
-	{
-		Nan::Utf8String val(callToString(result->ToObject(context).ToLocalChecked()));
-		return Nan::Just(std::string(*val, val.length()));
-	}
-
-	Nan::Utf8String val(result->ToString(context).ToLocalChecked());
-	return Nan::Just(std::string(*val, val.length()));
+	StrVal val = result;
+	return Nan::Just(std::string(val.data, val.size));
 }
 
 static Nan::Maybe<std::string> replace(WrappedRE2 *re2, const StrVal &replacee, const Nan::Callback *replacer, const v8::Local<v8::Value> &input, bool useBuffers)
@@ -464,7 +457,7 @@ static bool requiresBuffers(const v8::Local<v8::Function> &f)
 	}
 	if (flag->IsNumber())
 	{
-		return flag->NumberValue(Nan::GetCurrentContext()).ToChecked() != 0;
+		return flag->NumberValue(Nan::GetCurrentContext()).FromMaybe(0) != 0;
 	}
 	if (flag->IsString())
 	{
@@ -475,7 +468,6 @@ static bool requiresBuffers(const v8::Local<v8::Function> &f)
 
 NAN_METHOD(WrappedRE2::Replace)
 {
-
 	auto re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	if (!re2)
 	{
@@ -483,9 +475,10 @@ NAN_METHOD(WrappedRE2::Replace)
 		return;
 	}
 
-	StrVal replacee(info[0]);
+	StrVal replacee = info[0];
 	if (!replacee.data)
 	{
+		info.GetReturnValue().Set(info[0]);
 		return;
 	}
 
@@ -498,6 +491,7 @@ NAN_METHOD(WrappedRE2::Replace)
 		const auto replaced = replace(re2, replacee, cb.get(), info[0], requiresBuffers(fun));
 		if (replaced.IsNothing())
 		{
+			info.GetReturnValue().Set(info[0]);
 			return;
 		}
 		result = replaced.FromJust();
@@ -507,11 +501,13 @@ NAN_METHOD(WrappedRE2::Replace)
 		StrVal replacer = info[1];
 		if (!replacer.data)
 		{
+			info.GetReturnValue().Set(info[0]);
 			return;
 		}
 		const auto replaced = replace(re2, replacee, replacer.data, replacer.size);
 		if (replaced.IsNothing())
 		{
+			info.GetReturnValue().Set(info[0]);
 			return;
 		}
 		result = replaced.FromJust();

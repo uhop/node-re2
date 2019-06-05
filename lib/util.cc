@@ -15,13 +15,14 @@ StrVal::StrVal(const v8::Local<v8::Value> &arg) : data(NULL), size(0), isBuffer(
 	}
 	else
 	{
-		Nan::Utf8String t(arg);
-		if (t.length())
-		{
-			size = length = t.length();
+		auto t = arg->ToString(Nan::GetCurrentContext());
+		if (!t.IsEmpty()) {
+			auto s = t.ToLocalChecked();
+			length = Nan::DecodeBytes(s);
+			size = Nan::DecodeBytes(s, Nan::UTF8);
 			buffer.resize(size + 1);
 			data = &buffer[0];
-			memcpy(data, *t, size);
+			Nan::DecodeWrite(data, size, s, Nan::UTF8);
 			buffer[size] = '\0';
 		}
 	}

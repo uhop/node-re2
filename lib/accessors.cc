@@ -141,7 +141,7 @@ NAN_SETTER(WrappedRE2::SetLastIndex)
 	auto re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	if (value->IsNumber())
 	{
-		int n = value->NumberValue(Nan::GetCurrentContext()).ToChecked();
+		int n = value->NumberValue(Nan::GetCurrentContext()).FromMaybe(0);
 		re2->lastIndex = n <= 0 ? 0 : n;
 	}
 }
