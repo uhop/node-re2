@@ -231,11 +231,10 @@ NAN_METHOD(WrappedRE2::New)
 	{
 		if (info[1]->IsString())
 		{
-			Nan::Utf8String t(info[1]);
-			buffer.resize(t.length() + 1);
-			size = buffer.size() - 1;
+			size = Nan::DecodeBytes(info[1], Nan::UTF8);
+			buffer.resize(size + 1);
 			data = &buffer[0];
-			memcpy(data, *t, size);
+			Nan::DecodeWrite(data, size, info[1], Nan::UTF8);
 			buffer[size] = '\0';
 		}
 		else if (node::Buffer::HasInstance(info[1]))
@@ -273,18 +272,20 @@ NAN_METHOD(WrappedRE2::New)
 	{
 		size = node::Buffer::Length(info[0]);
 		data = node::Buffer::Data(info[0]);
+
 		source = escapeRegExp(data, size);
 	}
 	else if (info[0]->IsRegExp())
 	{
 		const auto *re = v8::RegExp::Cast(*info[0]);
 
-		Nan::Utf8String t(re->GetSource());
-		buffer.resize(t.length() + 1);
-		size = buffer.size() - 1;
+		auto t = re->GetSource();
+		size = Nan::DecodeBytes(t, Nan::UTF8);
+		buffer.resize(size + 1);
 		data = &buffer[0];
-		memcpy(data, *t, size);
+		Nan::DecodeWrite(data, size, t, Nan::UTF8);
 		buffer[size] = '\0';
+
 		source = escapeRegExp(data, size);
 
 		v8::RegExp::Flags flags = re->GetFlags();
@@ -312,6 +313,7 @@ NAN_METHOD(WrappedRE2::New)
 			needConversion = false;
 
 			source = re2->source;
+
 			global = re2->global;
 			ignoreCase = re2->ignoreCase;
 			multiline = re2->multiline;
@@ -321,12 +323,12 @@ NAN_METHOD(WrappedRE2::New)
 	}
 	else if (info[0]->IsString())
 	{
-		Nan::Utf8String t(info[0]);
-		buffer.resize(t.length() + 1);
-		size = buffer.size() - 1;
+		size = Nan::DecodeBytes(info[0], Nan::UTF8);
+		buffer.resize(size + 1);
 		data = &buffer[0];
-		memcpy(data, *t, size);
+		Nan::DecodeWrite(data, size, info[0], Nan::UTF8);
 		buffer[size] = '\0';
+
 		source = escapeRegExp(data, size);
 	}
 
