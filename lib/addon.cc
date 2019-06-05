@@ -9,18 +9,18 @@ Nan::Persistent<v8::FunctionTemplate> WrappedRE2::ctorTemplate;
 
 static NAN_METHOD(GetUtf8Length) {
 	auto isolate = v8::Isolate::GetCurrent();
-	v8::MaybeLocal<v8::String> t(info[0]->ToString(isolate->GetCurrentContext()));
+	auto t = info[0]->ToString(isolate->GetCurrentContext());
 	if (t.IsEmpty()) {
 		return;
 	}
-	v8::Local<v8::String> s(t.ToLocalChecked());
+	auto s =t.ToLocalChecked();
 	info.GetReturnValue().Set(static_cast<int>(s->Utf8Length(isolate)));
 }
 
 
 static NAN_METHOD(GetUtf16Length) {
 	if (node::Buffer::HasInstance(info[0])) {
-		char* s = node::Buffer::Data(info[0]);
+		const auto* s = node::Buffer::Data(info[0]);
 		info.GetReturnValue().Set(static_cast<int>(getUtf16Length(s, s + node::Buffer::Length(info[0]))));
 		return;
 	}
@@ -31,7 +31,7 @@ static NAN_METHOD(GetUtf16Length) {
 void WrappedRE2::Initialize(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) {
 
 	// prepare constructor template
-	v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(New);
+	auto tpl = Nan::New<v8::FunctionTemplate>(New);
 	tpl->SetClassName(Nan::New("RE2").ToLocalChecked());
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
@@ -47,7 +47,7 @@ void WrappedRE2::Initialize(v8::Local<v8::Object> exports, v8::Local<v8::Object>
 	Nan::SetPrototypeMethod(tpl, "search",   Search);
 	Nan::SetPrototypeMethod(tpl, "split",    Split);
 
-	v8::Local<v8::ObjectTemplate> proto = tpl->PrototypeTemplate();
+	auto proto = tpl->PrototypeTemplate();
 	Nan::SetAccessor(proto, Nan::New("source").ToLocalChecked(),         GetSource);
 	Nan::SetAccessor(proto, Nan::New("flags").ToLocalChecked(),          GetFlags);
 	Nan::SetAccessor(proto, Nan::New("global").ToLocalChecked(),         GetGlobal);
@@ -58,7 +58,7 @@ void WrappedRE2::Initialize(v8::Local<v8::Object> exports, v8::Local<v8::Object>
 	Nan::SetAccessor(proto, Nan::New("lastIndex").ToLocalChecked(),      GetLastIndex, SetLastIndex);
 	Nan::SetAccessor(proto, Nan::New("internalSource").ToLocalChecked(), GetInternalSource);
 
-	v8::Local<v8::Function> fun = Nan::GetFunction(tpl).ToLocalChecked();
+	auto fun = Nan::GetFunction(tpl).ToLocalChecked();
 	Nan::Export(fun, "getUtf8Length",  GetUtf8Length);
 	Nan::Export(fun, "getUtf16Length", GetUtf16Length);
 	Nan::SetAccessor(v8::Local<v8::Object>(fun), Nan::New("unicodeWarningLevel").ToLocalChecked(), GetUnicodeWarningLevel, SetUnicodeWarningLevel);

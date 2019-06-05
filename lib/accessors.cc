@@ -11,7 +11,7 @@ NAN_GETTER(WrappedRE2::GetSource) {
 		return;
 	}
 
-	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
+	auto re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	info.GetReturnValue().Set(Nan::New(re2->source).ToLocalChecked());
 }
 
@@ -21,7 +21,7 @@ NAN_GETTER(WrappedRE2::GetInternalSource) {
 		return;
 	}
 
-	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
+	auto re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	info.GetReturnValue().Set(Nan::New(re2->regexp.pattern()).ToLocalChecked());
 }
 
@@ -31,7 +31,7 @@ NAN_GETTER(WrappedRE2::GetFlags) {
 		return;
 	}
 
-	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
+	auto re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 
 	std::string flags;
 	if (re2->global) {
@@ -57,7 +57,7 @@ NAN_GETTER(WrappedRE2::GetGlobal) {
 		return;
 	}
 
-	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
+	auto re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	info.GetReturnValue().Set(re2->global);
 }
 
@@ -68,7 +68,7 @@ NAN_GETTER(WrappedRE2::GetIgnoreCase) {
 		return;
 	}
 
-	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
+	auto re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	info.GetReturnValue().Set(re2->ignoreCase);
 }
 
@@ -79,7 +79,7 @@ NAN_GETTER(WrappedRE2::GetMultiline) {
 		return;
 	}
 
-	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
+	auto re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	info.GetReturnValue().Set(re2->multiline);
 }
 
@@ -100,7 +100,7 @@ NAN_GETTER(WrappedRE2::GetSticky) {
 		return;
 	}
 
-	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
+	auto re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	info.GetReturnValue().Set(re2->sticky);
 }
 
@@ -111,7 +111,7 @@ NAN_GETTER(WrappedRE2::GetLastIndex) {
 		return;
 	}
 
-	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
+	auto re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	info.GetReturnValue().Set(static_cast<int>(re2->lastIndex));
 }
 
@@ -121,7 +121,7 @@ NAN_SETTER(WrappedRE2::SetLastIndex) {
 		return Nan::ThrowTypeError("Cannot set lastIndex of an invalid RE2 object.");
 	}
 
-	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
+	auto re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	if (value->IsNumber()) {
 		int n = value->NumberValue(v8::Isolate::GetCurrent()->GetCurrentContext()).ToChecked();
 		re2->lastIndex = n <= 0 ? 0 : n;
@@ -156,7 +156,7 @@ NAN_SETTER(WrappedRE2::SetUnicodeWarningLevel) {
 	auto isolate = v8::Isolate::GetCurrent();
 	auto ctx = isolate->GetCurrentContext();
 	if (value->IsString()) {
-		v8::Local<v8::String> t(value->ToString(ctx).ToLocalChecked());
+		auto t = value->ToString(ctx).ToLocalChecked();
 		std::vector<char> buffer(t->Utf8Length(isolate) + 1);
 		t->WriteUtf8(isolate, &buffer[0]);
 		if (!strcmp(&buffer[0], "throw")) {

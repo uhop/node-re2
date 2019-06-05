@@ -152,7 +152,7 @@ static const char* depricationMessage = "BMP patterns aren't supported by node-r
 inline bool ensureUniqueNamedGroups(const std::map<int, std::string>& groups) {
 	std::unordered_set<std::string> names;
 
-	for (std::pair<int, std::string> group: groups) {
+	for (auto group: groups) {
 		if (!names.insert(group.second).second) {
 			return false;
 		}
@@ -197,7 +197,7 @@ NAN_METHOD(WrappedRE2::New) {
 
 	if (info.Length() > 1) {
 		if (info[1]->IsString()) {
-			v8::Local<v8::String> t(info[1]->ToString(ctx).ToLocalChecked());
+			auto t = info[1]->ToString(ctx).ToLocalChecked();
 			buffer.resize(t->Utf8Length(isolate) + 1);
 			t->WriteUtf8(isolate, &buffer[0]);
 			size = buffer.size() - 1;
@@ -235,9 +235,9 @@ NAN_METHOD(WrappedRE2::New) {
 		data = node::Buffer::Data(info[0]);
 		source = escapeRegExp(data, size);
 	} else if (info[0]->IsRegExp()) {
-		const v8::RegExp* re = v8::RegExp::Cast(*info[0]);
+		const auto* re = v8::RegExp::Cast(*info[0]);
 
-		v8::Local<v8::String> t(re->GetSource());
+		auto t = re->GetSource();
 		buffer.resize(t->Utf8Length(isolate) + 1);
 		t->WriteUtf8(isolate, &buffer[0]);
 		size = buffer.size() - 1;
@@ -257,7 +257,7 @@ NAN_METHOD(WrappedRE2::New) {
 			re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(object);
 		}
 		if (re2) {
-			const std::string& pattern = re2->regexp.pattern();
+			const auto& pattern = re2->regexp.pattern();
 			size = pattern.size();
 			buffer.resize(size);
 			data = &buffer[0];
@@ -272,7 +272,7 @@ NAN_METHOD(WrappedRE2::New) {
 			sticky     = re2->sticky;
 		}
 	} else if (info[0]->IsString()) {
-		v8::Local<v8::String> t(info[0]->ToString(ctx).ToLocalChecked());
+		auto t = info[0]->ToString(ctx).ToLocalChecked();
 		buffer.resize(t->Utf8Length(isolate) + 1);
 		t->WriteUtf8(isolate, &buffer[0]);
 		size = buffer.size() - 1;

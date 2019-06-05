@@ -10,7 +10,7 @@ NAN_METHOD(WrappedRE2::Exec) {
 
 	// unpack arguments
 
-	WrappedRE2* re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
+	auto re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	if (!re2) {
 		info.GetReturnValue().SetNull();
 		return;
@@ -59,13 +59,12 @@ NAN_METHOD(WrappedRE2::Exec) {
 
 	// form a result
 
-	v8::Local<v8::Array> result = Nan::New<v8::Array>();
-
+	auto result = Nan::New<v8::Array>();
 	int indexOffset = re2->global || re2->sticky ? re2->lastIndex : 0;
 
 	if (str.isBuffer) {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
-			const re2::StringPiece& item = groups[i];
+			const auto& item = groups[i];
 			if (item.data() != NULL) {
 				Nan::Set(result, i, Nan::CopyBuffer(item.data(), item.size()).ToLocalChecked());
 			}
@@ -74,7 +73,7 @@ NAN_METHOD(WrappedRE2::Exec) {
 			indexOffset + static_cast<int>(groups[0].data() - str.data)));
 	} else {
 		for (size_t i = 0, n = groups.size(); i < n; ++i) {
-			const re2::StringPiece& item = groups[i];
+			const auto& item = groups[i];
 			if (item.data() != NULL) {
 				Nan::Set(result, i, Nan::New(item.data(), item.size()).ToLocalChecked());
 			}
@@ -85,13 +84,13 @@ NAN_METHOD(WrappedRE2::Exec) {
 
 	Nan::Set(result, Nan::New("input").ToLocalChecked(), info[0]);
 
-	const std::map<int, std::string>& groupNames = re2->regexp.CapturingGroupNames();
+	const auto& groupNames = re2->regexp.CapturingGroupNames();
 	if (!groupNames.empty()) {
-		v8::Local<v8::Object> groups = Nan::New<v8::Object>();
+		auto groups = Nan::New<v8::Object>();
 		(void)groups->SetPrototype(v8::Isolate::GetCurrent()->GetCurrentContext(), Nan::Null());
 
-		for (std::pair<int, std::string> group: groupNames) {
-			Nan::MaybeLocal<v8::Value> value = Nan::Get(result, group.first);
+		for (auto group: groupNames) {
+			auto value = Nan::Get(result, group.first);
 			if (!value.IsEmpty()) {
 				Nan::Set(groups, Nan::New(group.second).ToLocalChecked(), value.ToLocalChecked());
 			}
