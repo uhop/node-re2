@@ -353,6 +353,7 @@ Or:
 
 ## Release history
 
+- 1.10.2 *Technical release: added TypeScript types (thx [Jamie Magee](https://github.com/JamieMagee)).*
 - 1.10.1 *Updated `re2` to the latest version (thx [Jamie Magee](https://github.com/JamieMagee)), dropped Node 6.*
 - 1.10.0 *Added back support for Node 6 and Node 8. Now Node 6-12 is supported.*
 - 1.9.0 *Refreshed dependencies to support Node 12. Only versions 10-12 are supported now (`v8` restrictions). For older versions use `node-re2@1.8`.*
