@@ -5,6 +5,7 @@
   "homepage": "http://github.com/uhop/node-re2",
   "bugs": "http://github.com/uhop/node-re2/issues",
   "main": "re2.js",
+  "types": "re2.d.ts",
   "directories": {
     "test": "tests"
   },
