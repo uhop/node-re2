@@ -353,6 +353,7 @@ Or:
 
 ## Release history
 
+- 1.10.4 *Technical release: even better TypeScript types (thx [Louis Brann](https://github.com/louis-brann)).*
 - 1.10.3 *Technical release: missing reference to TS types (thx [Jamie Magee](https://github.com/JamieMagee)).*
 - 1.10.2 *Technical release: added TypeScript types (thx [Jamie Magee](https://github.com/JamieMagee)).*
 - 1.10.1 *Updated `re2` to the latest version (thx [Jamie Magee](https://github.com/JamieMagee)), dropped Node 6.*
