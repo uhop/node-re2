@@ -74,6 +74,7 @@ unit.add(module, [
 
 		eval(t.TEST("result[1] === 'aaa'"));
 		eval(t.TEST("result[2] === undefined"));
+		eval(t.TEST("result.length === 3"));
 	},
 	function test_execAnchoredToBeginning(t) {
 		"use strict";

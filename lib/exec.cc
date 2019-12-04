@@ -83,6 +83,10 @@ NAN_METHOD(WrappedRE2::Exec)
 			{
 				Nan::Set(result, i, Nan::CopyBuffer(item.data(), item.size()).ToLocalChecked());
 			}
+			else
+			{
+				Nan::Set(result, i, Nan::Undefined());
+			}
 		}
 		Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<v8::Integer>(indexOffset + static_cast<int>(groups[0].data() - str.data)));
 	}
@@ -94,6 +98,10 @@ NAN_METHOD(WrappedRE2::Exec)
 			if (item.data() != NULL)
 			{
 				Nan::Set(result, i, Nan::New(item.data(), item.size()).ToLocalChecked());
+			}
+			else
+			{
+				Nan::Set(result, i, Nan::Undefined());
 			}
 		}
 		Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<v8::Integer>(indexOffset + static_cast<int>(getUtf16Length(str.data + lastIndex, groups[0].data()))));
