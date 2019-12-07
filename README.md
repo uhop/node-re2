@@ -1,12 +1,11 @@
 # node-re2
 
-[![Build status][travis-image]][travis-url]
-[![Dependencies][deps-image]][deps-url]
-[![devDependencies][dev-deps-image]][dev-deps-url]
+<!-- [![Build status][travis-image]][travis-url] -->
 [![NPM version][npm-image]][npm-url]
 
 [![Greenkeeper badge](https://badges.greenkeeper.io/uhop/node-re2.svg)](https://greenkeeper.io/)
-
+[![Dependencies][deps-image]][deps-url]
+[![devDependencies][dev-deps-image]][dev-deps-url]
 
 This project provides bindings for [RE2](https://github.com/google/re2):
 fast, safe alternative to backtracking regular expression engines written by [Russ Cox](http://swtch.com/~rsc/).
@@ -353,6 +352,7 @@ Or:
 
 ## Release history
 
+- 1.10.5 *Bugfix for optional groups (thx [Josh Yudaken](https://github.com/qix)), the latest version of `re2`.*
 - 1.10.4 *Technical release: even better TypeScript types (thx [Louis Brann](https://github.com/louis-brann)).*
 - 1.10.3 *Technical release: missing reference to TS types (thx [Jamie Magee](https://github.com/JamieMagee)).*
 - 1.10.2 *Technical release: added TypeScript types (thx [Jamie Magee](https://github.com/JamieMagee)).*
