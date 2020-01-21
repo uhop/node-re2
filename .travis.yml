@@ -1,27 +1,15 @@
 sudo: false
-dist: Xenial
 
 branches:
   only:
     - pre-build
 
-compiler: clang
 language: node_js
+
 services: docker
 
-node_js:
-  - "10"
-
-os:
-  - linux
-
 before_install:
-  - cd $TRAVIS_BUILD_DIR
+  - docker pull kobelb/build-node-re2:alpha-1
 
 install:
-  - set -e;
-  - docker run -v `pwd`:/build --rm kobelb/build-node-re2:latest /build/build.sh;
-    sudo chown -R travis:travis .;
-
-before_script:
-  - if [ "`nvm current`" < "system" ]; then N=`which node`; D=`dirname $N`; ln -s $D/../lib/node_modules/npm/bin/node-gyp-bin/node-gyp; fi
+  - docker run --rm -v "$TRAVIS_BUILD_DIR":/opt/app-root/src/node-re2 kobelb/build-node-re2:alpha-1 yarn
