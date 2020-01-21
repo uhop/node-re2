@@ -2,7 +2,7 @@ sudo: false
 
 branches:
   only:
-    - pre-build
+    - master
 
 language: node_js
 
