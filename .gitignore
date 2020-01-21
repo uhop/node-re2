@@ -7,3 +7,5 @@ vendor/*
 !vendor/re2/*
 !vendor/util/*
 .vscode/
+.DS_Store
+yarn-error.log

@@ -1,0 +1,8 @@
+#!/bin/sh
+cat <<EOF
+This is a devtoolset-6-toolchain base image.
+
+Sample invocation:
+docker run -ti devtoolset-6-toolchain-rhel7 /bin/bash
+EOF
+
