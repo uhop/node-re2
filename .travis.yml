@@ -14,4 +14,4 @@ before_install:
   - docker pull kobelb/build-node-re2:alpha-1
 
 install:
-  - docker run --rm -v "$TRAVIS_BUILD_DIR":/opt/app-root/src/node-re2 kobelb/build-node-re2:alpha-1 yarn
+  - docker run --rm -v "$TRAVIS_BUILD_DIR":/opt/app-root/src/node-re2 kobelb/build-node-re2:alpha-1 "npm install"
