@@ -15,5 +15,5 @@ install:
   - sudo chown travis:travis $TRAVIS_BUILD_DIR
   - echo "test" > "$TRAVIS_BUILD_DIR"/foo.txt
   - cat foo.txt
-  - docker run --rm -v "$TRAVIS_BUILD_DIR":/opt/app-root/src/node-re2 kobelb/build-node-re2:alpha-1 "npm install"
+  - docker run --rm --mount type=bind,source="$TRAVIS_BUILD_DIR",destination=/opt/app-root/src/node-re2 kobelb/build-node-re2:alpha-1 "npm install"
 
