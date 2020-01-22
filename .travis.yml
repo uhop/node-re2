@@ -10,9 +10,8 @@ node_js:
 
 services: docker
 
-before_install:
-  - docker pull kobelb/build-node-re2:alpha-1
-  - docker run --rm -v "$TRAVIS_BUILD_DIR":/opt/app-root/src/node-re2 kobelb/build-node-re2:alpha-1 "npm install"
-
 install:
+  - docker pull kobelb/build-node-re2:alpha-1
+  - sudo chown travis:travis $TRAVIS_BUILD_DIR
+  - docker run --rm -v "$TRAVIS_BUILD_DIR":/opt/app-root/src/node-re2 kobelb/build-node-re2:alpha-1 "npm install"
 
