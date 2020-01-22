@@ -11,7 +11,7 @@ node_js:
 services: docker
 
 install:
-  - docker pull kobelb/build-node-re2:alpha-1
+  - docker pull kobelb/build-node-re2:alpha-2
   - sudo chown travis:travis $TRAVIS_BUILD_DIR
   - echo "test" > "$TRAVIS_BUILD_DIR"/foo.txt
   - cat foo.txt

@@ -20,6 +20,7 @@ RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh
 COPY ./root/ /
 
 RUN mkdir -p ${HOME} && \
+    mkdir -p ${HOME}\node-re2 && \
     groupadd -r default -f -g 1001 && \
     useradd -g default default -d ${HOME} -u 1001 && \
     chown -R 1001:1001 /opt/app-root /usr/bin/container-entrypoint /usr/bin/usage && \
