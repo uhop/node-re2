@@ -12,9 +12,10 @@ services: docker
 
 install:
   - docker pull kobelb/build-node-re2:alpha-2
+  - cd $TRAVIS_BUILD_DIR
+  - ls -altr
   - sudo chown travis:travis $TRAVIS_BUILD_DIR
-  - echo "test" > "$TRAVIS_BUILD_DIR"/foo.txt
-  - cat foo.txt
+  - ls -altr
   - docker run --rm --mount type=bind,source="$TRAVIS_BUILD_DIR",destination=/opt/app-root/src/node-re2 kobelb/build-node-re2:alpha-2 "ls -altr"
   - docker run --rm --mount type=bind,source="$TRAVIS_BUILD_DIR",destination=/opt/app-root/src/node-re2 kobelb/build-node-re2:alpha-2 "whoami"
   - docker run --rm --mount type=bind,source="$TRAVIS_BUILD_DIR",destination=/opt/app-root/src/node-re2 kobelb/build-node-re2:alpha-2 "touch foo.txt"
