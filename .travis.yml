@@ -11,6 +11,7 @@ node_js:
 os:
   - osx
   - linux
+  - windows
 osx_image: xcode9.2
 
 services: docker
@@ -25,6 +26,7 @@ install:
   - mkdir -p ./target/
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export ARCHIVE_PLATFORM=linux; build-resources/linux/build.sh; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export ARCHIVE_PLATFORM=darwin; npm install; cp ./build/Release/re2.node ./target/; fi
+  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then export ARCHIVE_PLATFORM=windows; npm install; cp ./build/Release/re2.node ./target/; fi
   - mkdir -p ./archives/
   - tar czvf "./archives/$PACKAGE_VERSION-$ARCHIVE_PLATFORM.tar.gz" ./target/re2.node
 script:
