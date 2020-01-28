@@ -15,4 +15,5 @@ install:
   - docker pull kobelb/build-node-re2:alpha-3
   - docker run -t --name build --mount type=bind,source="$TRAVIS_BUILD_DIR",destination=/opt/app-root/src/node-re2 kobelb/build-node-re2:alpha-3 /bin/bash -c "cp -r ./node-re2 ./tmp; cd ./tmp; npm install"
   - docker cp build:/opt/app-root/src/tmp/build/Release/re2.node ./target/linux
-
+  - mkdir -p ./artifacts/re2 && cd ./artifacts/re2
+  - tar czvf "$VERSION-linux.tar.gz" ../../target/linux/re2.node
