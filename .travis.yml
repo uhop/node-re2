@@ -22,6 +22,7 @@ install:
   - >
     PACKAGE_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]')
   - echo "Building archives for $PACKAGE_VERSION"
+  - mkdir -p ./target/
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export ARCHIVE_PLATFORM=linux; build-resources/linux/build.sh; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export ARCHIVE_PLATFORM=darwin; npm install; cp ./build/Release/re2.node ./target/; fi
   - mkdir -p ./archives/
