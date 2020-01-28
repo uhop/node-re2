@@ -10,6 +10,9 @@ node_js:
 
 services: docker
 
+before_install:
+  - openssl aes-256-cbc -K $encrypted_3bd977adfd95_key -iv $encrypted_3bd977adfd95_iv -in .gcs-secret.json.enc -out .gcs-secret.json -d
+
 install:
   - mkdir -p ./target/linux
   - docker pull kobelb/build-node-re2:alpha-3
@@ -17,3 +20,13 @@ install:
   - docker cp build:/opt/app-root/src/tmp/build/Release/re2.node ./target/linux
   - mkdir -p ./artifacts/re2 && cd ./artifacts/re2
   - tar czvf "$VERSION-linux.tar.gz" ../../target/linux/re2.node
+
+script:
+  - echo "skipping tests"
+
+deploy:
+  provider: gcs
+  key_file: .gcs-secret.json
+  bucket: "native_modules"
+  skip_cleanup: true
+  edge: true
