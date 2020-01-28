@@ -14,13 +14,12 @@ before_install:
   - openssl aes-256-cbc -K $encrypted_3bd977adfd95_key -iv $encrypted_3bd977adfd95_iv -in .gcs-secret.json.enc -out .gcs-secret.json -d
 
 install:
-  - ls -altr
-  - mkdir -p ./target/linux
   - docker pull kobelb/build-node-re2:alpha-3
   - docker run -t --name build --mount type=bind,source="$TRAVIS_BUILD_DIR",destination=/opt/app-root/src/node-re2 kobelb/build-node-re2:alpha-3 /bin/bash -c "cp -r ./node-re2 ./tmp; cd ./tmp; npm install"
+  - mkdir -p ./target/linux
   - docker cp build:/opt/app-root/src/tmp/build/Release/re2.node ./target/linux
-  - mkdir -p ./artifacts/re2 && cd ./artifacts/re2
-  - tar czvf "$VERSION-linux.tar.gz" ../../target/linux/re2.node
+  - mkdir -p ./artifacts/re2
+  - tar czvf ./artifacts/re2/1.10.5-linux.tar.gz ./target/linux/re2.node
 
 script:
   - echo "skipping tests"
