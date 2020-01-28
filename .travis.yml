@@ -11,14 +11,8 @@ node_js:
 services: docker
 
 install:
-  - docker pull kobelb/build-node-re2:alpha-2
-  - cd $TRAVIS_BUILD_DIR
-  - ls -altr
-  - sudo chown travis:travis $TRAVIS_BUILD_DIR
-  - ls -altr
-  - docker run --rm --mount type=bind,source="$TRAVIS_BUILD_DIR",destination=/opt/app-root/src/node-re2 kobelb/build-node-re2:alpha-2 "ls -altr"
-  - docker run --rm --mount type=bind,source="$TRAVIS_BUILD_DIR",destination=/opt/app-root/src/node-re2 kobelb/build-node-re2:alpha-2 "whoami"
-  - docker run --rm --mount type=bind,source="$TRAVIS_BUILD_DIR",destination=/opt/app-root/src/node-re2 kobelb/build-node-re2:alpha-2 "touch foo.txt"
-  - docker run --rm --mount type=bind,source="$TRAVIS_BUILD_DIR",destination=/opt/app-root/src/node-re2 kobelb/build-node-re2:alpha-2 "ls -altr"
-
+  - mkdir -p ./target/linux
+  - docker pull kobelb/build-node-re2:alpha-3
+  - docker run -t --name build --mount type=bind,source="$TRAVIS_BUILD_DIR",destination=/opt/app-root/src/node-re2 kobelb/build-node-re2:alpha-3 /bin/bash -c "cp -r ./node-re2 ./tmp; cd ./tmp; npm install"
+  - docker cp build:/opt/app-root/src/tmp/build/Release/re2.node ./target/linux
 

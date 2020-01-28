@@ -20,7 +20,6 @@ RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh
 COPY ./root/ /
 
 RUN mkdir -p ${HOME} && \
-    mkdir -p ${HOME}\node-re2 && \
     groupadd -r default -f -g 1001 && \
     useradd -g default default -d ${HOME} -u 1001 && \
     chown -R 1001:1001 /opt/app-root /usr/bin/container-entrypoint /usr/bin/usage && \
@@ -28,7 +27,7 @@ RUN mkdir -p ${HOME} && \
 
 USER 1001
 
-WORKDIR ${HOME}/node-re2
+WORKDIR ${HOME}
 
 # Enable the SCL for all bash scripts.
 ENV BASH_ENV=/opt/app-root/etc/scl_enable \
