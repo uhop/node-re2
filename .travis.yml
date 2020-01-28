@@ -14,7 +14,8 @@ before_install:
   - openssl aes-256-cbc -K $encrypted_3bd977adfd95_key -iv $encrypted_3bd977adfd95_iv -in .gcs-secret.json.enc -out .gcs-secret.json -d
 
 install:
-  - PACKAGE_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]')
+  - >
+    PACKAGE_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]')
   - echo "Building archives for $PACKAGE_VERSION"
   - docker pull kobelb/build-node-re2:alpha-3
   - docker run -t --name build --mount type=bind,source="$TRAVIS_BUILD_DIR",destination=/opt/app-root/src/node-re2 kobelb/build-node-re2:alpha-3 /bin/bash -c "cp -r ./node-re2 ./tmp; cd ./tmp; npm install"
