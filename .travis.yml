@@ -14,7 +14,10 @@ before_install:
   - openssl aes-256-cbc -K $encrypted_3bd977adfd95_key -iv $encrypted_3bd977adfd95_iv -in .gcs-secret.json.enc -out .gcs-secret.json -d
 
 install:
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then ARCHIVE_PLATFORM=linux; build-resources/linux/build.sh; fi
+  - >
+    PACKAGE_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]')
+  - echo "Building archives for $PACKAGE_VERSION"
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export ARCHIVE_PLATFORM=linux; build-resources/linux/build.sh; fi
   - mkdir -p ./archives/
   - tar czvf "./archives/$PACKAGE_VERSION-$ARCHIVE_PLATFORM.tar.gz" ./target/re2.node
 script:
