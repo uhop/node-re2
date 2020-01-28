@@ -10,5 +10,5 @@ vendor/*
 .DS_Store
 yarn-error.log
 .gcs-secret.json
-artifacts/
+archives/
 target/

@@ -18,8 +18,8 @@ install:
   - docker run -t --name build --mount type=bind,source="$TRAVIS_BUILD_DIR",destination=/opt/app-root/src/node-re2 kobelb/build-node-re2:alpha-3 /bin/bash -c "cp -r ./node-re2 ./tmp; cd ./tmp; npm install"
   - mkdir -p ./target/linux
   - docker cp build:/opt/app-root/src/tmp/build/Release/re2.node ./target/linux
-  - mkdir -p ./artifacts/re2
-  - tar czvf ./artifacts/re2/1.10.5-linux.tar.gz ./target/linux/re2.node
+  - mkdir -p ./archives/
+  - tar czvf ./archives/1.10.5-linux.tar.gz ./target/linux/re2.node
 
 script:
   - echo "skipping tests"
@@ -28,5 +28,8 @@ deploy:
   provider: gcs
   key_file: .gcs-secret.json
   bucket: "native_modules"
+  local_dir: ./archives/
+  upload_dir: re2
+  acl: public-read
   skip_cleanup: true
   edge: true
