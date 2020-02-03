@@ -39,6 +39,6 @@ deploy:
   bucket: "native_modules"
   local_dir: ./archives/
   upload_dir: re2
-  acl: public-read
+  acl: public_read
   skip_cleanup: true
   edge: true
