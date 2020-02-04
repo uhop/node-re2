@@ -9,6 +9,5 @@ vendor/*
 .vscode/
 .DS_Store
 yarn-error.log
-.gcs-secret.json
 archives/
 target/
