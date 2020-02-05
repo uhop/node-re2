@@ -16,7 +16,7 @@ osx_image: xcode9.2
 
 services: docker
 
-install:
+script:
   - >
     PACKAGE_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]')
   - echo "Building archives for $PACKAGE_VERSION"
@@ -26,8 +26,6 @@ install:
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then export ARCHIVE_PLATFORM=windows; npm install; cp ./build/Release/re2.node ./target/; fi
   - mkdir -p ./archives/
   - tar czvf "./archives/$PACKAGE_VERSION-$ARCHIVE_PLATFORM.tar.gz" ./target/re2.node
-script:
-  - echo "skipping tests"
 
 deploy:
   provider: s3
