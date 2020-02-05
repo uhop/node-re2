@@ -38,3 +38,5 @@ deploy:
   acl: public_read
   skip_cleanup: true
   edge: true
+  on:
+    branch: pre-build
