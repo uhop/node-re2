@@ -29,9 +29,10 @@ script:
 
 deploy:
   provider: s3
-  access_key_id: "YOUR AWS ACCESS KEY"
-  secret_access_key: "YOUR AWS SECRET KEY"
-  bucket: "kbn-native-modules"
+  access_key_id: "AKIAZXGMCLOUG6PFVGEB"
+  secret_access_key:
+    secure: "n7Xc05Q9nC3sltpeaP9xB6gzXyZWXHHMhWuTuPuNnflU+9c/BxOauf2XCRUYvt6cADQH3ihGgCZfJ11XyXowW9ycbmPbPMnhVrYE6UNCPTnqyYq397QzPFb90XJ+zlECdlbE6GrSzlU9lVE3KQdEsvVIiB+eAcgPqSBWLVP3solX1Uo00khHeMjtoGD/OAye2j9E4724Vz/dr8Ja49GOAu6XL62shdtvXIyrmw7YjbUhgUhTDmScOMs94f5SGj6JatxhyaDtHiVd8Lo6olZa5vMaPyxuZEqJEhsZsCfdX+7KWpuSBFEhbzQwVbwIy/D7E6u4plHSPD0nIAcaBpG1WQ6iBRUKOZ0mxFgYmVlNfUFmhu5bHMIxsJX6t8IJZgFSJu7NrIEjzOGwFGTqjOiZ3Ekucln+jXGzV+ibFzbIUWp0XLZ8JktHmwQTGeDncdoA0ESYVefZMuJEaC3no9V6La2euZG+9N6v19f2es+XKUv9pBWdsj+RmjmnftBSeQL/dHXS3xYd1Lt/a56ZQD3HrnRIMumD4KFVFcjxDHyi1fBRTjGa5J/UZ8aWVcam+hv+ZhTTJJ7lftx7Y+jNdK+/yDcAkxlofJcZ2dT7LT7tjsuGig1wB8/YLmlE88QisCDfq8tofqd4tuNYWAyM915k21kP6V+/gXUSZeLXiyRUe2A="
+  bucket: "kbn-test-native-modules"
   local_dir: ./archives/
   upload_dir: re2
   acl: public_read
