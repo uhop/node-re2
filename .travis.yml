@@ -32,7 +32,7 @@ deploy:
   access_key_id: AKIAZXGMCLOUBUHJQBPU
   secret_access_key:
     secure: wzTs1ezp8d3UvIiZFXj0oQLfc9QIJfpcv/uPG64I9O9/u+7SOTU/VjsbeQy7SxkmVkoHKaLrpmRl7ESfEGgbDhcGcn9BeeXPpnOsKLRpRkNpCTC2qMW8ak/C8aONCSrQkOIYfV5aHcY4bR1yeapB9dCt8NKfy7TiHWuupGQvtj/GkAkm9wxrqqln9fUkT4Xvxg0+C5rffpg9QIIBUJX5DRPfI8S2hCjXM4hghGO0u2Uyii5+eF3fi65Di2Bm/BBozu46HAJ/JtNjU1fbjIh5sEhEmS5BXK3ELcaLr9c1JTVpx3p0VczHSZZDvtQ5nEYv0m5QOwg1HncmrGLXh5bg0+z9uzR7r8oFVrsDRMVQ/zVe0wVSM+eE6leWpKOhhXBCNIeHKidv+lHD7N/xwyDnOvQFCCy99o4UgflcKffOr0k3oqCbYAvQ8CxXF6qnFfupEO0dp1QK38xWju1w2cJ3WzaAbQ/X+KSY+Vei2fHs2ZN5UU/8/dLx5t6TDfwi1B1tRL8tEaisu+3VjYu9peCqjSlm3pkybwhjm3crVoM+8MX0ja8ntckdnF+5iNLV5yBYG4SMPsL4fKL8sDmNzE6hLCRmGZiPdYnJCrXL4Lx4JpYiQDJuILWbHaldhaK8mGDWjGOvsdqYhdj6hydpaYuOjrHb3kJzBNQUtwiQLhimqcY=
-  bucket: "kbn-test-native-modules"
+  bucket: kbn-test-native-modules
   local_dir: ./archives/
   upload_dir: re2
   acl: public_read
