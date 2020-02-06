@@ -37,6 +37,5 @@ deploy:
   upload_dir: re2
   acl: public_read
   skip_cleanup: true
-  edge: true
   on:
     branch: pre-build
