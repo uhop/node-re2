@@ -48,7 +48,7 @@ private:
 	static Nan::Persistent<v8::FunctionTemplate> ctorTemplate;
 
 public:
-	static void Initialize(v8::Local<v8::Object> exports, v8::Local<v8::Object> module);
+	static void Initialize(v8::Local<v8::Value> module, v8::Local<v8::Context> context);
 
 	static inline bool HasInstance(v8::Local<v8::Object> object)
 	{

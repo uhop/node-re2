@@ -26,7 +26,7 @@ static NAN_METHOD(GetUtf16Length)
 	info.GetReturnValue().Set(-1);
 }
 
-void WrappedRE2::Initialize(v8::Local<v8::Object> exports, v8::Local<v8::Object> module)
+void WrappedRE2::Initialize(v8::Local<v8::Value> module, v8::Local<v8::Context> context)
 {
 
 	// prepare constructor template
@@ -65,12 +65,10 @@ void WrappedRE2::Initialize(v8::Local<v8::Object> exports, v8::Local<v8::Object>
 	ctorTemplate.Reset(tpl);
 
 	// return constructor as module's export
-	Nan::Set(module, Nan::New("exports").ToLocalChecked(), fun);
+	Nan::Set(module->ToObject(context).ToLocalChecked(), Nan::New("exports").ToLocalChecked(), fun);
 }
 
-void Initialize(v8::Local<v8::Object> exports, v8::Local<v8::Object> module)
+NODE_MODULE_INIT()
 {
-	WrappedRE2::Initialize(exports, module);
+	WrappedRE2::Initialize(module, context);
 }
-
-NODE_MODULE(re2, Initialize)
