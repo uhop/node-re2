@@ -1,6 +1,6 @@
 # node-re2
 
-<!-- [![Build status][travis-image]][travis-url] -->
+[![Build status][travis-image]][travis-url]
 [![NPM version][npm-image]][npm-url]
 
 [![Greenkeeper badge](https://badges.greenkeeper.io/uhop/node-re2.svg)](https://greenkeeper.io/)
