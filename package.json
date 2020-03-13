@@ -10,7 +10,8 @@
     "test": "tests"
   },
   "dependencies": {
-    "nan": "^2.14.0"
+    "nan": "^2.14.0",
+    "node-pre-gyp": "^0.14.0"
   },
   "devDependencies": {
     "heya-unit": "^0.3.0"
