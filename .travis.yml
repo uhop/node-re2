@@ -22,10 +22,10 @@ script:
   - echo "Building archives for $PACKAGE_VERSION"
   - mkdir -p ./target/
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export ARCHIVE_PLATFORM=linux; build-resources/linux/build.sh; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export ARCHIVE_PLATFORM=darwin; npm install; cp ./build/Release/re2.node ./target/; fi
-  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then export ARCHIVE_PLATFORM=windows; npm install; cp ./build/Release/re2.node ./target/; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export ARCHIVE_PLATFORM=darwin; npm install --build-from-source; fi
+  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then export ARCHIVE_PLATFORM=windows; npm install --build-from-source; fi
   - mkdir -p ./archives/
-  - (cd target && tar czvf "../archives/$PACKAGE_VERSION-$ARCHIVE_PLATFORM.tar.gz" re2.node)
+  - (tar czvf "./archives/$PACKAGE_VERSION-$ARCHIVE_PLATFORM.tar.gz" binding/re2.node)
 
 deploy:
   provider: s3
