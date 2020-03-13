@@ -17,7 +17,15 @@
     "heya-unit": "^0.3.0"
   },
   "scripts": {
-    "test": "node tests/tests.js"
+    "test": "node tests/tests.js",
+    "install": "node-pre-gyp install --fallback-to-build"
+  },
+  "binary": {
+    "module_name": "re2",
+    "module_path": "./binding/",
+    "host": "https://storage.googleapis.com/",
+    "remote_path": "native-modules/{name}",
+    "package_name": "{version}-{platform}.tar.gz"
   },
   "github": "http://github.com/uhop/node-re2",
   "repository": {
