@@ -350,6 +350,7 @@ for your platform, then run:
 
 ## Release history
 
+- 1.11.0 *Updated the way to initialize the extension (thx [BannerBomb](https://github.com/BannerBomb)).*
 - 1.10.5 *Bugfix for optional groups (thx [Josh Yudaken](https://github.com/qix)), the latest version of `re2`.*
 - 1.10.4 *Technical release: even better TypeScript types (thx [Louis Brann](https://github.com/louis-brann)).*
 - 1.10.3 *Technical release: missing reference to TS types (thx [Jamie Magee](https://github.com/JamieMagee)).*
