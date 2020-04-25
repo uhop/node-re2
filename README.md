@@ -18,11 +18,13 @@ at his [Implementing Regular Expressions](http://swtch.com/~rsc/regexp/) page.
 but it lacks two features: backreferences and lookahead assertions. See below for more details.
 
 `RE2` object emulates standard `RegExp` making it a practical drop-in replacement in most cases.
-`RE2` is extended to provide `String`-based regular expression methods as well. To help converting
+`RE2` is extended to provide `String`-based regular expression methods as well. To help to convert
 `RegExp` objects to `RE2` its constructor can take `RegExp` directly honoring all properties.
 
 It can work with [node.js buffers](http://nodejs.org/api/buffer.html) directly reducing overhead
 on recoding and copying characters, and making processing/parsing long files fast.
+
+All documentation can be found in this README and in the [wiki](https://github.com/uhop/node-re2/wiki).
 
 ## Why use node-re2?
 
@@ -345,10 +347,6 @@ In order to build it, make sure that you have all necessary `gyp` dependencies
 for your platform, then run:
 
     npm install
-
-Or:
-
-    yarn
 
 ## Release history
 
