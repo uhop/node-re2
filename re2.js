@@ -1,6 +1,10 @@
 'use strict';
 
-var RE2 = require('./build/Release/re2.node');
+
+var binary = require('node-pre-gyp');
+var path = require('path');
+var binding_path = binary.find(path.resolve(path.join(__dirname,'./package.json')));
+var RE2 = require(binding_path);
 
 if (typeof Symbol != 'undefined') {
   Symbol.match &&

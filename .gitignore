@@ -7,3 +7,7 @@ vendor/*
 !vendor/re2/*
 !vendor/util/*
 .vscode/
+.DS_Store
+binding/
+archives/
+target/

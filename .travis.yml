@@ -7,17 +7,40 @@ node_js:
   - "12"
   - "14"
 
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-    packages:
-      - build-essential
-      - gcc-7
-      - g++-7
+os:
+  - osx
+  - linux
+  - windows
+osx_image: xcode9.2
 
-before_install:
-  - export CXX="g++-7"
+services: docker
 
-before_script:
-  - if [ "`nvm current`" < "system" ]; then N=`which node`; D=`dirname $N`; ln -s $D/../lib/node_modules/npm/bin/node-gyp-bin/node-gyp; fi
+install: true
+
+script:
+  - >
+    PACKAGE_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]')
+  - echo "Building archives for $PACKAGE_VERSION"
+  - mkdir -p ./target/
+  - npm install --build-from-source --fallback-to-build=false
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export ARCHIVE_PLATFORM=linux; build-resources/linux/build-re2.sh $TRAVIS_NODE_VERSION; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export ARCHIVE_PLATFORM=darwin; fi
+  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then export ARCHIVE_PLATFORM=windows; fi
+  - NODE_VERSION_MODULE="$(node -e 'console.log(process.versions.modules)')"
+  - mkdir -p ./archives/
+  - (tar czvf "./archives/$PACKAGE_VERSION-$ARCHIVE_PLATFORM-node-v$NODE_VERSION_MODULE.tar.gz" binding/re2.node)
+  - npm test
+
+deploy:
+  provider: s3
+  access_key_id: AKIAZXGMCLOULADP2BHO
+  secret_access_key:
+    secure: "XBsqm6D/D8X0bIIo1ILt2cZMha9OmV9FRG67UU06Gp4Pxo6s7aO4pEPH83RPsbTQrL4G6lmCUWc5F9x7PZrhuaS0VqVIs0I+NevejpiNFn0tQx7XYfHKV97rA9iiCDUVXvUMMu34mgeCobGXgG/jpW1LoZcbZYhAsY5ke77dKMMHAoAR0SCB3MKXTobWplT/4o0tQmDcdGBhhYEcgzUn6ucAMdsq2jZScVrUCUzAJfnlGn/xoizj+r1gNHHz7iWKCcOD3kl4ea6va+ExSCh81DvfiaB+GKL4H1qsFFF6tJHzKmkh0t+7kp3W2TlGKDTfbaJQXecqFL+W48omt8mBlHq+ji+pqREMsTUxhpj5PKQ5xcj8SY/3OPafwn/QwplgK7bvjh60dfNMZtt6lZo59ZWrVCpgW4+70ypwoVvfudGsPAlIsPB+QpCRmYyUSAY4KjgWHR4p2817zmDLqp/zZ5mOFgjtgAiLIWTIMof4+vwx2jITMWlhXQxO4sLXc5UNl53cN2/f6eKWwQeRKNtoPFZg2d4yzmBELMFIQ3gIW4t+fzTVeBEa4T8fchPJD1n5/sOnBOgQf6gasJf9I3SwPxEa1x9s3dhvgp9uxIB9Dr9Yg6ZWxdC51iFErW2TGdD4lou/6x/NTm1sWhuiWMZf24UN8JQhx88VIVzU9yqzcbY="
+  bucket: kbn-test-native-modules
+  local_dir: ./archives/
+  upload_dir: re2
+  acl: public_read
+  skip_cleanup: true
+  on:
+    branch: node-pre-gyp
+
