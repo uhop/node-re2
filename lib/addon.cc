@@ -2,11 +2,7 @@
 
 #include <node_buffer.h>
 
-Nan::Persistent<v8::FunctionTemplate> &WrappedRE2::constructor()
-{
-	static Nan::Persistent<v8::FunctionTemplate> instance;
-	return instance;
-}
+Nan::Persistent<v8::FunctionTemplate> WrappedRE2::constructor;
 
 static NAN_METHOD(GetUtf8Length)
 {
@@ -35,7 +31,7 @@ v8::Local<v8::Value> WrappedRE2::Init()
 
 	// prepare constructor template
 	auto tpl = Nan::New<v8::FunctionTemplate>(New);
-	constructor().Reset(tpl);
+	constructor.Reset(tpl);
 	tpl->SetClassName(Nan::New("RE2").ToLocalChecked());
 	auto instanceTemplate = tpl->InstanceTemplate();
 	instanceTemplate->SetInternalFieldCount(1);
