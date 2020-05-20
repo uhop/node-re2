@@ -203,7 +203,8 @@ NAN_METHOD(WrappedRE2::New)
 		{
 			parameters[i] = info[i];
 		}
-		auto newObject = Nan::NewInstance(Nan::New<v8::Function>(constructor), parameters.size(), &parameters[0]);
+		auto constructorHandle = Nan::New(constructor());
+		auto newObject = Nan::NewInstance(Nan::GetFunction(constructorHandle).ToLocalChecked(), parameters.size(), &parameters[0]);
 		if (!newObject.IsEmpty())
 		{
 			info.GetReturnValue().Set(newObject.ToLocalChecked());
