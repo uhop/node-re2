@@ -45,6 +45,7 @@
         "-Wno-sign-compare",
         "-Wno-unused-parameter",
         "-Wno-missing-field-initializers",
+        "-Wno-cast-function-type",
         "-O3",
         "-g"
       ],
