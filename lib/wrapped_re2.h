@@ -42,14 +42,14 @@ private:
 	static NAN_GETTER(GetUnicodeWarningLevel);
 	static NAN_SETTER(SetUnicodeWarningLevel);
 
-	static Nan::Persistent<v8::FunctionTemplate> constructor;
-
 public:
-	static v8::Local<v8::Value> Init();
+	static v8::Local<v8::Function> Init();
 
 	static inline bool HasInstance(v8::Local<v8::Object> object)
 	{
-		return Nan::New(constructor)->HasInstance(object);
+		auto isolate = v8::Isolate::GetCurrent();
+		auto p_tpl = Nan::GetIsolateData<Nan::Persistent<v8::FunctionTemplate>>(isolate);
+		return p_tpl->Get(isolate)->HasInstance(object);
 	}
 
 	enum UnicodeWarningLevels

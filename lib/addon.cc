@@ -2,8 +2,6 @@
 
 #include <node_buffer.h>
 
-Nan::Persistent<v8::FunctionTemplate> WrappedRE2::constructor;
-
 static NAN_METHOD(GetUtf8Length)
 {
 	auto t = info[0]->ToString(Nan::GetCurrentContext());
@@ -25,16 +23,30 @@ static NAN_METHOD(GetUtf16Length)
 	info.GetReturnValue().Set(-1);
 }
 
-// NAN_MODULE_INIT(WrappedRE2::Init)
-v8::Local<v8::Value> WrappedRE2::Init()
+static void cleanup(void* p)
 {
+	v8::Isolate* isolate = static_cast<v8::Isolate*>(p);
+	auto p_tpl = Nan::GetIsolateData<Nan::Persistent<v8::FunctionTemplate>>(isolate);
+	delete p_tpl;
+}
+
+// NAN_MODULE_INIT(WrappedRE2::Init)
+v8::Local<v8::Function> WrappedRE2::Init()
+{
+	Nan::EscapableHandleScope scope;
 
 	// prepare constructor template
+
 	auto tpl = Nan::New<v8::FunctionTemplate>(New);
-	constructor.Reset(tpl);
 	tpl->SetClassName(Nan::New("RE2").ToLocalChecked());
 	auto instanceTemplate = tpl->InstanceTemplate();
 	instanceTemplate->SetInternalFieldCount(1);
+
+	// save the template
+	auto isolate = v8::Isolate::GetCurrent();
+	auto p_tpl = new Nan::Persistent<v8::FunctionTemplate>(tpl);
+	Nan::SetIsolateData(isolate, p_tpl);
+	node::AddEnvironmentCleanupHook(isolate, cleanup, isolate);
 
 	// prototype
 
@@ -61,18 +73,19 @@ v8::Local<v8::Value> WrappedRE2::Init()
 	Nan::SetAccessor(instanceTemplate, Nan::New("lastIndex").ToLocalChecked(), GetLastIndex, SetLastIndex);
 	Nan::SetAccessor(instanceTemplate, Nan::New("internalSource").ToLocalChecked(), GetInternalSource);
 
-	auto fun = Nan::GetFunction(tpl).ToLocalChecked();
+	auto ctr = Nan::GetFunction(tpl).ToLocalChecked();
 
 	// properties
 
-	Nan::Export(fun, "getUtf8Length", GetUtf8Length);
-	Nan::Export(fun, "getUtf16Length", GetUtf16Length);
-	Nan::SetAccessor(v8::Local<v8::Object>(fun), Nan::New("unicodeWarningLevel").ToLocalChecked(), GetUnicodeWarningLevel, SetUnicodeWarningLevel);
+	Nan::Export(ctr, "getUtf8Length", GetUtf8Length);
+	Nan::Export(ctr, "getUtf16Length", GetUtf16Length);
+	Nan::SetAccessor(v8::Local<v8::Object>(ctr), Nan::New("unicodeWarningLevel").ToLocalChecked(), GetUnicodeWarningLevel, SetUnicodeWarningLevel);
 
-	return fun;
+	return scope.Escape(ctr);
 }
 
 NODE_MODULE_INIT()
 {
+	Nan::HandleScope scope;
 	Nan::Set(module->ToObject(context).ToLocalChecked(), Nan::New("exports").ToLocalChecked(), WrappedRE2::Init());
 }
