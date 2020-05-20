@@ -1,7 +1,6 @@
 #ifndef WRAPPED_RE2_H_
 #define WRAPPED_RE2_H_
 
-#include <node.h>
 #include <nan.h>
 
 #include <re2/re2.h>
@@ -10,7 +9,6 @@
 
 class WrappedRE2 : public Nan::ObjectWrap
 {
-
 private:
 	WrappedRE2(const re2::StringPiece &pattern, const re2::RE2::Options &options, const std::string &s,
 			   const bool &g, const bool &i, const bool &m, const bool &y) : regexp(pattern, options),
@@ -44,15 +42,14 @@ private:
 	static NAN_GETTER(GetUnicodeWarningLevel);
 	static NAN_SETTER(SetUnicodeWarningLevel);
 
-	static Nan::Persistent<v8::Function> constructor;
-	static Nan::Persistent<v8::FunctionTemplate> ctorTemplate;
+	static Nan::Persistent<v8::FunctionTemplate> &constructor();
 
 public:
-	static void Initialize(v8::Local<v8::Value> module, v8::Local<v8::Context> context);
+	static NAN_MODULE_INIT(Init);
 
 	static inline bool HasInstance(v8::Local<v8::Object> object)
 	{
-		return Nan::New(ctorTemplate)->HasInstance(object);
+		return Nan::New(constructor())->HasInstance(object);
 	}
 
 	enum UnicodeWarningLevels
