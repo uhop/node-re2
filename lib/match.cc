@@ -128,7 +128,7 @@ NAN_METHOD(WrappedRE2::Match)
 		if (!groupNames.empty())
 		{
 			auto groups = Nan::New<v8::Object>();
-			(void)groups->SetPrototype(Nan::GetCurrentContext(), Nan::Null());
+			Nan::SetPrototype(groups, Nan::Null());
 
 			for (auto group : groupNames)
 			{

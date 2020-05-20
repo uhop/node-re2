@@ -319,7 +319,7 @@ inline Nan::Maybe<std::string> replace(const Nan::Callback *replacer, const std:
 	if (!namedGroups.empty())
 	{
 		auto groups = Nan::New<v8::Object>();
-		(void)groups->SetPrototype(context, Nan::Null());
+		Nan::SetPrototype(groups, Nan::Null());
 
 		for (std::pair<std::string, int> group : namedGroups)
 		{
