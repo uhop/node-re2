@@ -1,6 +1,6 @@
 'use strict';
 
-const RE2 = require('./build/Release/re2.node').RE2;
+const RE2 = require('./build/Release/re2');
 
 if (typeof Symbol != 'undefined') {
   Symbol.match &&
