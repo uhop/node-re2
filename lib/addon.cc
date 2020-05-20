@@ -29,7 +29,8 @@ static NAN_METHOD(GetUtf16Length)
 	info.GetReturnValue().Set(-1);
 }
 
-NAN_MODULE_INIT(WrappedRE2::Init)
+// NAN_MODULE_INIT(WrappedRE2::Init)
+v8::Local<v8::Value> WrappedRE2::Init()
 {
 
 	// prepare constructor template
@@ -65,17 +66,17 @@ NAN_MODULE_INIT(WrappedRE2::Init)
 	Nan::SetAccessor(instanceTemplate, Nan::New("internalSource").ToLocalChecked(), GetInternalSource);
 
 	auto fun = Nan::GetFunction(tpl).ToLocalChecked();
+
+	// properties
+
 	Nan::Export(fun, "getUtf8Length", GetUtf8Length);
 	Nan::Export(fun, "getUtf16Length", GetUtf16Length);
 	Nan::SetAccessor(v8::Local<v8::Object>(fun), Nan::New("unicodeWarningLevel").ToLocalChecked(), GetUnicodeWarningLevel, SetUnicodeWarningLevel);
 
-	// return constructor as module's export
-	Nan::Set(target, Nan::New("RE2").ToLocalChecked(), fun);
+	return fun;
 }
 
-NAN_MODULE_INIT(Init)
+NODE_MODULE_INIT()
 {
-	WrappedRE2::Init(target);
+	Nan::Set(module->ToObject(context).ToLocalChecked(), Nan::New("exports").ToLocalChecked(), WrappedRE2::Init());
 }
-
-NODE_MODULE(re2, Init)
