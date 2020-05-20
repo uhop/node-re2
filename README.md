@@ -350,6 +350,7 @@ for your platform, then run:
 
 ## Release history
 
+- 1.13.0 *Got rid of a single static variable to support multithreading.*
 - 1.12.1 *Updated `re2` to the latest version.*
 - 1.12.0 *Updated the way `RE2` objects are constructed.*
 - 1.11.0 *Updated the way to initialize the extension (thx [BannerBomb](https://github.com/BannerBomb)).*
