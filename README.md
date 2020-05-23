@@ -1,12 +1,5 @@
 # node-re2
 
-[![Build status][travis-image]][travis-url]
-[![NPM version][npm-image]][npm-url]
-
-[![Greenkeeper badge](https://badges.greenkeeper.io/uhop/node-re2.svg)](https://greenkeeper.io/)
-[![Dependencies][deps-image]][deps-url]
-[![devDependencies][dev-deps-image]][dev-deps-url]
-
 This project provides bindings for [RE2](https://github.com/google/re2):
 fast, safe alternative to backtracking regular expression engines written by [Russ Cox](http://swtch.com/~rsc/).
 To learn more about RE2, start with an overview
@@ -386,12 +379,3 @@ for your platform, then run:
 ## License
 
 BSD
-
-[npm-image]:      https://img.shields.io/npm/v/re2.svg
-[npm-url]:        https://npmjs.org/package/re2
-[deps-image]:     https://img.shields.io/david/uhop/node-re2.svg
-[deps-url]:       https://david-dm.org/uhop/node-re2
-[dev-deps-image]: https://img.shields.io/david/dev/uhop/node-re2.svg
-[dev-deps-url]:   https://david-dm.org/uhop/node-re2?type=dev
-[travis-image]:   https://img.shields.io/travis/uhop/node-re2.svg
-[travis-url]:     https://travis-ci.org/uhop/node-re2
