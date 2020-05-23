@@ -50,7 +50,8 @@
         "-g"
       ],
       "defines": [
-        "NDEBUG"
+        "NDEBUG",
+        "NOMINMAX"
       ],
       "include_dirs": [
         "<!(node -e \"require('nan')\")",
