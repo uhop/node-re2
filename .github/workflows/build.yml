@@ -39,7 +39,6 @@ jobs:
       with:
         tag_name: ${{github.ref}}
           release_name: Release ${{github.ref}}
-          body: |
-            This artifact is built for ${{matrix.node-version}} on ${{matrix.os}}.
+          body: This artifact is built for ${{matrix.node-version}} on ${{matrix.os}}.
           draft: false
           prerelease: false
