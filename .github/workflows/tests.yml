@@ -10,7 +10,7 @@ on:
     branches: [master]
 
 jobs:
-  test:
+  tests:
     name: Test on node ${{matrix.node-version}} and ${{matrix.os}}
     runs-on: ${{matrix.os}}
 
