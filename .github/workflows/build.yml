@@ -50,4 +50,4 @@ jobs:
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         REF: ${{github.ref}}
-    - run: npm run create-artifact
+      run: npm run create-artifact
