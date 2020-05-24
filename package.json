@@ -9,15 +9,15 @@
   "directories": {
     "test": "tests"
   },
-  "dependencies": {
-    "nan": "^2.14.1"
-  },
   "devDependencies": {
+    "@actions/github": "^2.2.0",
     "heya-unit": "^0.3.0",
+    "nan": "^2.14.1",
     "node-gyp": "^6.1.0"
   },
   "scripts": {
-    "test": "node tests/tests.js"
+    "test": "node tests/tests.js",
+    "create-artifact": "node scripts/create-artifact.js"
   },
   "github": "http://github.com/uhop/node-re2",
   "repository": {
