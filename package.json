@@ -17,7 +17,10 @@
   },
   "scripts": {
     "test": "node tests/tests.js",
-    "create-artifact": "node scripts/create-artifact.js"
+    "rebuild": "node-gyp rebuild",
+    "create-artifact": "node scripts/create-artifact.js",
+    "install": "node scripts/install-from-cache.js --artifact build/Release/re2.node",
+    "verify-build": "npm test"
   },
   "github": "http://github.com/uhop/node-re2",
   "repository": {
