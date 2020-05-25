@@ -69,4 +69,4 @@ jobs:
     - name: Create artifact
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      run npm create-binary-asset
+      run: npm create-binary-asset
