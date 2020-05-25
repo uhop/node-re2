@@ -4,7 +4,7 @@
   "description": "Github action to create release assets for a given platform/arch/ABI.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "ncc build index.js"
   },
   "keywords": [
     "github actions",
@@ -17,5 +17,8 @@
   "dependencies": {
     "@actions/core": "^1.2.4",
     "@actions/github": "^2.2.0"
+  },
+  "devDependencies": {
+    "@zeit/ncc": "^0.22.3"
   }
 }
