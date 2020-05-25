@@ -43,7 +43,7 @@ const main = async () => {
           url: uploadUrl,
           data: compressed,
           name: fileName + '.br',
-          label: `Binary artifact: ${artifactPath} built on platform ${process.platform}, architecture, ${process.arch}, ABI ${process.versions.modules}, and compressed by brotli`,
+          label: `Binary artifact: ${artifactPath} (${process.platform}, ${process.arch}, ${process.versions.modules}, brotli).`,
           headers: {'content-type': 'application/brotli', 'content-length': compressed.length}
         })
         .then(() => console.log('Uploaded BR.'))
@@ -57,7 +57,7 @@ const main = async () => {
           url: uploadUrl,
           data: compressed,
           name: fileName + '.gz',
-          label: `Binary artifact: ${artifactPath} built on platform ${process.platform}, architecture, ${process.arch}, ABI ${process.versions.modules}, and compressed by gzip`,
+          label: `Binary artifact: ${artifactPath} (${process.platform}, ${process.arch}, ${process.versions.modules}, gzip).`,
           headers: {'content-type': 'application/gzip', 'content-length': compressed.length}
         })
         .then(() => console.log('Uploaded GZ.'))
