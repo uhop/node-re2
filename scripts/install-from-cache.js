@@ -7,8 +7,6 @@ const {promisify} = require('util');
 const https = require('https');
 const {exec} = require('child_process');
 
-const pkg = require('../package.json');
-
 const getParam = (name, defaultValue = '') => {
   const index = process.argv.indexOf('--' + name);
   if (index > 0) return process.argv[index + 1] || '';
@@ -19,20 +17,37 @@ const artifactPath = getParam('artifact'),
   prefix = getParam('prefix'),
   suffix = getParam('suffix');
 
-const parseUrl = /^(?:https?|git|git\+https):\/\/github.com\/([^\/]+)\/([^\/\.]+)(?:\/|\.git\b|$)/i;
+const parseUrl = [
+  /^(?:https?|git|git\+ssh|git\+https?):\/\/github.com\/([^\/]+)\/([^\/\.]+)(?:\/|\.git\b|$)/i,
+  /^github:([^\/]+)\/([^#]+)(?:#|$)/i,
+  /^([^:\/]+)\/([^#]+)(?:#|$)/i
+];
 
-const getAssetUrlPrefix = pkg => {
-  const url = pkg.github || (pkg.repository && pkg.repository.type === 'git' && pkg.repository.url),
-    result = parseUrl.exec(url);
+const getRepo = url => {
+  if (!url) return null;
+  for (const re of parseUrl) {
+    const result = re.exec(url);
+    if (result) return result;
+  }
+  return null;
+};
+
+const getAssetUrlPrefix = () => {
+  const url =
+      process.env.npm_package_github ||
+      process.env.npm_package_repository ||
+      (process.env.npm_package_repository_type === 'git' && process.env.npm_package_repository_url),
+    result = getRepo(url);
   return (
     result &&
-    `https://github.com/${result[1]}/${result[2]}/releases/download/${'v5.5.5' || pkg.version}/${prefix}${process.platform}-${process.arch}-${
-      process.versions.modules
-    }${suffix}`
+    `https://github.com/${result[1]}/${result[2]}/releases/download/${'v5.5.5' || process.env.npm_package_version}/${prefix}${process.platform}-${
+      process.arch
+    }-${process.versions.modules}${suffix}`
   );
 };
 
 const isDev = async () => {
+  if (process.env.DEVELOPMENT_SKIP_CACHE) return true;
   try {
     await fsp.access(path.join(__dirname, '../.development'));
     return true;
@@ -101,7 +116,7 @@ const main = async () => {
       console.log('Development flag was detected.');
       break checks;
     }
-    const prefix = getAssetUrlPrefix(pkg);
+    const prefix = getAssetUrlPrefix();
     if (!prefix) {
       console.log('No github repository was identified.');
       break checks;
