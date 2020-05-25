@@ -59,4 +59,4 @@ jobs:
         owner: uhop
         repo: node-re2
         tag: ${{github.ref}}
-        path: './build/Release.re2.node'
+        path: './build/Release/re2.node'
