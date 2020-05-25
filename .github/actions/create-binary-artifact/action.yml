@@ -1,0 +1,20 @@
+name: 'create-platform-artifact'
+description: 'Create binary release artifacts for Node.js coded by platform/arch/ABI'
+
+inputs:
+  owner:
+    description: "Owner's name"
+    required: true
+  repo:
+    description: "Repo's name"
+    required: true
+  tag:
+    description: 'Tag used to create a release'
+    required: true
+  path:
+    description: 'Path to the binary artifact'
+    required: true
+
+runs:
+  using: 'node14'
+  main: 'index.js'

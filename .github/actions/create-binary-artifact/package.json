@@ -1,0 +1,21 @@
+{
+  "name": "create-artifact",
+  "version": "1.0.0",
+  "description": "Github action to create release artifacts for a given platform/arch/ABI.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "github actions",
+    "github",
+    "action",
+    "release artifact"
+  ],
+  "author": "Eugene Lazutkin <eugene.lazutkin@gmail.com> (http://lazutkin.com/)",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "@actions/core": "^1.2.4",
+    "@actions/github": "^2.2.0"
+  }
+}
