@@ -9,9 +9,15 @@ const {exec} = require('child_process');
 
 const pkg = require('../package.json');
 
-let artifactPath;
-const artifactIndex = process.argv.indexOf('--artifact');
-if (artifactIndex > 0) artifactPath = process.argv[artifactIndex + 1];
+const getParam = (name, defaultValue = '') => {
+  const index = process.argv.indexOf('--' + name);
+  if (index > 0) return process.argv[index + 1] || '';
+  return defaultValue;
+};
+
+const artifactPath = getParam('artifact'),
+  prefix = getParam('prefix'),
+  suffix = getParam('suffix');
 
 const parseUrl = /^(?:https?|git|git\+https):\/\/github.com\/([^\/]+)\/([^\/\.]+)(?:\/|\.git\b|$)/i;
 
@@ -20,9 +26,9 @@ const getAssetUrlPrefix = pkg => {
     result = parseUrl.exec(url);
   return (
     result &&
-    `https://github.com/${result[1]}/${result[2]}/releases/download/${'v5.5.5' || pkg.version}/${process.platform}-${process.arch}-${
+    `https://github.com/${result[1]}/${result[2]}/releases/download/${'v5.5.5' || pkg.version}/${prefix}${process.platform}-${process.arch}-${
       process.versions.modules
-    }.node`
+    }${suffix}`
   );
 };
 
