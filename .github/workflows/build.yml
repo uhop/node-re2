@@ -30,6 +30,7 @@ jobs:
   build:
     # if: github.event.base_ref == 'refs/heads/master'
     name: Build on node ${{matrix.node-version}} and ${{matrix.os}}
+    needs: release
     runs-on: ${{matrix.os}}
 
     strategy:
