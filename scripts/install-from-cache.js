@@ -28,7 +28,7 @@ const getAssetUrlPrefix = pkg => {
 
 const isDev = async () => {
   try {
-    await fsp.stat(path.join(__dirname, '../.development'));
+    await fsp.access(path.join(__dirname, '../.development'));
   } catch (e) {
     return false;
   }
