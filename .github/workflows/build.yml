@@ -64,8 +64,6 @@ jobs:
     - run: npm run build --if-present
     - run: npm test
     - name: Create artifact
-      uses: ./.github/actions/create-binary-asset
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      with:
-        path: './build/Release/re2.node'
+      run npm create-binary-asset
