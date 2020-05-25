@@ -29,10 +29,11 @@ const getAssetUrlPrefix = pkg => {
 const isDev = async () => {
   try {
     await fsp.access(path.join(__dirname, '../.development'));
+    return true;
   } catch (e) {
-    return false;
+    // squelch
   }
-  return true;
+  return false;
 };
 
 const run = async cmd =>
@@ -47,10 +48,11 @@ const run = async cmd =>
 const isVerified = async () => {
   try {
     await run('npm run verify-build');
+    return true;
   } catch (e) {
-    return false;
+    // squelch
   }
-  return true;
+  return false;
 };
 
 const get = async url =>
@@ -89,7 +91,7 @@ const main = async () => {
       console.log('No artifact path was specified with --artifact.');
       break checks;
     }
-    if (isDev()) {
+    if (await isDev()) {
       console.log('Development flag was detected.');
       break checks;
     }
@@ -109,7 +111,6 @@ const main = async () => {
         copied = true;
       } catch (e) {
         // squelch
-        console.log('ERROR-BR:', e);
       }
     }
     // let's try gzip
@@ -122,11 +123,10 @@ const main = async () => {
         copied = true;
       } catch (e) {
         // squelch
-        console.log('ERROR-GZ:', e);
       }
     }
     // verify the install
-    if (copied && isVerified()) return console.log('Done.');
+    if (copied && (await isVerified())) return console.log('Done.');
   }
   console.log('Building locally ...');
   await run('npm run rebuild');
