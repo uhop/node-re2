@@ -15,7 +15,7 @@ const OWNER = core.getInput('owner'),
   REF = core.getInput('tag'),
   TAG = /^refs\/tags\/(.*)$/.exec(REF)[1];
 
-const fileName = `re2-${process.platform}-${process.arch}-${process.versions.modules}.node`;
+const fileName = `${process.platform}-${process.arch}-${process.versions.modules}.node`;
 
 console.log('Preparing artifact', fileName, '...');
 

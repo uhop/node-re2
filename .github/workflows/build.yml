@@ -51,7 +51,7 @@ jobs:
     - run: npm run build --if-present
     - run: npm test
     - name: Create artifact
-      uses: ./.github/actions/create-binary-artifact
+      uses: ./.github/actions/create-binary-asset
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       # run: npm run create-artifact

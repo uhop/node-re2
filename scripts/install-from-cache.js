@@ -13,14 +13,14 @@ let artifactPath;
 const artifactIndex = process.argv.indexOf('--artifact');
 if (artifactIndex > 0) artifactPath = process.argv[artifactIndex + 1];
 
-const parseUrl = /^(?:https?|git):\/\/github.com\/([^\/]+)\/([^\/\.]+)(?:\/|\.git\b|$)/i;
+const parseUrl = /^(?:https?|git|git\+https):\/\/github.com\/([^\/]+)\/([^\/\.]+)(?:\/|\.git\b|$)/i;
 
 const getAssetUrlPrefix = pkg => {
   const url = pkg.github || (pkg.repository && pkg.repository.type === 'git' && pkg.repository.url),
     result = parseUrl.exec(url);
   return (
     result &&
-    `https://github.com/${result[1]}/${result[2]}/releases/download/${'v5.5.5' || pkg.version}/${pkg.name}-${process.platform}-${process.arch}-${
+    `https://github.com/${result[1]}/${result[2]}/releases/download/${'v5.5.5' || pkg.version}/${process.platform}-${process.arch}-${
       process.versions.modules
     }.node`
   );

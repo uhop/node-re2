@@ -1,5 +1,5 @@
-name: 'create-platform-artifact'
-description: 'Create binary release artifacts for Node.js coded by platform/arch/ABI'
+name: 'create-platform-asset'
+description: 'Create binary release assets for Node.js coded by platform/arch/ABI'
 
 inputs:
   owner:
@@ -12,9 +12,13 @@ inputs:
     description: 'Tag used to create a release'
     required: true
   path:
-    description: 'Path to the binary artifact'
+    description: 'Path to the binary asset'
     required: true
 
 runs:
   using: 'node12'
   main: 'index.js'
+
+branding:
+  icon: 'package'
+  color: 'gray-dark'
