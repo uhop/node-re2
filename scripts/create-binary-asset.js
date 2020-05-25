@@ -7,25 +7,33 @@ const {promisify} = require('util');
 
 const github = require('@actions/github');
 
-const OWNER = 'uhop',
-  REPO = 'node-re2';
+const getParam = (name, defaultValue = '') => {
+  const index = process.argv.indexOf('--' + name);
+  if (index > 0) return process.argv[index + 1] || '';
+  return defaultValue;
+};
 
-const TOKEN = process.env.GITHUB_TOKEN,
-  REF = process.env.REF || '',
-  TAG = /^refs\/tags\/(.*)$/.exec(REF)[1];
-
-const fileName = `re2-${process.platform}-${process.arch}-${process.versions.modules}.node`;
-
-console.log('Preparing artifact', fileName, '...');
-
-const octokit = new github.GitHub(TOKEN);
+const artifactPath = getParam('artifact'),
+  prefix = getParam('prefix'),
+  suffix = getParam('suffix');
 
 const main = async () => {
+  const [OWNER, REPO] = process.env.GITHUB_REPOSITORY.split('/'),
+    TAG = /^refs\/tags\/(.*)$/.exec(process.env.GITHUB_REF)[1];
+
+  const fileName = `${prefix}${process.platform}-${process.arch}-${process.versions.modules}${suffix}`;
+
+  console.log('Preparing artifact', fileName, '...');
+
+  const octokit = new github.GitHub(process.env.GITHUB_TOKEN);
+
   const [data, uploadUrl] = await Promise.all([
-    fsp.readFile(path.join(__dirname, '../build/Release/re2.node')),
+    fsp.readFile(path.normalize(artifactPath)),
     octokit.repos.getReleaseByTag({owner: OWNER, repo: REPO, tag: TAG}).then(response => response.data.upload_url)
   ]);
+
   console.log('Compressing and uploading ...');
+
   await Promise.all([
     (async () => {
       if (!zlib.brotliCompress) return null;
@@ -57,4 +65,7 @@ const main = async () => {
   console.log('Done.');
 };
 
-main();
+main().catch(e => {
+  console.log('::error::' + ((e && e.message) || 'create-binary-asset has failed'));
+  process.exit(1);
+});
