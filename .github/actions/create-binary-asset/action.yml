@@ -2,18 +2,17 @@ name: 'create-platform-asset'
 description: 'Create binary release assets for Node.js coded by platform/arch/ABI'
 
 inputs:
-  owner:
-    description: "Owner's name"
-    required: true
-  repo:
-    description: "Repo's name"
-    required: true
-  tag:
-    description: 'Tag used to create a release'
-    required: true
   path:
     description: 'Path to the binary asset'
     required: true
+  prefix:
+    description: 'Prefix for the binary asset'
+    required: false
+    default: ''
+  suffix:
+    description: 'Suffix for the binary asset'
+    required: false
+    default: ''
 
 runs:
   using: 'node12'

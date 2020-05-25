@@ -8,25 +8,26 @@ const {promisify} = require('util');
 const core = require('@actions/core');
 const github = require('@actions/github');
 
-const OWNER = core.getInput('owner'),
-  REPO = core.getInput('repo'),
-  TOKEN = process.env.GITHUB_TOKEN,
-  PATH = core.getInput('path'),
-  REF = core.getInput('tag'),
-  TAG = /^refs\/tags\/(.*)$/.exec(REF)[1];
-
-const fileName = `${process.platform}-${process.arch}-${process.versions.modules}.node`;
-
-console.log('Preparing artifact', fileName, '...');
-
-const octokit = new github.GitHub(TOKEN);
-
 const main = async () => {
+  const [OWNER, REPO] = process.env.GITHUB_REPOSITORY.split('/'),
+    PATH = core.getInput('path'),
+    PREFIX = core.getInput('prefix'),
+    SUFFIX = core.getInput('suffix'),
+    TAG = /^refs\/tags\/(.*)$/.exec(process.env.GITHUB_REF)[1];
+
+  const fileName = `${PREFIX}${process.platform}-${process.arch}-${process.versions.modules}${SUFFIX}`;
+
+  console.log('Preparing artifact', fileName, '...');
+
+  const octokit = new github.GitHub(process.env.GITHUB_TOKEN);
+
   const [data, uploadUrl] = await Promise.all([
     fsp.readFile(path.normalize(PATH)),
     octokit.repos.getReleaseByTag({owner: OWNER, repo: REPO, tag: TAG}).then(response => response.data.upload_url)
   ]);
+
   console.log('Compressing and uploading ...');
+
   await Promise.all([
     (async () => {
       if (!zlib.brotliCompress) return null;
