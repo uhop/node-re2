@@ -29,7 +29,7 @@ jobs:
 
   build:
     # if: github.event.base_ref == 'refs/heads/master'
-    name: Build on node ${{matrix.node-version}} and ${{matrix.os}}
+    name: Build on Node.js ${{matrix.node-version}} and ${{matrix.os}}
     needs: release
     runs-on: ${{matrix.os}}
 
@@ -44,6 +44,10 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: true
+    - name: Setup Node.js ${{matrix.node-version}}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{matrix.node-version}}
     - name: Get NPM cache directory
       id: npm-cache
       run: |
@@ -59,10 +63,6 @@ jobs:
           ${{runner.os}}-build-${{env.cache-name}}-
           ${{runner.os}}-build-
           ${{runner.os}}-
-    - name: Build on Node.js ${{matrix.node-version}}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{matrix.node-version}}
     - run: npm ci
     - run: npm run build --if-present
     - run: npm test
