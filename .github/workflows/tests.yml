@@ -29,8 +29,7 @@ jobs:
         node-version: ${{matrix.node-version}}
     - name: Get NPM cache directory
       id: npm-cache
-      run: |
-        echo "::set-output name=dir::$(npm config get cache)"
+      run: echo "::set-output name=dir::$(npm config get cache)"
     - name: Cache node modules
       uses: actions/cache@v1
       with:
@@ -39,6 +38,9 @@ jobs:
         restore-keys: |
           ${{runner.os}}-node-
           ${{runner.os}}-
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+    - name: Install the package and run tests
+      env:
+        DEVELOPMENT_SKIP_CACHE: true
+      run: npm ci
+      run: npm run build --if-present
+      run: npm test
