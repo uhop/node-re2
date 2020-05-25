@@ -58,4 +58,4 @@ const main = async () => {
   console.log('Done.');
 };
 
-main();
+main().catch(e => core.setFailed((e && e.message) || 'create-binary-asset has failed'));
