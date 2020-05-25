@@ -5,7 +5,7 @@ const path = require('path');
 const zlib = require('zlib');
 const {promisify} = require('util');
 const https = require('https');
-const {spawn} = require('child_process');
+const {exec} = require('child_process');
 
 const pkg = require('../package.json');
 
@@ -35,9 +35,9 @@ const isDev = async () => {
   return true;
 };
 
-const run = async (cmd, args) =>
+const run = async cmd =>
   new Promise((resolve, reject) => {
-    const p = spawn(cmd, args);
+    const p = exec(cmd);
     p.stdout.on('data', data => process.stdout.write(data));
     p.stderr.on('data', data => process.stderr.write(data));
     p.on('close', code => (code ? reject : resolve)(code));
@@ -46,7 +46,7 @@ const run = async (cmd, args) =>
 
 const isVerified = async () => {
   try {
-    await run('npm', ['run', 'verify-build']);
+    await run('npm run verify-build');
   } catch (e) {
     return false;
   }
@@ -90,7 +90,7 @@ const main = async () => {
       break checks;
     }
     if (isDev()) {
-      console.log('Development repository was detected.');
+      console.log('Development flag was detected.');
       break checks;
     }
     const prefix = getAssetUrlPrefix(pkg);
@@ -129,6 +129,6 @@ const main = async () => {
     if (copied && isVerified()) return console.log('Done.');
   }
   console.log('Building locally ...');
-  await run('npm', ['run', 'rebuild']);
+  await run('npm run rebuild');
 };
 main();
