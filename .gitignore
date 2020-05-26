@@ -8,4 +8,5 @@ vendor/*
 !vendor/util/*
 .vscode/
 .development
+.developmentx
 .xdevelopment
