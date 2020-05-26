@@ -248,7 +248,7 @@ static Nan::Maybe<std::string> replace(WrappedRE2 *re2, const StrVal &replacee, 
 		}
 		if (match.size())
 		{
-			if (match.data() == data || match.data() - data > lastIndex)
+			if (match.data() == data || match.data() - data > static_cast<long>(lastIndex))
 			{
 				result += std::string(data + lastIndex, match.data() - data - lastIndex);
 			}
@@ -396,7 +396,7 @@ static Nan::Maybe<std::string> replace(WrappedRE2 *re2, const StrVal &replacee, 
 		}
 		if (match.size())
 		{
-			if (match.data() == data || match.data() - data > lastIndex)
+			if (match.data() == data || match.data() - data > static_cast<long>(lastIndex))
 			{
 				result += std::string(data + lastIndex, match.data() - data - lastIndex);
 			}
