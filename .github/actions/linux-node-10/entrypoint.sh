@@ -1,4 +1,4 @@
-#!/bin/sh -l
+#!/bin/bash -l
 
 NVM_DIR=$HOME/.nvm
 PATH=$HOME/src/bin:$HOME/bin:$PATH
