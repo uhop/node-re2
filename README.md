@@ -328,19 +328,6 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 `RE2` always works in the Unicode mode. See `RE2.unicodeWarningLevel` above for more details on how to control warnings about this feature.
 
-## Working on this project
-
-This project uses git submodules, so the correct way to get it is:
-
-    git clone git@github.com:uhop/node-re2.git
-    cd node-re2
-    git submodule update --init --recursive
-
-In order to build it, make sure that you have all necessary `gyp` dependencies
-for your platform, then run:
-
-    npm install
-
 ## Release history
 
 - 1.13.1 *Fix for Windows builds.*
