@@ -66,12 +66,18 @@ const run = async cmd =>
 
 const isVerified = async () => {
   try {
-    await run('npm run verify-build');
-    return true;
+    if (process.env.npm_package_scripts_verify_build) {
+      await run('npm run verify-build');
+    } else if (process.env.npm_package_scripts_test) {
+      await run('npm test');
+    } else {
+      console.log('No verify-build nor test scripts were found -- no way to verify the build automatically.');
+      return false;
+    }
   } catch (e) {
-    // squelch
+    return false;
   }
-  return false;
+  return true;
 };
 
 const get = async url =>
