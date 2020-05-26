@@ -11,7 +11,7 @@ on:
 
 jobs:
   tests:
-    name: Test on Node.js ${{matrix.node-version}} and ${{matrix.os}}
+    name: Node.js ${{matrix.node-version}} on ${{matrix.os}}
     runs-on: ${{matrix.os}}
 
     strategy:
