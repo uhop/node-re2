@@ -40,9 +40,7 @@ const getAssetUrlPrefix = () => {
     result = getRepo(url);
   return (
     result &&
-    `https://github.com/${result[1]}/${result[2]}/releases/download/${'v5.5.5' || process.env.npm_package_version}/${prefix}${process.platform}-${
-      process.arch
-    }-${process.versions.modules}${suffix}`
+    `https://github.com/${result[1]}/${result[2]}/releases/download/${process.env.npm_package_version}/${prefix}${process.platform}-${process.arch}-${process.versions.modules}${suffix}`
   );
 };
 
