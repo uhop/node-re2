@@ -11,8 +11,7 @@ on:
       - v?[0-9]+.[0-9]+
 
 jobs:
-  release:
-    # if: github.event.base_ref == 'refs/heads/master'
+  create-release:
     name: Create release
     runs-on: ubuntu-latest
 
@@ -28,9 +27,8 @@ jobs:
         prerelease: false
 
   build:
-    # if: github.event.base_ref == 'refs/heads/master'
     name: Build on Node.js ${{matrix.node-version}} and ${{matrix.os}}
-    needs: release
+    needs: create-release
     runs-on: ${{matrix.os}}
 
     strategy:
@@ -71,3 +69,29 @@ jobs:
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       run: npm run create-binary-asset
+
+  build-linux-node-10:
+    name: Build on Node.js 10 and CentOS 6
+    needs: create-release
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+    - name: Get NPM cache directory
+      id: npm-cache
+      run: |
+        echo "::set-output name=dir::$(npm config get cache)"
+    - name: Cache node modules
+      uses: actions/cache@v1
+      with:
+        path: ${{steps.npm-cache.outputs.dir}}
+        key: Linux-node-${{hashFiles('**/package-lock.json')}}
+        restore-keys: |
+          Linux-node-
+          Linux-
+    - name: Install, test, and create artifact
+      uses: ./.github/actions/linux-node-10/
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
