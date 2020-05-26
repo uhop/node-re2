@@ -12,9 +12,6 @@ RUN yum install -y centos-release-scl && \
 # ENV NVM_DIR=$HOME/.nvm \
 #     PATH=$HOME/src/bin:$HOME/bin:/opt/rh/devtoolset-6/root/usr/bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-# # Copy extra files to the image.
-# COPY enable $HOME/etc/enable
-
 # RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash && \
 #     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  && \
 #     nvm install 10
