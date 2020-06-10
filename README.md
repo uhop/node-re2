@@ -1,5 +1,10 @@
 # node-re2
 
+[![NPM version][npm-img]][npm-url]
+
+[npm-img]: https://img.shields.io/npm/v/re2.svg
+[npm-url]: https://npmjs.org/package/re2
+
 This project provides bindings for [RE2](https://github.com/google/re2):
 fast, safe alternative to backtracking regular expression engines written by [Russ Cox](http://swtch.com/~rsc/).
 To learn more about RE2, start with an overview
