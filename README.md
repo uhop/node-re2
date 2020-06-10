@@ -177,7 +177,7 @@ Starting 1.8.0 property `source` emulates the same property of `RegExp`, meaning
 
 ### Unicode warning level
 
-`RE2` engine always works in the Unicode mode. In most cases either there is no difference or the Unicode mode is actually preferred. But sometimes a user want a tight control over her regular expressions. For those cases, there is a static string property `RE2.unicodeWarningLevel`.
+`RE2` engine always works in the Unicode mode. In most cases either there is no difference or the Unicode mode is actually preferred. But sometimes a user wants a tight control over their regular expressions. For those cases, there is a static string property `RE2.unicodeWarningLevel`.
 
 Regular expressions in the Unicode mode work as usual. But if a regular expression lacks the Unicode flag, it is always added silently.
 
@@ -256,7 +256,7 @@ result = new RE2("ab*").exec("abba");
 result = RE2("ab*").exec("abba");
 ```
 
-## Limitations (Things RE2 does not support)
+## Limitations (things RE2 does not support)
 
 `RE2` consciously avoids any regular expression features that require worst-case exponential time to evaluate.
 These features are essentially those that describe a Context-Free Language (CFL) rather than a Regular Expression,
