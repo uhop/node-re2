@@ -22,7 +22,7 @@ unit.add(module, [
 		eval(t.TEST("RE2('\\\\D{,2}', 'mig') + '' === '/\\\\D{,2}/gimu'"));
 		eval(t.TEST("RE2('^a{2,}', 'mi') + '' === '/^a{2,}/imu'"));
 		eval(t.TEST("RE2('^a{5}$', 'gim') + '' === '/^a{5}$/gimu'"));
-		eval(t.TEST("RE2('\\\\u{1F603}/', 'iy') + '' === '/\\\\x{1F603}\\\\//iuy'"));
+		eval(t.TEST("RE2('\\\\u{1F603}/', 'iy') + '' === '/\\\\u{1F603}\\\\//iuy'"));
 
 		eval(t.TEST("RE2('c', 'ug').toString() === '/c/gu'"));
 		eval(t.TEST("RE2('d', 'um').toString() === '/d/mu'"));

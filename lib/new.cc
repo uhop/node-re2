@@ -18,7 +18,7 @@ inline bool isHexadecimal(char ch)
 	return ('0' <= ch && ch <= '9') || ('A' <= ch && ch <= 'Z') || ('a' <= ch && ch <= 'z');
 }
 
-static bool translateRegExp(const char *data, size_t size, std::vector<char> &buffer)
+static bool translateRegExp(const char *data, size_t size, bool multiline, std::vector<char> &buffer)
 {
 	std::string result;
 	bool changed = false;
@@ -26,6 +26,11 @@ static bool translateRegExp(const char *data, size_t size, std::vector<char> &bu
 	if (!size)
 	{
 		result = "(?:)";
+		changed = true;
+	}
+	else if (multiline)
+	{
+		result = "(?m)";
 		changed = true;
 	}
 
@@ -360,7 +365,7 @@ NAN_METHOD(WrappedRE2::New)
 		}
 	}
 
-	if (needConversion && translateRegExp(data, size, buffer))
+	if (needConversion && translateRegExp(data, size, multiline, buffer))
 	{
 		size = buffer.size() - 1;
 		data = &buffer[0];
@@ -370,8 +375,8 @@ NAN_METHOD(WrappedRE2::New)
 
 	re2::RE2::Options options;
 	options.set_case_sensitive(!ignoreCase);
-	options.set_one_line(!multiline);
-	options.set_log_errors(false); // inappropriate when embedding
+	options.set_one_line(!multiline); // to track this state, otherwise it is ignored
+	options.set_log_errors(false);	  // inappropriate when embedding
 
 	std::unique_ptr<WrappedRE2> re2(new WrappedRE2(re2::StringPiece(data, size), options, source, global, ignoreCase, multiline, sticky));
 	if (!re2->regexp.ok())

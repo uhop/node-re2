@@ -49,6 +49,9 @@ unit.add(module, [
 
 		re = new RE2("(?<foo>bar)", "u");
 		eval(t.TEST("re.internalSource === '(?P<foo>bar)'"));
+
+		re = new RE2("foo\\/bar", "m");
+		eval(t.TEST("re.internalSource === '(?m)foo\\\\/bar'"));
 	},
 	function test_sourceBackSlashes(t) {
 		"use strict";

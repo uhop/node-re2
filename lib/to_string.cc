@@ -17,7 +17,7 @@ NAN_METHOD(WrappedRE2::ToString)
 	// actual work
 
 	std::string buffer("/");
-	buffer += re2->regexp.pattern();
+	buffer += re2->source;
 	buffer += "/";
 
 	if (re2->global)
