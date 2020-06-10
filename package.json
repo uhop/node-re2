@@ -14,7 +14,7 @@
     "node-gyp": "^7.0.0"
   },
   "devDependencies": {
-    "@actions/github": "^2.2.0",
+    "@actions/github": "^3.0.0",
     "heya-unit": "^0.3.0"
   },
   "scripts": {
