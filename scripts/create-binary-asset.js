@@ -25,7 +25,7 @@ const main = async () => {
 
   console.log('Preparing artifact', fileName, '...');
 
-  const octokit = new github.GitHub(process.env.GITHUB_TOKEN);
+  const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
 
   const [data, uploadUrl] = await Promise.all([
     fsp.readFile(path.normalize(artifactPath)),
