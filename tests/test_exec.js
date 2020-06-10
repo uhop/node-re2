@@ -282,5 +282,24 @@ unit.add(module, [
 		eval(t.TEST("t.unify(result2, [' '])"));
 		eval(t.TEST("result2.index === 5"));
 		eval(t.TEST("re2.lastIndex === 6"));
-	}
+  },
+
+  // Multiline test
+
+  function test_execMultiline(t) {
+		"use strict";
+
+    const re = new RE2("^xy", "m"),
+      pattern = ` xy1
+xy2 (at start of line)
+  xy3`;
+
+    const result = pattern.match(re);
+
+		eval(t.TEST("!!result"));
+		eval(t.TEST("result[0] === 'xy'"));
+		eval(t.TEST("result.index > 3"));
+		eval(t.TEST("result.index < pattern.length - 4"));
+    eval(t.TEST("result[0] === pattern.substr(result.index, result[0].length)"));
+  }
 ]);
