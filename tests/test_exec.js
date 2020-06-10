@@ -294,7 +294,7 @@ unit.add(module, [
 xy2 (at start of line)
   xy3`;
 
-    const result = pattern.match(re);
+    const result = re.exec(pattern);
 
 		eval(t.TEST("!!result"));
 		eval(t.TEST("result[0] === 'xy'"));
