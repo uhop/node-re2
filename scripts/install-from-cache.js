@@ -55,26 +55,35 @@ const isDev = async () => {
   return false;
 };
 
-const run = async cmd =>
+const run = async (cmd, suppressOutput) =>
   new Promise((resolve, reject) => {
     const p = exec(cmd);
-    p.stdout.on('data', data => process.stdout.write(data));
-    p.stderr.on('data', data => process.stderr.write(data));
-    p.on('close', code => (code ? reject : resolve)(code));
-    p.on('error', error => reject(error));
+    let closed = false;
+    p.on('exit', (code, signal) => {
+      if (closed) return;
+      closed = true;
+      (signal || code) && reject(signal || code);
+      resolve(0);
+    });
+    p.on('error', error => !closed && ((closed = true), reject(error)));
+    if (!suppressOutput || process.env.DEVELOPMENT_SHOW_VERIFICATION_RESULTS) {
+      p.stdout.on('data', data => process.stdout.write(data));
+      p.stderr.on('data', data => process.stderr.write(data));
+    }
   });
 
 const isVerified = async () => {
   try {
     if (process.env.npm_package_scripts_verify_build) {
-      await run('npm run verify-build');
+      await run('npm run verify-build', true);
     } else if (process.env.npm_package_scripts_test) {
-      await run('npm test');
+      await run('npm test', true);
     } else {
       console.log('No verify-build nor test scripts were found -- no way to verify the build automatically.');
       return false;
     }
   } catch (e) {
+    console.log('The verification has failed: building from sources...');
     return false;
   }
   return true;
