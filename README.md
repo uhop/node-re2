@@ -207,6 +207,10 @@ Installation:
 npm install --save re2
 ```
 
+While the project is known to work with other package managers, it is not guaranteed nor tested.
+For example, [yarn](https://yarnpkg.com/) is known to fail in some scenarios
+(see this [Wiki article](https://github.com/uhop/node-re2/wiki/Problem:-unusual-errors-with-yarn)).
+
 ## How to use
 
 It is used just like a `RegExp` object.
