@@ -83,7 +83,7 @@ const isVerified = async () => {
       return false;
     }
   } catch (e) {
-    console.log('The verification has failed: building from sources...');
+    console.log('The verification has failed: building from sources ...');
     return false;
   }
   return true;
