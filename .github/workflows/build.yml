@@ -90,7 +90,7 @@ jobs:
   #         Linux-node-
   #         Linux-
   #   - name: Install, test, and create artifact
-  #     uses: ./.github/actions/linux-node-10/
+  #     uses: .github/actions/linux-node-10/
   #     env:
   #       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
@@ -120,7 +120,7 @@ jobs:
   #         Linux-node-
   #         Linux-
   #   - name: Install, test, and create artifact
-  #     uses: ./.github/actions/linux-node-12/
+  #     uses: .github/actions/linux-node-12/
   #     env:
   #       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
   #     with:
@@ -148,6 +148,6 @@ jobs:
           Linux-Alpine-node-
           Linux-Alpine-
     - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-alpine-node-10/
+      uses: .github/actions/linux-alpine-node-10/
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
