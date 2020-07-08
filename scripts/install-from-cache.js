@@ -5,7 +5,23 @@ const path = require('path');
 const zlib = require('zlib');
 const {promisify} = require('util');
 const https = require('https');
-const {exec} = require('child_process');
+const {exec, spawnSync} = require('child_process');
+
+const spawnOptions = {encoding: 'utf8', env: process.env};
+const getPlatform = () => {
+  const platform = process.platform;
+  if (platform !== 'linux') return platform;
+  // detecting musl using algorithm from https://github.com/lovell/detect-libc under Apache License 2.0
+  let result = spawnSync('getconf', ['GNU_LIBC_VERSION'], spawnOptions);
+  if (!result.status && !result.signal) return platform;
+  result = spawnSync('ldd', ['--version'], spawnOptions);
+  if (result.signal) return platform;
+  if ((!result.status && result.stdout.toString().indexOf('musl') >= 0) || (result.status === 1 && result.stderr.toString().indexOf('musl') >= 0))
+    return platform + '-musl';
+  return platform;
+};
+const platform = getPlatform();
+
 
 const getParam = (name, defaultValue = '') => {
   const index = process.argv.indexOf('--' + name);
@@ -40,7 +56,7 @@ const getAssetUrlPrefix = () => {
     result = getRepo(url);
   return (
     result &&
-    `https://github.com/${result[1]}/${result[2]}/releases/download/${process.env.npm_package_version}/${prefix}${process.platform}-${process.arch}-${process.versions.modules}${suffix}`
+    `https://github.com/${result[1]}/${result[2]}/releases/download/${process.env.npm_package_version}/${prefix}${platform}-${process.arch}-${process.versions.modules}${suffix}`
   );
 };
 
