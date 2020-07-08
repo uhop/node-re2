@@ -26,50 +26,108 @@ jobs:
         draft: false
         prerelease: false
 
-  build:
-    name: Node.js ${{matrix.node-version}} on ${{matrix.os}}
-    needs: create-release
-    runs-on: ${{matrix.os}}
+  # build:
+  #   name: Node.js ${{matrix.node-version}} on ${{matrix.os}}
+  #   needs: create-release
+  #   runs-on: ${{matrix.os}}
 
-    strategy:
-      matrix:
-        os: [windows-latest, macOS-latest]
-        node-version: [10, 12, 14]
+  #   strategy:
+  #     matrix:
+  #       os: [windows-latest, macOS-latest]
+  #       node-version: [10, 12, 14]
 
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: true
-    - name: Setup Node.js ${{matrix.node-version}}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{matrix.node-version}}
-    - name: Get NPM cache directory
-      id: npm-cache
-      run: |
-        echo "::set-output name=dir::$(npm config get cache)"
-    - name: Cache node modules
-      uses: actions/cache@v2
-      with:
-        path: ${{steps.npm-cache.outputs.dir}}
-        key: ${{runner.os}}-node-${{hashFiles('**/package-lock.json')}}
-        restore-keys: |
-          ${{runner.os}}-node-
-          ${{runner.os}}-
-    - name: Install the package and run tests
-      env:
-        DEVELOPMENT_SKIP_GETTING_ASSET: true
-      run: |
-        npm ci
-        npm run build --if-present
-        npm test
-    - name: Create artifact
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      run: npm run create-binary-asset
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #     with:
+  #       submodules: true
+  #   - name: Setup Node.js ${{matrix.node-version}}
+  #     uses: actions/setup-node@v1
+  #     with:
+  #       node-version: ${{matrix.node-version}}
+  #   - name: Get NPM cache directory
+  #     id: npm-cache
+  #     run: |
+  #       echo "::set-output name=dir::$(npm config get cache)"
+  #   - name: Cache node modules
+  #     uses: actions/cache@v2
+  #     with:
+  #       path: ${{steps.npm-cache.outputs.dir}}
+  #       key: ${{runner.os}}-node-${{hashFiles('**/package-lock.json')}}
+  #       restore-keys: |
+  #         ${{runner.os}}-node-
+  #         ${{runner.os}}-
+  #   - name: Install the package and run tests
+  #     env:
+  #       DEVELOPMENT_SKIP_GETTING_ASSET: true
+  #     run: |
+  #       npm ci
+  #       npm run build --if-present
+  #       npm test
+  #   - name: Create artifact
+  #     env:
+  #       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+  #     run: npm run create-binary-asset
 
-  build-linux-node-10:
-    name: Node.js 10 on CentOS 6
+  # build-linux-node-10:
+  #   name: Node.js 10 on CentOS 6
+  #   needs: create-release
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #     with:
+  #       submodules: true
+  #   - name: Get NPM cache directory
+  #     id: npm-cache
+  #     run: |
+  #       echo "::set-output name=dir::$(npm config get cache)"
+  #   - name: Cache node modules
+  #     uses: actions/cache@v2
+  #     with:
+  #       path: ${{steps.npm-cache.outputs.dir}}
+  #       key: Linux-node-${{hashFiles('**/package-lock.json')}}
+  #       restore-keys: |
+  #         Linux-node-
+  #         Linux-
+  #   - name: Install, test, and create artifact
+  #     uses: ./.github/actions/linux-node-10/
+  #     env:
+  #       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+  # build-linux-node:
+  #   name: Node.js ${{matrix.node-version}} on CentOS 7
+  #   needs: create-release
+  #   runs-on: ubuntu-latest
+
+  #   strategy:
+  #     matrix:
+  #       node-version: [12, 14]
+
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #     with:
+  #       submodules: true
+  #   - name: Get NPM cache directory
+  #     id: npm-cache
+  #     run: |
+  #       echo "::set-output name=dir::$(npm config get cache)"
+  #   - name: Cache node modules
+  #     uses: actions/cache@v2
+  #     with:
+  #       path: ${{steps.npm-cache.outputs.dir}}
+  #       key: Linux-node-${{hashFiles('**/package-lock.json')}}
+  #       restore-keys: |
+  #         Linux-node-
+  #         Linux-
+  #   - name: Install, test, and create artifact
+  #     uses: ./.github/actions/linux-node-12/
+  #     env:
+  #       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+  #     with:
+  #       node-version: ${{matrix.node-version}}
+
+  build-linux-alpine-node-10:
+    name: Node.js 10 on Alpine Linux
     needs: create-release
     runs-on: ubuntu-latest
 
@@ -85,43 +143,11 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ${{steps.npm-cache.outputs.dir}}
-        key: Linux-node-${{hashFiles('**/package-lock.json')}}
+        key: Linux-Alpine-node-${{hashFiles('**/package-lock.json')}}
         restore-keys: |
-          Linux-node-
-          Linux-
+          Linux-Alpine-node-
+          Linux-Alpine-
     - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-node-10/
+      uses: ./.github/actions/linux-alpine-node-10/
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
-  build-linux-node:
-    name: Node.js ${{matrix.node-version}} on CentOS 7
-    needs: create-release
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [12, 14]
-
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: true
-    - name: Get NPM cache directory
-      id: npm-cache
-      run: |
-        echo "::set-output name=dir::$(npm config get cache)"
-    - name: Cache node modules
-      uses: actions/cache@v2
-      with:
-        path: ${{steps.npm-cache.outputs.dir}}
-        key: Linux-node-${{hashFiles('**/package-lock.json')}}
-        restore-keys: |
-          Linux-node-
-          Linux-
-    - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-node-12/
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      with:
-        node-version: ${{matrix.node-version}}
