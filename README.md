@@ -339,6 +339,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 ## Release history
 
+- 1.15.2 *Added `linux-musl` target for precompiled images (thx [Uzlopak](https://github.com/Uzlopak)).*
 - 1.15.1 *Refreshed dependencies, updated the verification check on installation, general maintenance.*
 - 1.15.0 *Fix for multiline expressions (thx [Frederic Rudman](https://github.com/frudman)), `toString()` uses `source` now, updated deps.*
 - 1.14.0 *New delivery mechanism for binary artifacts (thx [Brandon Kobel](https://github.com/kobelb) for the idea and the research) + minor fix to eliminate warnings on Windows.*
@@ -356,16 +357,16 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 - 1.9.0 *Refreshed dependencies to support Node 12. Only versions 10-12 are supported now (`v8` restrictions). For older versions use `node-re2@1.8`.*
 - 1.8.4 *Refreshed dependencies, removed `unistd.h` to compile on Windows.*
 - 1.8.3 *Refreshed dependencies, removed suppression of some warnings.*
-- 1.8.2 *Bugfix to support the null prototype for groups. Thx [Exter-N](https://github.com/Exter-N)!*
+- 1.8.2 *Bugfix to support the null prototype for groups. Thx [Exter-N](https://github.com/Exter-N).*
 - 1.8.1 *Bugfix for better source escaping.*
-- 1.8.0 *Clarified Unicode support, added `unicode` flag, added named groups &mdash; thx [Exter-N](https://github.com/Exter-N)! Bugfixes &mdash; thx [Barak Amar](https://github.com/nopcoder)!*
-- 1.7.0 *Implemented `sticky` and `flags` + bug fixes + more tests. Thx [Exter-N](https://github.com/Exter-N)!*
-- 1.6.2 *Bugfix for a prototype access. Thx [Exter-N](https://github.com/Exter-N)!*
-- 1.6.1 *Returned support for node 4 LTS. Thx [Kannan Goundan](https://github.com/cakoose)!*
+- 1.8.0 *Clarified Unicode support, added `unicode` flag, added named groups &mdash; thx [Exter-N](https://github.com/Exter-N)! Bugfixes &mdash; thx [Barak Amar](https://github.com/nopcoder).*
+- 1.7.0 *Implemented `sticky` and `flags` + bug fixes + more tests. Thx [Exter-N](https://github.com/Exter-N).*
+- 1.6.2 *Bugfix for a prototype access. Thx [Exter-N](https://github.com/Exter-N).*
+- 1.6.1 *Returned support for node 4 LTS. Thx [Kannan Goundan](https://github.com/cakoose).*
 - 1.6.0 *Added well-known symbol-based methods of ES6. Refreshed NAN.*
-- 1.5.0 *Bugfixes, error checks, better docs. Thx [Jamie Davis](https://github.com/davisjam), and [omg](https://github.com/omg)!*
+- 1.5.0 *Bugfixes, error checks, better docs. Thx [Jamie Davis](https://github.com/davisjam), and [omg](https://github.com/omg).*
 - 1.4.1 *Minor corrections in README.*
-- 1.4.0 *Use re2 as a git submodule. Thx [Ben James](https://github.com/benhjames)!*
+- 1.4.0 *Use re2 as a git submodule. Thx [Ben James](https://github.com/benhjames).*
 - 1.3.3 *Refreshed dependencies.*
 - 1.3.2 *Updated references in README (re2 was moved to github).*
 - 1.3.1 *Refreshed dependencies, new Travis-CI config.*
