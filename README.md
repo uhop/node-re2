@@ -1,6 +1,4 @@
-# node-re2
-
-[![NPM version][npm-img]][npm-url]
+# node-re2 [![NPM version][npm-img]][npm-url]
 
 [npm-img]: https://img.shields.io/npm/v/re2.svg
 [npm-url]: https://npmjs.org/package/re2
