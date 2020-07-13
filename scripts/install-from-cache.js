@@ -53,10 +53,11 @@ const getAssetUrlPrefix = () => {
       process.env.npm_package_github ||
       process.env.npm_package_repository ||
       (process.env.npm_package_repository_type === 'git' && process.env.npm_package_repository_url),
-    result = getRepo(url);
+    result = getRepo(url),
+    host = process.env.RE2_DOWNLOAD_MIRROR || 'https://github.com';
   return (
     result &&
-    `https://github.com/${result[1]}/${result[2]}/releases/download/${process.env.npm_package_version}/${prefix}${platform}-${process.arch}-${process.versions.modules}${suffix}`
+    `${host}/${result[1]}/${result[2]}/releases/download/${process.env.npm_package_version}/${prefix}${platform}-${process.arch}-${process.versions.modules}${suffix}`
   );
 };
 
