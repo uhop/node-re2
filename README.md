@@ -211,6 +211,12 @@ While the project is known to work with other package managers, it is not guaran
 For example, [yarn](https://yarnpkg.com/) is known to fail in some scenarios
 (see this [Wiki article](https://github.com/uhop/node-re2/wiki/Problem:-unusual-errors-with-yarn)).
 
+### Precompiled artifacts
+
+When installing re2 the [install script](scripts/install-from-cache.js) attempts to download a prebuilt artifact for your system from the Github releases. The download location can be overridden by setting the `RE2_DOWNLOAD_MIRROR` environment variable as seen in the install script.
+
+If all attempts to download the prebuilt artifact for your system fails the script attempts to built re2 locally on your machine using [node-gyp](https://github.com/nodejs/node-gyp).
+
 ## How to use
 
 It is used just like a `RegExp` object.
@@ -339,6 +345,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 ## Release history
 
+- **unreleased** *Added support for RE2_DOWNLOAD_MIRROR environment variable for precompiled artifact download during installation*
 - 1.15.2 *Added `linux-musl` target for precompiled images (thx [Uzlopak](https://github.com/Uzlopak)).*
 - 1.15.1 *Refreshed dependencies, updated the verification check on installation, general maintenance.*
 - 1.15.0 *Fix for multiline expressions (thx [Frederic Rudman](https://github.com/frudman)), `toString()` uses `source` now, updated deps.*
