@@ -350,14 +350,14 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 - 1.14.0 *New delivery mechanism for binary artifacts (thx [Brandon Kobel](https://github.com/kobelb) for the idea and the research) + minor fix to eliminate warnings on Windows.*
 - 1.13.1 *Fix for Windows builds.*
 - 1.13.0 *Got rid of a single static variable to support multithreading.*
-- 1.12.1 *Updated `re2` to the latest version.*
+- 1.12.1 *Updated re2 to the latest version.*
 - 1.12.0 *Updated the way `RE2` objects are constructed.*
 - 1.11.0 *Updated the way to initialize the extension (thx [BannerBomb](https://github.com/BannerBomb)).*
-- 1.10.5 *Bugfix for optional groups (thx [Josh Yudaken](https://github.com/qix)), the latest version of `re2`.*
+- 1.10.5 *Bugfix for optional groups (thx [Josh Yudaken](https://github.com/qix)), the latest version of re2.*
 - 1.10.4 *Technical release: even better TypeScript types (thx [Louis Brann](https://github.com/louis-brann)).*
 - 1.10.3 *Technical release: missing reference to TS types (thx [Jamie Magee](https://github.com/JamieMagee)).*
 - 1.10.2 *Technical release: added TypeScript types (thx [Jamie Magee](https://github.com/JamieMagee)).*
-- 1.10.1 *Updated `re2` to the latest version (thx [Jamie Magee](https://github.com/JamieMagee)), dropped Node 6.*
+- 1.10.1 *Updated re2 to the latest version (thx [Jamie Magee](https://github.com/JamieMagee)), dropped Node 6.*
 - 1.10.0 *Added back support for Node 6 and Node 8. Now Node 6-12 is supported.*
 - 1.9.0 *Refreshed dependencies to support Node 12. Only versions 10-12 are supported now (`v8` restrictions). For older versions use `node-re2@1.8`.*
 - 1.8.4 *Refreshed dependencies, removed `unistd.h` to compile on Windows.*
