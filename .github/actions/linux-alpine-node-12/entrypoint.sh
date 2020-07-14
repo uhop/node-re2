@@ -4,4 +4,4 @@ npm config set unsafe-perm true
 npm ci
 npm run build --if-present
 npm test
-npm run create-binary-asset
+npm run save-to-github
