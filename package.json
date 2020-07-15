@@ -10,14 +10,14 @@
     "test": "tests"
   },
   "dependencies": {
-    "install-artifact-from-github": "github:uhop/install-artifact-from-github",
+    "install-artifact-from-github": "^1.0.0",
     "nan": "^2.14.1",
     "node-gyp": "^7.0.0"
   },
   "devDependencies": {
     "@actions/github": "^4.0.0",
     "heya-unit": "^0.3.0",
-    "save-artifact-to-github": "github:uhop/save-artifact-to-github"
+    "save-artifact-to-github": "^1.0.0"
   },
   "scripts": {
     "test": "node tests/tests.js",
