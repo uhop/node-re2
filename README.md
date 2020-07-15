@@ -343,6 +343,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 ## Release history
 
+- 1.15.4 *Updated deps. Fixed a yarn-related bug (thx [Michael Kriese](https://github.com/viceice)).*
 - 1.15.3 *Extracted caching artifacts to separate packages. Added support for `RE2_DOWNLOAD_MIRROR` environment variable for precompiled artifact download during installation.*
 - 1.15.2 *Added `linux-musl` target for precompiled images (thx [Uzlopak](https://github.com/Uzlopak)).*
 - 1.15.1 *Refreshed dependencies, updated the verification check on installation, general maintenance.*
@@ -375,7 +376,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 - 1.3.3 *Refreshed dependencies.*
 - 1.3.2 *Updated references in README (re2 was moved to github).*
 - 1.3.1 *Refreshed dependencies, new Travis-CI config.*
-- 1.3.0 *Upgraded NAN to 1.6.3, now we support node.js 0.10.36, 0.12.0, and io.js 1.3.0. Thx @reid!*
+- 1.3.0 *Upgraded NAN to 1.6.3, now we support node.js 0.10.36, 0.12.0, and io.js 1.3.0. Thx [Reid Burke](https://github.com/reid)!*
 - 1.2.0 *Documented getUtfXLength() functions. Added support for `\c` and `\u` commands.*
 - 1.1.1 *Minor corrections in README.*
 - 1.1.0 *Buffer-based API is public. Unicode is fully supported.*
