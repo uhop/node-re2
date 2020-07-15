@@ -343,7 +343,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 ## Release history
 
-- **unreleased** *Added support for RE2_DOWNLOAD_MIRROR environment variable for precompiled artifact download during installation*
+- 1.15.3 *Extracted caching artifacts to separate packages. Added support for `RE2_DOWNLOAD_MIRROR` environment variable for precompiled artifact download during installation.*
 - 1.15.2 *Added `linux-musl` target for precompiled images (thx [Uzlopak](https://github.com/Uzlopak)).*
 - 1.15.1 *Refreshed dependencies, updated the verification check on installation, general maintenance.*
 - 1.15.0 *Fix for multiline expressions (thx [Frederic Rudman](https://github.com/frudman)), `toString()` uses `source` now, updated deps.*
