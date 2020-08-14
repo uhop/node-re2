@@ -12,7 +12,7 @@
   "dependencies": {
     "install-artifact-from-github": "^1.0.2",
     "nan": "^2.14.1",
-    "node-gyp": "^7.0.0"
+    "node-gyp": "^7.1.0"
   },
   "devDependencies": {
     "@actions/github": "^4.0.0",
