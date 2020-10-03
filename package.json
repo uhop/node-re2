@@ -22,7 +22,7 @@
   "scripts": {
     "test": "node tests/tests.js",
     "save-to-github": "save-to-github --artifact build/Release/re2.node",
-    "install": "install-from-cache --artifact build/Release/re2.node --host-var RE2_DOWNLOAD_MIRROR",
+    "install": "install-from-cache --artifact build/Release/re2.node --host-var RE2_DOWNLOAD_MIRROR || npm run rebuild",
     "verify-build": "node scripts/verify-build.js",
     "rebuild": "node-gyp rebuild"
   },
