@@ -343,6 +343,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 ## Release history
 
+- 1.15.5 *Updated deps. Fixed a `node2nix`-related problem (thx [malte-v](https://github.com/malte-v)).*
 - 1.15.4 *Updated deps. Fixed a yarn-related bug (thx [Michael Kriese](https://github.com/viceice)).*
 - 1.15.3 *Extracted caching artifacts to separate packages. Added support for `RE2_DOWNLOAD_MIRROR` environment variable for precompiled artifact download during installation.*
 - 1.15.2 *Added `linux-musl` target for precompiled images (thx [Uzlopak](https://github.com/Uzlopak)).*
