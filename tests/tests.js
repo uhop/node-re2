@@ -17,5 +17,6 @@ require("./test_symbols");
 require("./test_prototype");
 require("./test_new");
 require("./test_groups");
+require("./test_options");
 
 unit.run();

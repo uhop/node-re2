@@ -44,6 +44,10 @@ node-re2 makes vulnerable regular expression patterns safe by evaluating them in
 
 * [`new RE2(pattern[, flags])`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp)
 
+or optionally with [RE2 specific options](https://github.com/google/re2/blob/master/re2/re2.h#L594):
+
+* `new RE2(pattern[, flags, options])`
+
 Supported properties:
 
 * [`re2.lastIndex`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex)
@@ -61,6 +65,12 @@ Supported methods:
 * [`re2.exec(str)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec)
 * [`re2.test(str)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test)
 * [`re2.toString()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/toString)
+
+Supported RE2 options:
+
+* [`max_mem`](https://github.com/google/re2/blob/master/re2/re2.h#L618)
+* [`never_capture`](https://github.com/google/re2/blob/master/re2/re2.h#L606)
+
 
 Starting with 1.6.0 following well-known symbol-based methods are supported (see [Symbols](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol)):
 
@@ -237,6 +247,11 @@ re = new RE2("a(b*)", "i");
 result = re.exec("aBbC");
 console.log(result[0]); // "aBb"
 console.log(result[1]); // "Bb"
+
+// with max_mem option
+var re = new RE2("[0-9]+", undefined, {max_mem: 2 << 10});
+var result = re.exec("1234");
+console.log(result[0]); // "1234"
 
 // from regular expression object
 var regexp = new RegExp("a(b*)", "i");

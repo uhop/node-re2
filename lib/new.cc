@@ -231,6 +231,8 @@ NAN_METHOD(WrappedRE2::New)
 	bool multiline = false;
 	bool unicode = false;
 	bool sticky = false;
+	int64_t max_mem = 0;
+	bool never_capture = false;
 
 	auto context = Nan::GetCurrentContext();
 
@@ -271,6 +273,18 @@ NAN_METHOD(WrappedRE2::New)
 			}
 		}
 		size = 0;
+	}
+
+	if (info.Length() > 2 && info[2]->IsObject() && !info[2].IsEmpty())
+	{
+		auto re2options = info[2]->ToObject(context).ToLocalChecked();
+		auto max_mem_key = Nan::New<v8::String>("max_mem").ToLocalChecked();
+		auto never_capture_key = Nan::New<v8::String>("never_capture").ToLocalChecked();
+
+		if (re2options->Has(context, max_mem_key).ToChecked())
+			max_mem = re2options->Get(context, max_mem_key).ToLocalChecked()->NumberValue(context).ToChecked();
+		if (re2options->Has(context, never_capture_key).ToChecked())
+			never_capture = re2options->Get(context, never_capture_key).ToLocalChecked()->BooleanValue(context).ToChecked();
 	}
 
 	bool needConversion = true;
@@ -377,6 +391,10 @@ NAN_METHOD(WrappedRE2::New)
 	options.set_case_sensitive(!ignoreCase);
 	options.set_one_line(!multiline); // to track this state, otherwise it is ignored
 	options.set_log_errors(false);	  // inappropriate when embedding
+	if (max_mem > 0)
+		options.set_max_mem(max_mem);
+	options.set_never_capture(never_capture);
+        
 
 	std::unique_ptr<WrappedRE2> re2(new WrappedRE2(re2::StringPiece(data, size), options, source, global, ignoreCase, multiline, sticky));
 	if (!re2->regexp.ok())
