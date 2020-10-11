@@ -8,6 +8,7 @@ curl -sS -o- https://raw.githubusercontent.com/creationix/nvm/v0.35.3/install.sh
 nvm install --no-progress $1
 
 npm config set unsafe-perm true
+export DEVELOPMENT_SKIP_GETTING_ASSET=true
 npm ci
 npm run build --if-present
 npm test
