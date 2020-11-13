@@ -343,6 +343,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 ## Release history
 
+- 1.15.9 *Updated deps.*
 - 1.15.8 *Updated deps.*
 - 1.15.7 *Updated deps.*
 - 1.15.6 *Technical release: less dependencies for the build.*
