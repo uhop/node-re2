@@ -211,7 +211,7 @@ For example, [yarn](https://yarnpkg.com/) is known to fail in some scenarios
 
 ### Precompiled artifacts
 
-When installing re2 the [install script](scripts/install-from-cache.js) attempts to download a prebuilt artifact for your system from the Github releases. The download location can be overridden by setting the `RE2_DOWNLOAD_MIRROR` environment variable as seen in the install script.
+When installing re2 the [install script](https://github.com/uhop/install-artifact-from-github/blob/master/bin/install-from-cache.js) attempts to download a prebuilt artifact for your system from the Github releases. The download location can be overridden by setting the `RE2_DOWNLOAD_MIRROR` environment variable as seen in the install script.
 
 If all attempts to download the prebuilt artifact for your system fails the script attempts to built re2 locally on your machine using [node-gyp](https://github.com/nodejs/node-gyp).
 
