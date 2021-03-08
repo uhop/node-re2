@@ -39,7 +39,7 @@
         "vendor/util/strutil.cc"
       ],
       "cflags": [
-        "-std=c++11",
+        "-std=c++14",
         "-Wall",
         "-Wextra",
         "-Wno-sign-compare",
@@ -62,7 +62,7 @@
         "CLANG_CXX_LANGUAGE_STANDARD": "c++11",
         "CLANG_CXX_LIBRARY": "libc++",
         "OTHER_CFLAGS": [
-          "-std=c++11",
+          "-std=c++14",
           "-Wall",
           "-Wextra",
           "-Wno-sign-compare",
