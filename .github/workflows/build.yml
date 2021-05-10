@@ -31,7 +31,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, macOS-latest]
-        node-version: [10, 12, 14, 15, 16]
+        node-version: [12, 14, 15, 16]
 
     steps:
     - uses: actions/checkout@v2
@@ -65,32 +65,6 @@ jobs:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       run: npm run save-to-github
 
-  build-linux-node-10:
-    name: Node.js 10 on CentOS 6
-    needs: create-release
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: true
-    - name: Get NPM cache directory
-      id: npm-cache
-      run: |
-        echo "::set-output name=dir::$(npm config get cache)"
-    - name: Cache node modules
-      uses: actions/cache@v2
-      with:
-        path: ${{steps.npm-cache.outputs.dir}}
-        key: Linux-node-${{hashFiles('**/package-lock.json')}}
-        restore-keys: |
-          Linux-node-
-          Linux-
-    - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-node-10/
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
   build-linux-node:
     name: Node.js ${{matrix.node-version}} on CentOS 7
     needs: create-release
@@ -122,32 +96,6 @@ jobs:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       with:
         node-version: ${{matrix.node-version}}
-
-  build-linux-alpine-node-10:
-    name: Node.js 10 on Alpine Linux
-    needs: create-release
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: true
-    - name: Get NPM cache directory
-      id: npm-cache
-      run: |
-        echo "::set-output name=dir::$(npm config get cache)"
-    - name: Cache node modules
-      uses: actions/cache@v2
-      with:
-        path: ${{steps.npm-cache.outputs.dir}}
-        key: Linux-Alpine-node-${{hashFiles('**/package-lock.json')}}
-        restore-keys: |
-          Linux-Alpine-node-
-          Linux-Alpine-
-    - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-alpine-node-10/
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-alpine-node-12:
     name: Node.js 12 on Alpine Linux
