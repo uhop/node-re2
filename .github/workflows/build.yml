@@ -69,6 +69,7 @@ jobs:
     name: Node.js ${{matrix.node-version}} on CentOS 7
     needs: create-release
     runs-on: ubuntu-latest
+    continue-on-error: true
 
     strategy:
       matrix:
@@ -101,6 +102,7 @@ jobs:
     name: Node.js 12 on Alpine Linux
     needs: create-release
     runs-on: ubuntu-latest
+    continue-on-error: true
 
     steps:
     - uses: actions/checkout@v2
@@ -127,6 +129,7 @@ jobs:
     name: Node.js 14 on Alpine Linux
     needs: create-release
     runs-on: ubuntu-latest
+    continue-on-error: true
 
     steps:
     - uses: actions/checkout@v2
@@ -153,6 +156,7 @@ jobs:
     name: Node.js 15 on Alpine Linux
     needs: create-release
     runs-on: ubuntu-latest
+    continue-on-error: true
 
     steps:
     - uses: actions/checkout@v2
@@ -179,6 +183,7 @@ jobs:
     name: Node.js 16 on Alpine Linux
     needs: create-release
     runs-on: ubuntu-latest
+    continue-on-error: true
 
     steps:
     - uses: actions/checkout@v2
