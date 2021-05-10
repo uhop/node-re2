@@ -343,7 +343,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 ## Release history
 
-- 1.16.0 *Updated the compiler (thx, [Sergei Dyshel](https://github.com/sergei-dyshel)), updated GYP, removed support for Node 10, added support for Node 16.*
+- 1.16.0 *Updated the compiler (thx, [Sergei Dyshel](https://github.com/sergei-dyshel)), updated GYP, removed support for Node 10, added support for Node 16, updated TS bindings (thx, [BannerBomb](https://github.com/BannerBomb)).*
 - 1.15.9 *Updated deps.*
 - 1.15.8 *Updated deps.*
 - 1.15.7 *Updated deps.*
@@ -354,40 +354,8 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 - 1.15.2 *Added `linux-musl` target for precompiled images (thx [Uzlopak](https://github.com/Uzlopak)).*
 - 1.15.1 *Refreshed dependencies, updated the verification check on installation, general maintenance.*
 - 1.15.0 *Fix for multiline expressions (thx [Frederic Rudman](https://github.com/frudman)), `toString()` uses `source` now, updated deps.*
-- 1.14.0 *New delivery mechanism for binary artifacts (thx [Brandon Kobel](https://github.com/kobelb) for the idea and the research) + minor fix to eliminate warnings on Windows.*
-- 1.13.1 *Fix for Windows builds.*
-- 1.13.0 *Got rid of a single static variable to support multithreading.*
-- 1.12.1 *Updated re2 to the latest version.*
-- 1.12.0 *Updated the way `RE2` objects are constructed.*
-- 1.11.0 *Updated the way to initialize the extension (thx [BannerBomb](https://github.com/BannerBomb)).*
-- 1.10.5 *Bugfix for optional groups (thx [Josh Yudaken](https://github.com/qix)), the latest version of re2.*
-- 1.10.4 *Technical release: even better TypeScript types (thx [Louis Brann](https://github.com/louis-brann)).*
-- 1.10.3 *Technical release: missing reference to TS types (thx [Jamie Magee](https://github.com/JamieMagee)).*
-- 1.10.2 *Technical release: added TypeScript types (thx [Jamie Magee](https://github.com/JamieMagee)).*
-- 1.10.1 *Updated re2 to the latest version (thx [Jamie Magee](https://github.com/JamieMagee)), dropped Node 6.*
-- 1.10.0 *Added back support for Node 6 and Node 8. Now Node 6-12 is supported.*
-- 1.9.0 *Refreshed dependencies to support Node 12. Only versions 10-12 are supported now (`v8` restrictions). For older versions use `node-re2@1.8`.*
-- 1.8.4 *Refreshed dependencies, removed `unistd.h` to compile on Windows.*
-- 1.8.3 *Refreshed dependencies, removed suppression of some warnings.*
-- 1.8.2 *Bugfix to support the null prototype for groups. Thx [Exter-N](https://github.com/Exter-N).*
-- 1.8.1 *Bugfix for better source escaping.*
-- 1.8.0 *Clarified Unicode support, added `unicode` flag, added named groups &mdash; thx [Exter-N](https://github.com/Exter-N)! Bugfixes &mdash; thx [Barak Amar](https://github.com/nopcoder).*
-- 1.7.0 *Implemented `sticky` and `flags` + bug fixes + more tests. Thx [Exter-N](https://github.com/Exter-N).*
-- 1.6.2 *Bugfix for a prototype access. Thx [Exter-N](https://github.com/Exter-N).*
-- 1.6.1 *Returned support for node 4 LTS. Thx [Kannan Goundan](https://github.com/cakoose).*
-- 1.6.0 *Added well-known symbol-based methods of ES6. Refreshed NAN.*
-- 1.5.0 *Bugfixes, error checks, better docs. Thx [Jamie Davis](https://github.com/davisjam), and [omg](https://github.com/omg).*
-- 1.4.1 *Minor corrections in README.*
-- 1.4.0 *Use re2 as a git submodule. Thx [Ben James](https://github.com/benhjames).*
-- 1.3.3 *Refreshed dependencies.*
-- 1.3.2 *Updated references in README (re2 was moved to github).*
-- 1.3.1 *Refreshed dependencies, new Travis-CI config.*
-- 1.3.0 *Upgraded NAN to 1.6.3, now we support node.js 0.10.36, 0.12.0, and io.js 1.3.0. Thx [Reid Burke](https://github.com/reid)!*
-- 1.2.0 *Documented getUtfXLength() functions. Added support for `\c` and `\u` commands.*
-- 1.1.1 *Minor corrections in README.*
-- 1.1.0 *Buffer-based API is public. Unicode is fully supported.*
-- 1.0.0 *Implemented all `RegExp` methods, and all relevant `String` methods.*
-- 0.9.0 *The initial public release.*
+
+The rest can be consulted in the project's wiki [Release history](https://github.com/uhop/node-re2/wiki/Release-history).
 
 ## License
 
