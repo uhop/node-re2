@@ -12,7 +12,7 @@
   "dependencies": {
     "install-artifact-from-github": "^1.2.0",
     "nan": "^2.14.2",
-    "node-gyp": "^7.0.0"
+    "node-gyp": "^7"
   },
   "devDependencies": {
     "heya-unit": "^0.3.0"
