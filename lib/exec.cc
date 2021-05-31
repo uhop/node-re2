@@ -50,7 +50,9 @@ NAN_METHOD(WrappedRE2::Exec)
 			}
 			for (size_t n = re2->lastIndex; n; --n)
 			{
-				lastIndex += getUtf8CharSize(str.data[lastIndex]);
+				size_t s = getUtf8CharSize(str.data[lastIndex]);
+				lastIndex += s;
+				if (s == 4 && n >= 2) --n;
 			}
 		}
 	}
