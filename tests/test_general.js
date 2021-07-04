@@ -209,6 +209,12 @@ unit.add(module, [
 		eval(t.TEST("s3.length === 1"));
 		eval(t.TEST("RE2.getUtf8Length(s3) === 3"));
 
+		var s4 = "🤡";
+
+		eval(t.TEST("s4.length === 2"));
+		eval(t.TEST("RE2.getUtf8Length(s4) === 4"));
+		eval(t.TEST("RE2.getUtf16Length(Buffer.from(s4, 'utf8')) === s4.length"));
+
 		var b3 = new Buffer([0xF0]);
 
 		eval(t.TEST("b3.length === 1"));
