@@ -284,6 +284,22 @@ unit.add(module, [
 		eval(t.TEST("re2.lastIndex === 6"));
   },
 
+	function test_execSupplemental(t) {
+		"use strict";
+
+		var re = new RE2("\\w+", "g");
+		var testString = "🤡🤡🤡 Hello clown world!";
+
+		var result = re.exec(testString);
+		eval(t.TEST("t.unify(result, ['Hello'])"));
+		
+		result = re.exec(testString);
+		eval(t.TEST("t.unify(result, ['clown'])"));
+
+		result = re.exec(testString);
+		eval(t.TEST("t.unify(result, ['world'])"));
+	},
+
   // Multiline test
 
   function test_execMultiline(t) {
