@@ -59,7 +59,10 @@ NAN_METHOD(WrappedRE2::Match)
 		{
 			for (size_t n = re2->lastIndex; n; --n)
 			{
-				lastIndex += getUtf8CharSize(a.data[lastIndex]);
+				size_t s = getUtf8CharSize(a.data[lastIndex]);
+				lastIndex += s;
+				if (s == 4 && n >= 2) --n; // this utf8 character will take two utf16 characters
+				// the decrement above is protected to avoid an overflow of an unsigned integer
 			}
 			anchor = RE2::ANCHOR_START;
 		}

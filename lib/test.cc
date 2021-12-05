@@ -50,7 +50,10 @@ NAN_METHOD(WrappedRE2::Test)
 			}
 			for (size_t n = re2->lastIndex; n; --n)
 			{
-				lastIndex += getUtf8CharSize(str.data[lastIndex]);
+				size_t s = getUtf8CharSize(str.data[lastIndex]);
+				lastIndex += s;
+				if (s == 4 && n >= 2) --n; // this utf8 character will take two utf16 characters
+				// the decrement above is protected to avoid an overflow of an unsigned integer
 			}
 		}
 	}

@@ -226,7 +226,10 @@ static Nan::Maybe<std::string> replace(WrappedRE2 *re2, const StrVal &replacee, 
 			{
 				for (size_t n = re2->lastIndex; n; --n)
 				{
-					lastIndex += getUtf8CharSize(data[lastIndex]);
+					size_t s = getUtf8CharSize(data[lastIndex]);
+					lastIndex += s;
+					if (s == 4 && n >= 2) --n; // this utf8 character will take two utf16 characters
+					// the decrement above is protected to avoid an overflow of an unsigned integer
 				}
 			}
 		}
@@ -372,7 +375,10 @@ static Nan::Maybe<std::string> replace(WrappedRE2 *re2, const StrVal &replacee, 
 			{
 				for (size_t n = re2->lastIndex; n; --n)
 				{
-					lastIndex += getUtf8CharSize(data[lastIndex]);
+					size_t s = getUtf8CharSize(data[lastIndex]);
+					lastIndex += s;
+					if (s == 4 && n >= 2) --n; // this utf8 character will take two utf16 characters
+					// the decrement above is protected to avoid an overflow of an unsigned integer
 				}
 			}
 		}
