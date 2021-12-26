@@ -13,6 +13,10 @@ at his [Implementing Regular Expressions](http://swtch.com/~rsc/regexp/) page.
 (see [Syntax](https://github.com/google/re2/wiki/Syntax)),
 but it lacks two features: backreferences and lookahead assertions. See below for more details.
 
+`RE2` always works in the [Unicode mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/unicode), which means that all matches that use character codes are interpret as Unicode code points, not as binary values of UTF-16.
+See `RE2.unicodeWarningLevel` below for more details.
+
+
 `RE2` object emulates standard `RegExp` making it a practical drop-in replacement in most cases.
 `RE2` is extended to provide `String`-based regular expression methods as well. To help to convert
 `RegExp` objects to `RE2` its constructor can take `RegExp` directly honoring all properties.
