@@ -1,6 +1,6 @@
 {
   "name": "re2",
-  "version": "1.17.1",
+  "version": "1.17.2",
   "description": "Bindings for RE2: fast, safe alternative to backtracking regular expression engines.",
   "homepage": "https://github.com/uhop/node-re2",
   "bugs": "https://github.com/uhop/node-re2/issues",
@@ -10,7 +10,7 @@
     "test": "tests"
   },
   "dependencies": {
-    "install-artifact-from-github": "^1.2.0",
+    "install-artifact-from-github": "^1.3.0",
     "nan": "^2.15.0",
     "node-gyp": "^8.4.1"
   },
@@ -20,7 +20,7 @@
   "scripts": {
     "test": "node tests/tests.js",
     "save-to-github": "save-to-github-cache --artifact build/Release/re2.node",
-    "install": "install-from-cache --artifact build/Release/re2.node --host-var RE2_DOWNLOAD_MIRROR || npm run rebuild",
+    "install": "install-from-cache --artifact build/Release/re2.node --host-var RE2_DOWNLOAD_MIRROR --skip-path-var RE2_DOWNLOAD_SKIP_PATH --skip-ver-var RE2_DOWNLOAD_SKIP_VER || npm run rebuild",
     "verify-build": "node scripts/verify-build.js",
     "rebuild": "node-gyp rebuild"
   },
@@ -35,6 +35,6 @@
     "text processing",
     "PCRE alternative"
   ],
-  "author": "Eugene Lazutkin <eugene.lazutkin@gmail.com> (http://lazutkin.com/)",
+  "author": "Eugene Lazutkin <eugene.lazutkin@gmail.com> (https://lazutkin.com/)",
   "license": "BSD-3-Clause"
 }
