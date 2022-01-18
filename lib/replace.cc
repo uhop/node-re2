@@ -228,7 +228,9 @@ static Nan::Maybe<std::string> replace(WrappedRE2 *re2, const StrVal &replacee, 
 				{
 					size_t s = getUtf8CharSize(data[lastIndex]);
 					lastIndex += s;
-					if (s == 4 && n >= 2) --n; // this utf8 character will take two utf16 characters
+					if (s == 4 && n >= 2) {
+						--n; // this utf8 character will take two utf16 characters
+					}
 					// the decrement above is protected to avoid an overflow of an unsigned integer
 				}
 			}
@@ -245,28 +247,30 @@ static Nan::Maybe<std::string> replace(WrappedRE2 *re2, const StrVal &replacee, 
 	while (lastIndex <= size && re2->regexp.Match(str, lastIndex, size, anchor, &groups[0], groups.size()))
 	{
 		noMatch = false;
+		auto offset = match.data() - data;
 		if (!re2->global && re2->sticky)
 		{
-			re2->lastIndex += replacee.isBuffer ? match.data() - data + match.size() - lastIndex : getUtf16Length(data + lastIndex, match.data() + match.size());
+			re2->lastIndex += replacee.isBuffer ? offset + match.size() - lastIndex : getUtf16Length(data + lastIndex, match.data() + match.size());
 		}
+		if (match.data() == data || offset > static_cast<long>(lastIndex))
+		{
+			result += std::string(data + lastIndex, offset - lastIndex);
+		}
+		result += replace(replacer, replacer_size, groups, str, namedGroups);
 		if (match.size())
 		{
-			if (match.data() == data || match.data() - data > static_cast<long>(lastIndex))
-			{
-				result += std::string(data + lastIndex, match.data() - data - lastIndex);
-			}
-			result += replace(replacer, replacer_size, groups, str, namedGroups);
-			lastIndex = match.data() - data + match.size();
+			lastIndex = offset + match.size();
+		}
+		else if (offset < size)
+		{
+			auto sym_size = getUtf8CharSize(data[offset]);
+			result.append(data + offset, sym_size);
+			lastIndex = offset + sym_size;
 		}
 		else
 		{
-			result += replace(replacer, replacer_size, groups, str, namedGroups);
-			size_t sym_size = getUtf8CharSize(data[lastIndex]);
-			if (lastIndex < size)
-			{
-				result.append(data + lastIndex, sym_size);
-			}
-			lastIndex += sym_size;
+			lastIndex = size;
+			break;
 		}
 		if (!re2->global)
 		{
@@ -295,7 +299,7 @@ static Nan::Maybe<std::string> replace(WrappedRE2 *re2, const StrVal &replacee, 
 
 inline Nan::Maybe<std::string> replace(const Nan::Callback *replacer, const std::vector<re2::StringPiece> &groups, const re2::StringPiece &str, const v8::Local<v8::Value> &input, bool useBuffers, const std::map<std::string, int> &namedGroups)
 {
-	std::vector<v8::Local<v8::Value>> argv;
+	std::vector<v8::Local<v8::Value> > argv;
 
 	auto context = Nan::GetCurrentContext();
 
@@ -377,7 +381,9 @@ static Nan::Maybe<std::string> replace(WrappedRE2 *re2, const StrVal &replacee, 
 				{
 					size_t s = getUtf8CharSize(data[lastIndex]);
 					lastIndex += s;
-					if (s == 4 && n >= 2) --n; // this utf8 character will take two utf16 characters
+					if (s == 4 && n >= 2) {
+						--n; // this utf8 character will take two utf16 characters
+					}
 					// the decrement above is protected to avoid an overflow of an unsigned integer
 				}
 			}
@@ -396,38 +402,35 @@ static Nan::Maybe<std::string> replace(WrappedRE2 *re2, const StrVal &replacee, 
 	while (lastIndex <= size && re2->regexp.Match(str, lastIndex, size, anchor, &groups[0], groups.size()))
 	{
 		noMatch = false;
+		auto offset = match.data() - data;
 		if (!re2->global && re2->sticky)
 		{
-			re2->lastIndex += replacee.isBuffer ? match.data() - data + match.size() - lastIndex : getUtf16Length(data + lastIndex, match.data() + match.size());
+			re2->lastIndex += replacee.isBuffer ? offset + match.size() - lastIndex : getUtf16Length(data + lastIndex, match.data() + match.size());
 		}
+		if (match.data() == data || offset > static_cast<long>(lastIndex))
+		{
+			result += std::string(data + lastIndex, offset - lastIndex);
+		}
+		const auto part = replace(replacer, groups, str, input, useBuffers, namedGroups);
+		if (part.IsNothing())
+		{
+			return part;
+		}
+		result += part.FromJust();
 		if (match.size())
 		{
-			if (match.data() == data || match.data() - data > static_cast<long>(lastIndex))
-			{
-				result += std::string(data + lastIndex, match.data() - data - lastIndex);
-			}
-			const auto part = replace(replacer, groups, str, input, useBuffers, namedGroups);
-			if (part.IsNothing())
-			{
-				return part;
-			}
-			result += part.FromJust();
-			lastIndex = match.data() - data + match.size();
+			lastIndex = offset + match.size();
+		}
+		else if (offset < size)
+		{
+			auto sym_size = getUtf8CharSize(data[offset]);
+			result.append(data + offset, sym_size);
+			lastIndex = offset + sym_size;
 		}
 		else
 		{
-			const auto part = replace(replacer, groups, str, input, useBuffers, namedGroups);
-			if (part.IsNothing())
-			{
-				return part;
-			}
-			result += part.FromJust();
-			size_t sym_size = getUtf8CharSize(data[lastIndex]);
-			if (lastIndex < size)
-			{
-				result.append(data + lastIndex, sym_size);
-			}
-			lastIndex += sym_size;
+			lastIndex = size;
+			break;
 		}
 		if (!re2->global)
 		{
