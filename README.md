@@ -347,6 +347,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 ## Release history
 
+- 1.17.4 *Updated deps.*
 - 1.17.3 *Fixed bug with zero-length replacements.*
 - 1.17.2 *Added support for the enhanced local mirroring by updating [install-artifact-from-github](https://github.com/uhop/install-artifact-from-github).*
 - 1.17.1 *Fix for `lastIndex` for U+10000 - U+10FFFF UTF characters. Thx, [omg](https://github.com/omg).*
