@@ -68,7 +68,7 @@ jobs:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       run: npm run save-to-github
 
-  build-linux-node:
+  build-linux-centos7-node:
     name: Node.js ${{matrix.node-version}} on CentOS 7
     needs: create-release
     runs-on: ubuntu-latest
@@ -76,7 +76,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14, 16, 18]
+        node-version: [14, 16]
 
     steps:
     - uses: actions/checkout@v3
@@ -96,6 +96,39 @@ jobs:
           Linux-
     - name: Install, test, and create artifact
       uses: ./.github/actions/linux-node-12/
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      with:
+        node-version: ${{matrix.node-version}}
+
+  build-linux-ubi8-node:
+    name: Node.js ${{matrix.node-version}} on RedHat UBI 8
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    strategy:
+      matrix:
+        node-version: [18]
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - name: Get NPM cache directory
+      id: npm-cache
+      run: |
+        echo "::set-output name=dir::$(npm config get cache)"
+    - name: Cache node modules
+      uses: actions/cache@v3
+      with:
+        path: ${{steps.npm-cache.outputs.dir}}
+        key: Linux-node-${{hashFiles('**/package-lock.json')}}
+        restore-keys: |
+          Linux-node-
+          Linux-
+    - name: Install, test, and create artifact
+      uses: ./.github/actions/linux-node-18/
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       with:

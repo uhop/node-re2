@@ -1,0 +1,12 @@
+name: 'Create a binary artifact for Node >10 on Linux'
+description: 'Create a binary artifact for Node >10 on Linux using CentOS6 and glibc 2.17'
+inputs:
+  node-version:
+    description: 'Node.js version'
+    required: false
+    default: '12'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{inputs.node-version}}
