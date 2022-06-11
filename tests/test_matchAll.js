@@ -61,7 +61,6 @@ unit.add(module, [
       t.test(false); // shouldn't be here
     } catch (e) {
       eval(t.TEST('e instanceof TypeError'));
-      eval(t.TEST('e instanceof Error'));
     }
   },
 
