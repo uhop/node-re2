@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+        os: [ubuntu-latest, macOS-latest]
         node-version: [14, 16, 18]
 
     steps:
@@ -39,6 +39,42 @@ jobs:
       env:
         DEVELOPMENT_SKIP_GETTING_ASSET: true
       run: |
+        npm i
+        npm run build --if-present
+        npm test
+
+  test-on-windows:
+    name: Node.js ${{matrix.node-version}} on windows-latest
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        node-version: [14, 16, 18]
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - name: Setup Node.js ${{matrix.node-version}}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{matrix.node-version}}
+    - name: Get NPM cache directory
+      id: npm-cache
+      run: echo "::set-output name=dir::$(npm config get cache)"
+    - name: Cache node modules
+      uses: actions/cache@v3
+      with:
+        path: ${{steps.npm-cache.outputs.dir}}
+        key: ${{runner.os}}-node-${{hashFiles('**/package-lock.json')}}
+        restore-keys: |
+          ${{runner.os}}-node-
+          ${{runner.os}}-
+    - name: Install the package and run tests
+      env:
+        DEVELOPMENT_SKIP_GETTING_ASSET: true
+      run: |
+        npm i -g windows-build-tools
         npm i
         npm run build --if-present
         npm test
