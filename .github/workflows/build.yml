@@ -31,7 +31,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, macOS-latest]
-        node-version: [12, 14, 16, 17]
+        node-version: [14, 16, 18]
 
     steps:
     - uses: actions/checkout@v2
@@ -73,7 +73,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12, 14, 16, 17]
+        node-version: [14, 16, 18]
 
     steps:
     - uses: actions/checkout@v2
@@ -97,33 +97,6 @@ jobs:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       with:
         node-version: ${{matrix.node-version}}
-
-  build-linux-alpine-node-12:
-    name: Node.js 12 on Alpine Linux
-    needs: create-release
-    runs-on: ubuntu-latest
-    continue-on-error: true
-
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: true
-    - name: Get NPM cache directory
-      id: npm-cache
-      run: |
-        echo "::set-output name=dir::$(npm config get cache)"
-    - name: Cache node modules
-      uses: actions/cache@v2
-      with:
-        path: ${{steps.npm-cache.outputs.dir}}
-        key: Linux-Alpine-node-${{hashFiles('**/package-lock.json')}}
-        restore-keys: |
-          Linux-Alpine-node-
-          Linux-Alpine-
-    - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-alpine-node-12/
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-alpine-node-14:
     name: Node.js 14 on Alpine Linux
@@ -179,7 +152,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-  build-linux-alpine-node-17:
+  build-linux-alpine-node-18:
     name: Node.js 17 on Alpine Linux
     needs: create-release
     runs-on: ubuntu-latest
