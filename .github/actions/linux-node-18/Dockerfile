@@ -1,7 +1,7 @@
 FROM redhat/ubi8
 
-# RUN yum-config-manager --enable rhel-server-rhscl-8-rpms && \
-RUN INSTALL_PKGS="devtoolset-7-gcc devtoolset-7-gcc-c++ python3 make" && \
+RUN yum-config-manager --enable rhel-server-rhscl-8-rpms && \
+    INSTALL_PKGS="devtoolset-7-gcc devtoolset-7-gcc-c++ python3 make" && \
     yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
     yum -y clean all --enablerepo='*'
