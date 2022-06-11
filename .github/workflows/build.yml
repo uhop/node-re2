@@ -34,11 +34,11 @@ jobs:
         node-version: [14, 16, 18]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: true
     - name: Setup Node.js ${{matrix.node-version}}
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v3
       with:
         node-version: ${{matrix.node-version}}
     - name: Get NPM cache directory
@@ -46,7 +46,7 @@ jobs:
       run: |
         echo "::set-output name=dir::$(npm config get cache)"
     - name: Cache node modules
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{steps.npm-cache.outputs.dir}}
         key: ${{runner.os}}-node-${{hashFiles('**/package-lock.json')}}
@@ -76,7 +76,7 @@ jobs:
         node-version: [14, 16, 18]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: true
     - name: Get NPM cache directory
@@ -84,7 +84,7 @@ jobs:
       run: |
         echo "::set-output name=dir::$(npm config get cache)"
     - name: Cache node modules
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{steps.npm-cache.outputs.dir}}
         key: Linux-node-${{hashFiles('**/package-lock.json')}}
@@ -105,7 +105,7 @@ jobs:
     continue-on-error: true
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: true
     - name: Get NPM cache directory
@@ -113,7 +113,7 @@ jobs:
       run: |
         echo "::set-output name=dir::$(npm config get cache)"
     - name: Cache node modules
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{steps.npm-cache.outputs.dir}}
         key: Linux-Alpine-node-${{hashFiles('**/package-lock.json')}}
@@ -132,7 +132,7 @@ jobs:
     continue-on-error: true
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: true
     - name: Get NPM cache directory
@@ -140,7 +140,7 @@ jobs:
       run: |
         echo "::set-output name=dir::$(npm config get cache)"
     - name: Cache node modules
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{steps.npm-cache.outputs.dir}}
         key: Linux-Alpine-node-${{hashFiles('**/package-lock.json')}}
@@ -153,13 +153,13 @@ jobs:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-alpine-node-18:
-    name: Node.js 17 on Alpine Linux
+    name: Node.js 18 on Alpine Linux
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: true
     - name: Get NPM cache directory
@@ -167,7 +167,7 @@ jobs:
       run: |
         echo "::set-output name=dir::$(npm config get cache)"
     - name: Cache node modules
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{steps.npm-cache.outputs.dir}}
         key: Linux-Alpine-node-${{hashFiles('**/package-lock.json')}}
@@ -175,6 +175,6 @@ jobs:
           Linux-Alpine-node-
           Linux-Alpine-
     - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-alpine-node-17/
+      uses: ./.github/actions/linux-alpine-node-18/
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
