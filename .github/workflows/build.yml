@@ -101,15 +101,11 @@ jobs:
       with:
         node-version: ${{matrix.node-version}}
 
-  build-linux-redhat-ubi8-node:
-    name: Node.js ${{matrix.node-version}} on RedHat UBI 8
+  build-linux-node-18:
+    name: Node.js 18 on Debian Buster
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
-
-    strategy:
-      matrix:
-        node-version: [18]
 
     steps:
     - uses: actions/checkout@v3
@@ -131,8 +127,6 @@ jobs:
       uses: ./.github/actions/linux-node-18/
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      with:
-        node-version: ${{matrix.node-version}}
 
   build-linux-alpine-node-14:
     name: Node.js 14 on Alpine Linux
