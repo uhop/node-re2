@@ -101,7 +101,7 @@ jobs:
       with:
         node-version: ${{matrix.node-version}}
 
-  build-linux-ubi8-node:
+  build-linux-redhat-ubi8-node:
     name: Node.js ${{matrix.node-version}} on RedHat UBI 8
     needs: create-release
     runs-on: ubuntu-latest
