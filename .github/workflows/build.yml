@@ -30,8 +30,11 @@ jobs:
 
     strategy:
       matrix:
-        os: [windows-latest, macOS-latest]
+        os: [macOS-latest, windows-latest]
         node-version: [14, 16, 18]
+        exclude:
+          - os: windows-latest
+          - node-version: 14
 
     steps:
     - uses: actions/checkout@v3
