@@ -1,4 +1,4 @@
-FROM redhat/ubi8
+FROM centos:centos7
 
 RUN yum install -y centos-release-scl && \
     INSTALL_PKGS="devtoolset-7-gcc devtoolset-7-gcc-c++ python3 make" && \
