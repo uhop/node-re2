@@ -74,7 +74,6 @@ jobs:
       env:
         DEVELOPMENT_SKIP_GETTING_ASSET: true
       run: |
-        npm i -g windows-build-tools
         npm i
         npm run build --if-present
         npm test
