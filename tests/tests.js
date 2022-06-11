@@ -9,6 +9,7 @@ require("./test_exec");
 require("./test_test");
 require("./test_toString");
 require("./test_match");
+require("./test_matchAll");
 require("./test_replace");
 require("./test_search");
 require("./test_split");
