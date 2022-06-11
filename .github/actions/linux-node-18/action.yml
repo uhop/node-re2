@@ -1,10 +1,10 @@
-name: 'Create a binary artifact for Node >10 on Linux'
-description: 'Create a binary artifact for Node >10 on Linux using CentOS6 and glibc 2.17'
+name: 'Create a binary artifact for Node == 18 on Linux'
+description: 'Create a binary artifact for Node == 18 on Linux using node:18-buster'
 inputs:
   node-version:
     description: 'Node.js version'
     required: false
-    default: '12'
+    default: '18'
 runs:
   using: 'docker'
   image: 'Dockerfile'

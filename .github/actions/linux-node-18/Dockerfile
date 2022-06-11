@@ -1,16 +1,6 @@
-FROM redhat/ubi8
+FROM node:18-buster
 
-# RUN yum-config-manager --enable rhel-server-rhscl-8-rpms && \
-RUN yum repolist --enablerepo=rhel-server-rhscl-8-rpms && \
-    INSTALL_PKGS="devtoolset-7-gcc devtoolset-7-gcc-c++ python3 make" && \
-    yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
-    rpm -V $INSTALL_PKGS && \
-    yum -y clean all --enablerepo='*'
-    #  && \
-    # source scl_source enable devtoolset-7 && \
-    # source scl_source enable python3
-
-ENV PATH=/opt/rh/devtoolset-7/root/usr/bin:$PATH
+RUN apk add --no-cache python3 make gcc g++
 
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
