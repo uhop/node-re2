@@ -51,6 +51,10 @@ NAN_GETTER(WrappedRE2::GetFlags)
 	{
 		flags += "m";
 	}
+	if (re2->dotAll)
+	{
+		flags += "s";
+	}
 	flags += "u";
 	if (re2->sticky)
 	{
@@ -94,6 +98,18 @@ NAN_GETTER(WrappedRE2::GetMultiline)
 
 	auto re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	info.GetReturnValue().Set(re2->multiline);
+}
+
+NAN_GETTER(WrappedRE2::GetDotAll)
+{
+	if (!WrappedRE2::HasInstance(info.This()))
+	{
+		info.GetReturnValue().SetUndefined();
+		return;
+	}
+
+	auto re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
+	info.GetReturnValue().Set(re2->dotAll);
 }
 
 NAN_GETTER(WrappedRE2::GetUnicode)

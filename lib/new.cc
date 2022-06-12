@@ -229,6 +229,7 @@ NAN_METHOD(WrappedRE2::New)
 	bool global = false;
 	bool ignoreCase = false;
 	bool multiline = false;
+	bool dotAll = false;
 	bool unicode = false;
 	bool sticky = false;
 
@@ -261,6 +262,9 @@ NAN_METHOD(WrappedRE2::New)
 				break;
 			case 'm':
 				multiline = true;
+				break;
+			case 's':
+				dotAll = true;
 				break;
 			case 'u':
 				unicode = true;
@@ -299,6 +303,7 @@ NAN_METHOD(WrappedRE2::New)
 		global = bool(flags & v8::RegExp::kGlobal);
 		ignoreCase = bool(flags & v8::RegExp::kIgnoreCase);
 		multiline = bool(flags & v8::RegExp::kMultiline);
+		dotAll = bool(flags & v8::RegExp::kDotAll);
 		unicode = bool(flags & v8::RegExp::kUnicode);
 		sticky = bool(flags & v8::RegExp::kSticky);
 	}
@@ -324,6 +329,7 @@ NAN_METHOD(WrappedRE2::New)
 			global = re2->global;
 			ignoreCase = re2->ignoreCase;
 			multiline = re2->multiline;
+			dotAll = re2->dotAll;
 			unicode = true;
 			sticky = re2->sticky;
 		}
@@ -376,9 +382,10 @@ NAN_METHOD(WrappedRE2::New)
 	re2::RE2::Options options;
 	options.set_case_sensitive(!ignoreCase);
 	options.set_one_line(!multiline); // to track this state, otherwise it is ignored
-	options.set_log_errors(false);	  // inappropriate when embedding
+	options.set_dot_nl(dotAll);
+	options.set_log_errors(false); // inappropriate when embedding
 
-	std::unique_ptr<WrappedRE2> re2(new WrappedRE2(re2::StringPiece(data, size), options, source, global, ignoreCase, multiline, sticky));
+	std::unique_ptr<WrappedRE2> re2(new WrappedRE2(re2::StringPiece(data, size), options, source, global, ignoreCase, multiline, dotAll, sticky));
 	if (!re2->regexp.ok())
 	{
 		return Nan::ThrowSyntaxError(re2->regexp.error().c_str());

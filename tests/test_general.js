@@ -106,6 +106,7 @@ unit.add(module, [
 		eval(t.TEST("'global' in re"));
 		eval(t.TEST("'ignoreCase' in re"));
 		eval(t.TEST("'multiline' in re"));
+		eval(t.TEST("'dotAll' in re"));
 		eval(t.TEST("'sticky' in re"));
 		eval(t.TEST("'lastIndex' in re"));
 	},
@@ -125,6 +126,7 @@ unit.add(module, [
 		eval(t.TEST("typeof re.global == 'boolean'"));
 		eval(t.TEST("typeof re.ignoreCase == 'boolean'"));
 		eval(t.TEST("typeof re.multiline == 'boolean'"));
+		eval(t.TEST("typeof re.dotAll == 'boolean'"));
 		eval(t.TEST("typeof re.sticky == 'boolean'"));
 		eval(t.TEST("typeof re.lastIndex == 'number'"));
 	},
@@ -181,6 +183,15 @@ unit.add(module, [
 		re2 = new RE2(re1);
 
 		compare(re1, re2, t);
+
+		re1 = new RE2("b", "sgm");
+		re2 = new RE2(re1);
+
+		compare(re1, re2, t);
+
+		re2 = new RE2(/\s/sgm);
+
+		compare(/\s/sgm, re2, t);
 	},
 	function test_utf8(t) {
 		"use strict";
@@ -264,6 +275,9 @@ unit.add(module, [
 
 		re = new RE2("a", "migyu");
 		eval(t.TEST("re.flags === 'gimuy'"));
+
+		re = new RE2("a", "smigyu");
+		eval(t.TEST("re.flags === 'gimsuy'"));
 	}
 ]);
 
