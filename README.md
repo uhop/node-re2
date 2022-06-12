@@ -54,6 +54,7 @@ Supported properties:
 * [`re2.global`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global)
 * [`re2.ignoreCase`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/ignoreCase)
 * [`re2.multiline`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/multiline)
+* *Since 1.17.6*: [`re2.dotAll`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/dotAll)
 * [`re2.unicode`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/unicode)
   * `RE2` engine always works in the Unicode mode. See details below.
 * [`re2.sticky`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/sticky)
@@ -69,6 +70,7 @@ Supported methods:
 Starting with 1.6.0 following well-known symbol-based methods are supported (see [Symbols](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol)):
 
 * [`re2[Symbol.match](str)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/match)
+* *Since 1.17.5*: [`re2[Symbol.matchAll](str)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/matchAll)
 * [`re2[Symbol.search](str)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/search)
 * [`re2[Symbol.replace](str, newSubStr|function)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/replace)
 * [`re2[Symbol.split](str[, limit])`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/split)
@@ -81,6 +83,9 @@ var re = new RE2("1");
 "213".search(re);       // 1
 "213".replace(re, "+"); // 2+3
 "213".split(re);        // [ '2', '3' ]
+
+Array.from("2131".matchAll(re)); // returns a generator!
+// [['1', index: 1, input: '2131'], ['1', index: 3, input: '2131']]
 ```
 
 Starting with 1.8.0 [named groups](https://tc39.github.io/proposal-regexp-named-groups/) are supported.
@@ -347,6 +352,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 ## Release history
 
+- 1.17.6 *Implemented `dotAll`. Thx [Michael Kriese](https://github.com/viceice).*
 - 1.17.5 *Updated deps, updated test/build targets, implemented `matchAll()` (thx, [ThePendulum](https://github.com/ThePendulum) and [David Sichau](https://github.com/DavidSichau)).*
 - 1.17.4 *Updated deps.*
 - 1.17.3 *Fixed bug with zero-length replacements.*
