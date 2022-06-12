@@ -32,6 +32,10 @@ NAN_METHOD(WrappedRE2::ToString)
 	{
 		buffer += "m";
 	}
+	if (re2->dotAll)
+	{
+		buffer += "s";
+	}
 	buffer += "u";
 	if (re2->sticky)
 	{
