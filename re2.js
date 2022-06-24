@@ -19,7 +19,7 @@ if (typeof Symbol != 'undefined') {
     (RE2.prototype[Symbol.split] = function (str, limit) {
       return this.split(str, limit);
     });
-    Symbol.matchAll &&
+  Symbol.matchAll &&
     (RE2.prototype[Symbol.matchAll] = function* (str) {
       if (!this.global) {
         throw TypeError('String.prototype.matchAll called with a non-global RE2 argument');
