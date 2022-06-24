@@ -4,6 +4,7 @@
   "description": "Bindings for RE2: fast, safe alternative to backtracking regular expression engines.",
   "homepage": "https://github.com/uhop/node-re2",
   "bugs": "https://github.com/uhop/node-re2/issues",
+  "type": "commonjs",
   "main": "re2.js",
   "types": "re2.d.ts",
   "directories": {
