@@ -20,6 +20,7 @@
     "typescript": "^4.8.3"
   },
   "scripts": {
+    "pretest": "tsc",
     "test": "node tests/tests.js",
     "save-to-github": "save-to-github-cache --artifact build/Release/re2.node",
     "install": "install-from-cache --artifact build/Release/re2.node --host-var RE2_DOWNLOAD_MIRROR --skip-path-var RE2_DOWNLOAD_SKIP_PATH --skip-ver-var RE2_DOWNLOAD_SKIP_VER || npm run rebuild",
