@@ -3,6 +3,7 @@ declare module 're2' {
   interface RE2MatchArray<K> extends Array<K> {
     index?: number;
     input?: K;
+    0: string;
     groups?: {
       [key: string]: string
     }
@@ -11,6 +12,7 @@ declare module 're2' {
   interface RE2ExecArray<K> extends Array<K> {
     index: number;
     input: K;
+    0: string;
     groups?: {
       [key: string]: string
     }
