@@ -27,17 +27,6 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{matrix.node-version}}
-    - name: Get NPM cache directory
-      id: npm-cache
-      run: echo "dir=$(npm config get cache)" >> $GITHUB_OUTPUT
-    - name: Cache node modules
-      uses: actions/cache@v3
-      with:
-        path: ${{steps.npm-cache.outputs.dir}}
-        key: ${{runner.os}}-node-${{hashFiles('**/package-lock.json')}}
-        restore-keys: |
-          ${{runner.os}}-node-
-          ${{runner.os}}-
     - name: Install the package and run tests
       env:
         DEVELOPMENT_SKIP_GETTING_ASSET: true
