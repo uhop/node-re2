@@ -31,7 +31,7 @@ jobs:
     strategy:
       matrix:
         os: [macOS-latest, windows-latest]
-        node-version: [14, 16, 18]
+        node-version: [14, 16, 18, 19]
         exclude:
           - os: windows-latest
             node-version: 14
@@ -128,6 +128,33 @@ jobs:
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
+  build-linux-node-19:
+    name: Node.js 19 on Debian Buster
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - name: Get NPM cache directory
+      id: npm-cache
+      run: |
+        echo "::set-output name=dir::$(npm config get cache)"
+    - name: Cache node modules
+      uses: actions/cache@v3
+      with:
+        path: ${{steps.npm-cache.outputs.dir}}
+        key: Linux-node-${{hashFiles('**/package-lock.json')}}
+        restore-keys: |
+          Linux-node-
+          Linux-
+    - name: Install, test, and create artifact
+      uses: ./.github/actions/linux-node-19/
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
   build-linux-alpine-node-14:
     name: Node.js 14 on Alpine Linux
     needs: create-release
@@ -206,5 +233,32 @@ jobs:
           Linux-Alpine-
     - name: Install, test, and create artifact
       uses: ./.github/actions/linux-alpine-node-18/
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+  build-linux-alpine-node-19:
+    name: Node.js 19 on Alpine Linux
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - name: Get NPM cache directory
+      id: npm-cache
+      run: |
+        echo "::set-output name=dir::$(npm config get cache)"
+    - name: Cache node modules
+      uses: actions/cache@v3
+      with:
+        path: ${{steps.npm-cache.outputs.dir}}
+        key: Linux-Alpine-node-${{hashFiles('**/package-lock.json')}}
+        restore-keys: |
+          Linux-Alpine-node-
+          Linux-Alpine-
+    - name: Install, test, and create artifact
+      uses: ./.github/actions/linux-alpine-node-19/
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
