@@ -1,29 +1,31 @@
 declare module 're2' {
 
-  interface RE2MatchArray<K extends string> extends RegExpMatchArray /*Array<K>*/ {
-    index?: number;
-    input?: K;
-    0: K;
+  interface RE2BufferExecArray {
+    index: number;
+    input: Buffer;
+    0: Buffer;
     groups?: {
-      [key: string]: K
+      [key: string]: Buffer
     }
   }
 
-  interface RE2ExecArray<K extends string> extends RegExpExecArray /*Array<K>*/ {
-    index: number;
-    input: K;
-    0: K;
+  interface RE2BufferMatchArray {
+    index?: number;
+    input?: Buffer;
+    0: Buffer;
     groups?: {
-      [key: string]: K
+      [key: string]: Buffer
     }
   }
 
   interface RE2 extends RegExp {
-    exec<K extends String | Buffer>(str: K): RE2ExecArray<K> | null;
+    exec(str: string): RegExpExecArray | null;
+    exec(str: Buffer): RE2BufferExecArray | null;
+
+    match(str: string): RegExpMatchArray | null;
+    match(str: Buffer): RE2BufferMatchArray | null;
 
     test(str: string | Buffer): boolean;
-
-    match<K extends String | Buffer>(str: K): RE2MatchArray<K> | null;
 
     replace<K extends String | Buffer>(str: K, replaceValue: string | Buffer): K;
     replace<K extends String | Buffer>(str: K, replacer: (substring: string, ...args: any[]) => string | Buffer): K;
@@ -34,10 +36,10 @@ declare module 're2' {
   }
 
   interface RE2Constructor extends RegExpConstructor {
-    new(pattern: Buffer | RegExp | string): RE2;
-    new(pattern: Buffer | string, flags?: string): RE2;
-    (pattern: Buffer | RegExp | string): RE2;
-    (pattern: Buffer | string, flags?: string): RE2;
+    new(pattern: Buffer | RegExp | RE2 | string): RE2;
+    new(pattern: Buffer | string, flags?: string | Buffer): RE2;
+    (pattern: Buffer | RegExp | RE2 | string): RE2;
+    (pattern: Buffer | string, flags?: string | Buffer): RE2;
     readonly prototype: RE2;
 
     unicodeWarningLevel: 'nothing' | 'warnOnce' | 'warn' | 'throw';
