@@ -39,7 +39,7 @@
         "vendor/util/strutil.cc"
       ],
       "cflags": [
-        "-std=c++14",
+        "-std=c++20",
         "-Wall",
         "-Wextra",
         "-Wno-sign-compare",
@@ -59,10 +59,10 @@
       ],
       "xcode_settings": {
         "MACOSX_DEPLOYMENT_TARGET": "10.7",
-        "CLANG_CXX_LANGUAGE_STANDARD": "c++11",
+        "CLANG_CXX_LANGUAGE_STANDARD": "c++20",
         "CLANG_CXX_LIBRARY": "libc++",
         "OTHER_CFLAGS": [
-          "-std=c++14",
+          "-std=c++20",
           "-Wall",
           "-Wextra",
           "-Wno-sign-compare",
