@@ -1,18 +1,20 @@
 declare module 're2' {
 
-  interface RE2MatchArray<K> extends Array<K> {
+  interface RE2MatchArray<K extends string> extends RegExpMatchArray /*Array<K>*/ {
     index?: number;
     input?: K;
+    0: K;
     groups?: {
-      [key: string]: string
+      [key: string]: K
     }
   }
 
-  interface RE2ExecArray<K> extends Array<K> {
+  interface RE2ExecArray<K extends string> extends RegExpExecArray /*Array<K>*/ {
     index: number;
     input: K;
+    0: K;
     groups?: {
-      [key: string]: string
+      [key: string]: K
     }
   }
 
