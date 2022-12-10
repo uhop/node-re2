@@ -1,6 +1,6 @@
 {
   "name": "re2",
-  "version": "1.17.8",
+  "version": "1.18.0",
   "description": "Bindings for RE2: fast, safe alternative to backtracking regular expression engines.",
   "homepage": "https://github.com/uhop/node-re2",
   "bugs": "https://github.com/uhop/node-re2/issues",
