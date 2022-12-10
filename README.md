@@ -352,6 +352,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 ## Release history
 
+- 1.17.8 *Updated deps, added Node 19 as a pre-compilation target.*
 - 1.17.7 *Added support for a cross-platform fetching of a pre-compiled version by updating [install-artifact-from-github](https://github.com/uhop/install-artifact-from-github).*
 - 1.17.6 *Implemented `dotAll`. Thx [Michael Kriese](https://github.com/viceice).*
 - 1.17.5 *Updated deps, updated test/build targets, implemented `matchAll()` (thx, [ThePendulum](https://github.com/ThePendulum) and [David Sichau](https://github.com/DavidSichau)).*
