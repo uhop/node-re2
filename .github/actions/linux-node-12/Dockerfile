@@ -1,7 +1,7 @@
 FROM centos:centos7
 
 RUN yum install -y centos-release-scl && \
-    INSTALL_PKGS="devtoolset-8 python3 make" && \
+    INSTALL_PKGS="devtoolset-8 python3 make git" && \
     yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
     yum -y clean all --enablerepo='*'
