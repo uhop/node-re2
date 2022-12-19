@@ -14,14 +14,12 @@ jobs:
 
     steps:
     - name: Create release
-      uses: actions/create-release@v1
       env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      with:
-        tag_name: ${{github.ref}}
-        release_name: Release ${{github.ref}}
-        draft: false
-        prerelease: false
+        GH_TOKEN: ${{github.token}}
+      run: |
+        REF=${{github.ref}}
+        TAG=${REF#"refs/tags/"}
+        gh release create -t "Release ${TAG}" -n "" "${{github.ref}}"
 
   build:
     name: Node.js ${{matrix.node-version}} on ${{matrix.os}}
