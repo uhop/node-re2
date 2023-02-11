@@ -124,7 +124,7 @@ unit.add(module, [
 	function test_testUnicode(t) {
 		"use strict";
 
-		var re = new RE2("охотник\\s(желает).+?(где)", "i");
+		var re = new RE2("охотник\\s(желает).+?(где)", "ui");
 
 		eval(t.TEST("re.test('Каждый Охотник Желает Знать Где Сидит Фазан')"));
 		eval(t.TEST("re.test('кАЖДЫЙ оХОТНИК жЕЛАЕТ зНАТЬ гДЕ сИДИТ фАЗАН')"));
@@ -147,7 +147,7 @@ unit.add(module, [
 
 		var str = "аббвгдеабё";
 
-		var re = new RE2("аб*", "g");
+		var re = new RE2("аб*", "ug");
 		var result = re.test(str);
 
 		eval(t.TEST("result"));
@@ -168,7 +168,7 @@ unit.add(module, [
 	function test_testBuffer(t) {
 		"use strict";
 
-		var re = new RE2("охотник\\s(желает).+?(где)", "i");
+		var re = new RE2("охотник\\s(желает).+?(где)", "ui");
 
 		eval(t.TEST("re.test(new Buffer('Каждый Охотник Желает Знать Где Сидит Фазан'))"));
 		eval(t.TEST("re.test(new Buffer('кАЖДЫЙ оХОТНИК жЕЛАЕТ зНАТЬ гДЕ сИДИТ фАЗАН'))"));

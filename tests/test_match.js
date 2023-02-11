@@ -69,7 +69,7 @@ unit.add(module, [
 
 		var str = "Это ГЛАВА 3.4.5.1";
 
-		var re = new RE2(/(глава \d+(\.\d)*)/i);
+		var re = new RE2(/(глава \d+(\.\d)*)/ui);
 		var result = re.match(str);
 
 		eval(t.TEST("result.input === str"));
@@ -87,7 +87,7 @@ unit.add(module, [
 
 		var buf = new Buffer("Это ГЛАВА 3.4.5.1");
 
-		var re = new RE2(/(глава \d+(\.\d)*)/i);
+		var re = new RE2(/(глава \d+(\.\d)*)/ui);
 		var result = re.match(buf);
 
 		eval(t.TEST("result.input instanceof Buffer"));

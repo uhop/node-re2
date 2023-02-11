@@ -11,10 +11,10 @@ unit.add(module, [
 	function test_sourceIdentity(t) {
 		"use strict";
 
-		var re = new RE2("a\\cM\\u34\\u1234\\u10abcdz");
+		var re = new RE2("a\\cM\\u34\\u1234\\u10abcdz", "u");
 		eval(t.TEST("re.source === 'a\\\\cM\\\\u34\\\\u1234\\\\u10abcdz'"));
 
-		re = new RE2("a\\cM\\u34\\u1234\\u{10abcd}z");
+		re = new RE2("a\\cM\\u34\\u1234\\u{10abcd}z", "u");
 		eval(t.TEST("re.source === 'a\\\\cM\\\\u34\\\\u1234\\\\u{10abcd}z'"));
 
 		re = new RE2("");
@@ -32,10 +32,10 @@ unit.add(module, [
 	function test_sourceTranslation(t) {
 		"use strict";
 
-		var re = new RE2("a\\cM\\u34\\u1234\\u10abcdz");
+		var re = new RE2("a\\cM\\u34\\u1234\\u10abcdz", "u");
 		eval(t.TEST("re.internalSource === 'a\\\\x0D\\\\x{34}\\\\x{1234}\\\\x{10ab}cdz'"));
 
-		re = new RE2("a\\cM\\u34\\u1234\\u{10abcd}z");
+		re = new RE2("a\\cM\\u34\\u1234\\u{10abcd}z", "u");
 		eval(t.TEST("re.internalSource === 'a\\\\x0D\\\\x{34}\\\\x{1234}\\\\x{10abcd}z'"));
 
 		re = new RE2("");
