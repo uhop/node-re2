@@ -139,7 +139,7 @@ unit.add(module, [
   function test_execUnicode(t) {
     'use strict';
 
-    var re = new RE2('охотник\\s(желает).+?(где)', 'ig');
+    var re = new RE2('охотник\\s(желает).+?(где)', 'uig');
 
     eval(t.TEST("re.source === 'охотник\\\\s(желает).+?(где)'"));
     eval(t.TEST('re.ignoreCase'));
@@ -161,7 +161,7 @@ unit.add(module, [
 
     var str = 'аббвгдеабё';
 
-    var re = new RE2('аб*', 'g');
+    var re = new RE2('аб*', 'ug');
     var result = re.exec(str);
 
     eval(t.TEST('!!result'));
@@ -183,7 +183,7 @@ unit.add(module, [
   function test_execUnicodeSupplementary(t) {
     'use strict';
 
-    var re = new RE2('\\u{1F603}', 'g');
+    var re = new RE2('\\u{1F603}', 'ug');
 
     eval(t.TEST("re.source === '\\\\u{1F603}'"));
     eval(t.TEST("re.internalSource === '\\\\x{1F603}'"));
@@ -198,7 +198,7 @@ unit.add(module, [
     eval(t.TEST("result.input === '\\u{1F603}'"));
     eval(t.TEST('re.lastIndex === 2'));
 
-    var re2 = new RE2('.', 'g');
+    var re2 = new RE2('.', 'ug');
 
     eval(t.TEST("re2.source === '.'"));
     eval(t.TEST('!re2.ignoreCase'));
@@ -212,7 +212,7 @@ unit.add(module, [
     eval(t.TEST("result2.input === '\\u{1F603}'"));
     eval(t.TEST('re2.lastIndex === 2'));
 
-    var re3 = new RE2('[\u{1F603}-\u{1F605}]', 'g');
+    var re3 = new RE2('[\u{1F603}-\u{1F605}]', 'ug');
 
     eval(t.TEST("re3.source === '[\u{1F603}-\u{1F605}]'"));
     eval(t.TEST('!re3.ignoreCase'));
@@ -232,7 +232,7 @@ unit.add(module, [
   function test_execBuffer(t) {
     'use strict';
 
-    var re = new RE2('охотник\\s(желает).+?(где)', 'ig');
+    var re = new RE2('охотник\\s(желает).+?(где)', 'uig');
     var buf = new Buffer('Каждый Охотник Желает Знать Где Сидит Фазан');
 
     var result = re.exec(buf);
@@ -288,7 +288,7 @@ unit.add(module, [
   function test_execSupplemental(t) {
     'use strict';
 
-    var re = new RE2('\\w+', 'g');
+    var re = new RE2('\\w+', 'ug');
     var testString = '🤡🤡🤡 Hello clown world!';
 
     var result = re.exec(testString);

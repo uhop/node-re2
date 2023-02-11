@@ -161,19 +161,19 @@ unit.add(module, [
   function test_replaceStrUnicode(t) {
     'use strict';
 
-    var re = new RE2(/яблоки/gi);
+    var re = new RE2(/яблоки/ugi);
     var result = re.replace('Яблоки красны, яблоки сочны.', 'апельсины');
     eval(t.TEST("result === 'апельсины красны, апельсины сочны.'"));
 
-    re = new RE2(/иван/i);
+    re = new RE2(/иван/ui);
     result = re.replace('Могуч Иван Иванов...', 'Сидор');
     eval(t.TEST("result === 'Могуч Сидор Иванов...'"));
 
-    re = new RE2(/иван/gi);
+    re = new RE2(/иван/ugi);
     result = re.replace('Могуч Иван Иванов...', 'Сидор');
     eval(t.TEST("result === 'Могуч Сидор Сидоров...'"));
 
-    re = new RE2(/([а-яё]+)\s+([а-яё]+)/i);
+    re = new RE2(/([а-яё]+)\s+([а-яё]+)/ui);
     result = re.replace('Пётр Петров', '$2, $1');
     eval(t.TEST("result === 'Петров, Пётр'"));
   },
@@ -188,7 +188,7 @@ unit.add(module, [
       return match.charAt(0).toUpperCase() + match.substr(1).toLowerCase();
     }
 
-    var re = new RE2(/(?:иван|пётр|сидор)/gi);
+    var re = new RE2(/(?:иван|пётр|сидор)/ugi);
     var result = re.replace('ИВАН и пЁтр', replacer);
     eval(t.TEST("result === 'Иван и Пётр'"));
   },
@@ -198,7 +198,7 @@ unit.add(module, [
   function test_replaceStrBuffer(t) {
     'use strict';
 
-    var re = new RE2(/яблоки/gi);
+    var re = new RE2(/яблоки/ugi);
     var result = re.replace(new Buffer('Яблоки красны, яблоки сочны.'), 'апельсины');
     eval(t.TEST('result instanceof Buffer'));
     eval(t.TEST("result.toString() === 'апельсины красны, апельсины сочны.'"));
@@ -225,7 +225,7 @@ unit.add(module, [
     }
     replacer.useBuffers = true;
 
-    var re = new RE2(/(?:иван|пётр|сидор)/gi);
+    var re = new RE2(/(?:иван|пётр|сидор)/ugi);
     var result = re.replace('ИВАН и пЁтр', replacer);
     eval(t.TEST("typeof result == 'string'"));
     eval(t.TEST("result === 'Иван и Пётр'"));

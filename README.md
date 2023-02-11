@@ -3,6 +3,8 @@
 [npm-img]: https://img.shields.io/npm/v/re2.svg
 [npm-url]: https://npmjs.org/package/re2
 
+This version uses RE2::Options::EncodingLatin1 encoding by default. This allows Buffers to be searched by byte value, rather than Unicode code point value.  This is useful not just for Latin1 but for any byte-wise searching, including searching UTF-8 by code unit.
+
 This project provides bindings for [RE2](https://github.com/google/re2):
 fast, safe alternative to backtracking regular expression engines written by [Russ Cox](http://swtch.com/~rsc/).
 To learn more about RE2, start with an overview

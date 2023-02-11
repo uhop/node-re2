@@ -91,7 +91,7 @@ NAN_METHOD(WrappedRE2::Exec)
 				Nan::Set(result, i, Nan::Undefined());
 			}
 		}
-		Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<v8::Integer>(indexOffset + static_cast<int>(groups[0].data() - str.data)));
+		Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<v8::Integer>(/*indexOffset +*/ static_cast<int>(groups[0].data() - str.data)));
 	}
 	else
 	{

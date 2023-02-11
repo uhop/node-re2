@@ -330,7 +330,7 @@ NAN_METHOD(WrappedRE2::New)
 			ignoreCase = re2->ignoreCase;
 			multiline = re2->multiline;
 			dotAll = re2->dotAll;
-			unicode = true;
+			unicode = re2->unicode;
 			sticky = re2->sticky;
 		}
 	}
@@ -380,12 +380,17 @@ NAN_METHOD(WrappedRE2::New)
 	// create and return an object
 
 	re2::RE2::Options options;
+	if (unicode) {
+		options.set_encoding(RE2::Options::EncodingUTF8);
+	} else {
+		options.set_encoding(RE2::Options::EncodingLatin1);
+	}
 	options.set_case_sensitive(!ignoreCase);
 	options.set_one_line(!multiline); // to track this state, otherwise it is ignored
 	options.set_dot_nl(dotAll);
 	options.set_log_errors(false); // inappropriate when embedding
 
-	std::unique_ptr<WrappedRE2> re2(new WrappedRE2(re2::StringPiece(data, size), options, source, global, ignoreCase, multiline, dotAll, sticky));
+        std::unique_ptr<WrappedRE2> re2(new WrappedRE2(re2::StringPiece(data, size), options, source, global, ignoreCase, multiline, dotAll, sticky, unicode));
 	if (!re2->regexp.ok())
 	{
 		return Nan::ThrowSyntaxError(re2->regexp.error().c_str());
