@@ -1,7 +1,0 @@
-name: 'Create a binary artifact for Node 14 on Alpine Linux'
-description: 'Create a binary artifact for Node 14 on Alpine Linux using musl'
-runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  args:
-    - ${{inputs.node-version}}
