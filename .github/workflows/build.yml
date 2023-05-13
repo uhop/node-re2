@@ -29,10 +29,7 @@ jobs:
     strategy:
       matrix:
         os: [macOS-latest, windows-latest]
-        node-version: [14, 16, 18, 19]
-        exclude:
-          - os: windows-latest
-            node-version: 14
+        node-version: [16, 18, 20]
 
     steps:
     - uses: actions/checkout@v3
@@ -62,7 +59,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14, 16]
+        node-version: [16]
 
     steps:
     - uses: actions/checkout@v3
@@ -90,8 +87,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-  build-linux-node-19:
-    name: Node.js 19 on Debian Buster
+  build-linux-node-20:
+    name: Node.js 20 on Debian Buster
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -101,22 +98,7 @@ jobs:
       with:
         submodules: true
     - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-node-19/
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
-  build-linux-alpine-node-14:
-    name: Node.js 14 on Alpine Linux
-    needs: create-release
-    runs-on: ubuntu-latest
-    continue-on-error: true
-
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: true
-    - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-alpine-node-14/
+      uses: ./.github/actions/linux-node-20/
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
@@ -150,8 +132,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-  build-linux-alpine-node-19:
-    name: Node.js 19 on Alpine Linux
+  build-linux-alpine-node-20:
+    name: Node.js 20 on Alpine Linux
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -161,6 +143,6 @@ jobs:
       with:
         submodules: true
     - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-alpine-node-19/
+      uses: ./.github/actions/linux-alpine-node-20/
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
