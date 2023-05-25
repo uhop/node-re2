@@ -10,3 +10,5 @@ vendor/*
 .development
 .developmentx
 .xdevelopment
+
+/scripts/save-local.sh
