@@ -280,5 +280,43 @@ unit.add(module, [
 
     eval(t.TEST("re2.replace('ABCDEFABCDEF', '!') === '!!!!!FABCDEF'"));
     eval(t.TEST('re2.lastIndex === 0'));
+  },
+
+  // Non-matches
+
+  function test_ReplaceOneNonMatch(t) {
+    'use strict';
+
+    function replacer(match, capture, offset, string) {
+      t.test(typeof offset == 'number');
+      t.test(typeof match == 'string');
+      t.test(typeof string == 'string');
+      t.test(typeof capture == 'undefined');
+      t.test(offset === 0);
+      t.test(string === 'hello ');
+      return '';
+    }
+
+    var re = new RE2(/hello (world)?/);
+    re.replace('hello ', replacer);
+  },
+  function test_ReplaceTwoNonMatches(t) {
+    'use strict';
+
+    function replacer(match, capture1, capture2, offset, string) {
+      t.test(typeof offset == 'number');
+      t.test(typeof match == 'string');
+      t.test(typeof string == 'string');
+      t.test(typeof capture1 == 'undefined');
+      t.test(typeof capture2 == 'undefined');
+      t.test(offset === 1);
+      t.test(match === 'b & y');
+      t.test(string === 'ab & yz');
+      return '';
+    }
+
+    var re = new RE2(/b(1)? & (2)?y/);
+    var result = re.replace('ab & yz', replacer);
+    eval(t.TEST("result === 'az'"));
   }
 ]);
