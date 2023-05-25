@@ -228,7 +228,8 @@ static Nan::Maybe<std::string> replace(WrappedRE2 *re2, const StrVal &replacee, 
 				{
 					size_t s = getUtf8CharSize(data[lastIndex]);
 					lastIndex += s;
-					if (s == 4 && n >= 2) {
+					if (s == 4 && n >= 2)
+					{
 						--n; // this utf8 character will take two utf16 characters
 					}
 					// the decrement above is protected to avoid an overflow of an unsigned integer
@@ -299,27 +300,57 @@ static Nan::Maybe<std::string> replace(WrappedRE2 *re2, const StrVal &replacee, 
 
 inline Nan::Maybe<std::string> replace(const Nan::Callback *replacer, const std::vector<re2::StringPiece> &groups, const re2::StringPiece &str, const v8::Local<v8::Value> &input, bool useBuffers, const std::map<std::string, int> &namedGroups)
 {
-	std::vector<v8::Local<v8::Value> > argv;
+	std::vector<v8::Local<v8::Value>> argv;
 
 	auto context = Nan::GetCurrentContext();
 
 	if (useBuffers)
 	{
+		bool flag = true;
+		auto first_match = str.data();
 		for (size_t i = 0, n = groups.size(); i < n; ++i)
 		{
 			const auto &item = groups[i];
-			argv.push_back(Nan::CopyBuffer(item.data(), item.size()).ToLocalChecked());
+			const auto data = item.data();
+			if (data)
+			{
+				if (flag)
+				{
+					first_match = data;
+					flag = false;
+				}
+				argv.push_back(Nan::CopyBuffer(data, item.size()).ToLocalChecked());
+			}
+			else
+			{
+				argv.push_back(Nan::Undefined());
+			}
 		}
-		argv.push_back(Nan::New(static_cast<int>(groups[0].data() - str.data())));
+		argv.push_back(Nan::New(static_cast<int>(flag ? str.size() : first_match - str.data())));
 	}
 	else
 	{
+		bool flag = true;
+		auto first_match = str.data();
 		for (size_t i = 0, n = groups.size(); i < n; ++i)
 		{
 			const auto &item = groups[i];
-			argv.push_back(Nan::New(item.data(), item.size()).ToLocalChecked());
+			const auto data = item.data();
+			if (data)
+			{
+				if (flag)
+				{
+					first_match = data;
+					flag = false;
+				}
+				argv.push_back(Nan::New(data, item.size()).ToLocalChecked());
+			}
+			else
+			{
+				argv.push_back(Nan::Undefined());
+			}
 		}
-		argv.push_back(Nan::New(static_cast<int>(getUtf16Length(str.data(), groups[0].data()))));
+		argv.push_back(Nan::New(static_cast<int>(flag ? getUtf16Length(str.data(), str.data() + str.size()) : getUtf16Length(str.data(), groups[0].data()))));
 	}
 	argv.push_back(input);
 
@@ -381,7 +412,8 @@ static Nan::Maybe<std::string> replace(WrappedRE2 *re2, const StrVal &replacee, 
 				{
 					size_t s = getUtf8CharSize(data[lastIndex]);
 					lastIndex += s;
-					if (s == 4 && n >= 2) {
+					if (s == 4 && n >= 2)
+					{
 						--n; // this utf8 character will take two utf16 characters
 					}
 					// the decrement above is protected to avoid an overflow of an unsigned integer
