@@ -14,6 +14,7 @@
         "lib/to_string.cc",
         "lib/accessors.cc",
         "lib/util.cc",
+        "vendor/re2/bitmap256.cc",
         "vendor/re2/bitstate.cc",
         "vendor/re2/compile.cc",
         "vendor/re2/dfa.cc",
