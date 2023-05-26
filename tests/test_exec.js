@@ -21,9 +21,13 @@ unit.add(module, [
 
     var result = re.exec('The Quick Brown Fox Jumps Over The Lazy Dog');
 
-    eval(t.TEST("t.unify(result, ['Quick Brown Fox Jumps', 'Brown', 'Jumps'])"));
+    eval(
+      t.TEST("t.unify(result, ['Quick Brown Fox Jumps', 'Brown', 'Jumps'])")
+    );
     eval(t.TEST('result.index === 4'));
-    eval(t.TEST("result.input === 'The Quick Brown Fox Jumps Over The Lazy Dog'"));
+    eval(
+      t.TEST("result.input === 'The Quick Brown Fox Jumps Over The Lazy Dog'")
+    );
     eval(t.TEST('re.lastIndex === 25'));
   },
   function test_execSucc(t) {
@@ -148,12 +152,20 @@ unit.add(module, [
 
     var result = re.exec('Каждый Охотник Желает Знать Где Сидит Фазан');
 
-    eval(t.TEST("t.unify(result, ['Охотник Желает Знать Где', 'Желает', 'Где'])"));
+    eval(
+      t.TEST("t.unify(result, ['Охотник Желает Знать Где', 'Желает', 'Где'])")
+    );
     eval(t.TEST('result.index === 7'));
-    eval(t.TEST("result.input === 'Каждый Охотник Желает Знать Где Сидит Фазан'"));
+    eval(
+      t.TEST("result.input === 'Каждый Охотник Желает Знать Где Сидит Фазан'")
+    );
     eval(t.TEST('re.lastIndex === 31'));
 
-    eval(t.TEST("result.input.substr(result.index) === 'Охотник Желает Знать Где Сидит Фазан'"));
+    eval(
+      t.TEST(
+        "result.input.substr(result.index) === 'Охотник Желает Знать Где Сидит Фазан'"
+      )
+    );
     eval(t.TEST("result.input.substr(re.lastIndex) === ' Сидит Фазан'"));
   },
   function test_execUnicodeSubsequent(t) {
@@ -248,11 +260,21 @@ unit.add(module, [
 
     eval(t.TEST('result.index === 13'));
     eval(t.TEST('result.input instanceof Buffer'));
-    eval(t.TEST("result.input.toString() === 'Каждый Охотник Желает Знать Где Сидит Фазан'"));
+    eval(
+      t.TEST(
+        "result.input.toString() === 'Каждый Охотник Желает Знать Где Сидит Фазан'"
+      )
+    );
     eval(t.TEST('re.lastIndex === 58'));
 
-    eval(t.TEST("result.input.toString('utf8', result.index) === 'Охотник Желает Знать Где Сидит Фазан'"));
-    eval(t.TEST("result.input.toString('utf8', re.lastIndex) === ' Сидит Фазан'"));
+    eval(
+      t.TEST(
+        "result.input.toString('utf8', result.index) === 'Охотник Желает Знать Где Сидит Фазан'"
+      )
+    );
+    eval(
+      t.TEST("result.input.toString('utf8', re.lastIndex) === ' Сидит Фазан'")
+    );
   },
 
   // Sticky tests
@@ -317,7 +339,9 @@ xy2 (at start of line)
     eval(t.TEST("result[0] === 'xy'"));
     eval(t.TEST('result.index > 3'));
     eval(t.TEST('result.index < pattern.length - 4'));
-    eval(t.TEST('result[0] === pattern.substr(result.index, result[0].length)'));
+    eval(
+      t.TEST('result[0] === pattern.substr(result.index, result[0].length)')
+    );
   },
 
   // dotAll tests
@@ -332,5 +356,63 @@ xy2 (at start of line)
     eval(t.TEST("new RE2('a.c', 's').test('abc')"));
     eval(t.TEST("new RE2(/a.c/s).test('a c')"));
     eval(t.TEST("new RE2(/a.c/s).test('a\\nc')"));
+  },
+
+  // hasIndices tests
+
+  function test_execHasIndices(t) {
+    'use strict';
+
+    eval(t.TEST("!new RE2('1').hasIndices"));
+    eval(t.TEST('!new RE2(/1/).hasIndices'));
+
+    var re = new RE2('(aa)(?<b>b)?(?<c>ccc)', 'd');
+
+    eval(t.TEST('re.hasIndices'));
+
+    var result = re.exec('1aabccc2');
+
+    eval(t.TEST('result.length === 4'));
+    eval(t.TEST("result.input === '1aabccc2'"));
+    eval(t.TEST('result.index === 1'));
+    eval(t.TEST('Object.keys(result.groups).length === 2'));
+    eval(t.TEST("result.groups.b === 'b'"));
+    eval(t.TEST("result.groups.c === 'ccc'"));
+    eval(t.TEST("result[0] === 'aabccc'"));
+    eval(t.TEST("result[1] === 'aa'"));
+    eval(t.TEST("result[2] === 'b'"));
+    eval(t.TEST("result[3] === 'ccc'"));
+    eval(t.TEST('result.indices.length === 4'));
+    eval(t.TEST('t.unify(result.indices, [[1, 7], [1, 3], [3, 4], [4, 7]])'));
+    eval(t.TEST('Object.keys(result.indices.groups).length === 2'));
+    eval(t.TEST('t.unify(result.indices.groups.b, [3, 4])'));
+    eval(t.TEST('t.unify(result.indices.groups.c, [4, 7])'));
+
+    result = re.exec('1aaccc2');
+
+    eval(t.TEST('result.length === 4'));
+    eval(t.TEST("result.input === '1aaccc2'"));
+    eval(t.TEST('result.index === 1'));
+    eval(t.TEST('Object.keys(result.groups).length === 2'));
+    eval(t.TEST('result.groups.b === undefined'));
+    eval(t.TEST("result.groups.c === 'ccc'"));
+    eval(t.TEST("result[0] === 'aaccc'"));
+    eval(t.TEST("result[1] === 'aa'"));
+    eval(t.TEST('result[2] === undefined'));
+    eval(t.TEST("result[3] === 'ccc'"));
+    eval(t.TEST('result.indices.length === 4'));
+    eval(
+      t.TEST('t.unify(result.indices, [[1, 6], [1, 3], undefined, [3, 6]])')
+    );
+    eval(t.TEST('Object.keys(result.indices.groups).length === 2'));
+    eval(t.TEST('t.unify(result.indices.groups.b, undefined)'));
+    eval(t.TEST('t.unify(result.indices.groups.c, [3, 6])'));
+
+    try {
+      re = new RE2(new RegExp('1', 'd'));
+      eval(t.TEST('re.hasIndices'));
+    } catch (e) {
+      // squelch
+    }
   }
 ]);
