@@ -306,19 +306,12 @@ inline Nan::Maybe<std::string> replace(const Nan::Callback *replacer, const std:
 
 	if (useBuffers)
 	{
-		bool flag = true;
-		auto first_match = str.data();
 		for (size_t i = 0, n = groups.size(); i < n; ++i)
 		{
 			const auto &item = groups[i];
 			const auto data = item.data();
 			if (data)
 			{
-				if (flag)
-				{
-					first_match = data;
-					flag = false;
-				}
 				argv.push_back(Nan::CopyBuffer(data, item.size()).ToLocalChecked());
 			}
 			else
@@ -326,23 +319,16 @@ inline Nan::Maybe<std::string> replace(const Nan::Callback *replacer, const std:
 				argv.push_back(Nan::Undefined());
 			}
 		}
-		argv.push_back(Nan::New(static_cast<int>(flag ? str.size() : first_match - str.data())));
+		argv.push_back(Nan::New(static_cast<int>(groups[0].data() - str.data())));
 	}
 	else
 	{
-		bool flag = true;
-		auto first_match = str.data();
 		for (size_t i = 0, n = groups.size(); i < n; ++i)
 		{
 			const auto &item = groups[i];
 			const auto data = item.data();
 			if (data)
 			{
-				if (flag)
-				{
-					first_match = data;
-					flag = false;
-				}
 				argv.push_back(Nan::New(data, item.size()).ToLocalChecked());
 			}
 			else
@@ -350,7 +336,7 @@ inline Nan::Maybe<std::string> replace(const Nan::Callback *replacer, const std:
 				argv.push_back(Nan::Undefined());
 			}
 		}
-		argv.push_back(Nan::New(static_cast<int>(flag ? getUtf16Length(str.data(), str.data() + str.size()) : getUtf16Length(str.data(), groups[0].data()))));
+		argv.push_back(Nan::New(static_cast<int>(getUtf16Length(str.data(), groups[0].data()))));
 	}
 	argv.push_back(input);
 
