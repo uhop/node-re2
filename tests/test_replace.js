@@ -13,7 +13,10 @@ unit.add(module, [
     'use strict';
 
     var re = new RE2(/apples/gi);
-    var result = re.replace('Apples are round, and apples are juicy.', 'oranges');
+    var result = re.replace(
+      'Apples are round, and apples are juicy.',
+      'oranges'
+    );
     eval(t.TEST("result === 'oranges are round, and oranges are juicy.'"));
 
     re = new RE2(/xmas/i);
@@ -199,15 +202,24 @@ unit.add(module, [
     'use strict';
 
     var re = new RE2(/яблоки/gi);
-    var result = re.replace(new Buffer('Яблоки красны, яблоки сочны.'), 'апельсины');
+    var result = re.replace(
+      new Buffer('Яблоки красны, яблоки сочны.'),
+      'апельсины'
+    );
     eval(t.TEST('result instanceof Buffer'));
     eval(t.TEST("result.toString() === 'апельсины красны, апельсины сочны.'"));
 
-    result = re.replace(new Buffer('Яблоки красны, яблоки сочны.'), new Buffer('апельсины'));
+    result = re.replace(
+      new Buffer('Яблоки красны, яблоки сочны.'),
+      new Buffer('апельсины')
+    );
     eval(t.TEST('result instanceof Buffer'));
     eval(t.TEST("result.toString() === 'апельсины красны, апельсины сочны.'"));
 
-    result = re.replace('Яблоки красны, яблоки сочны.', new Buffer('апельсины'));
+    result = re.replace(
+      'Яблоки красны, яблоки сочны.',
+      new Buffer('апельсины')
+    );
     eval(t.TEST("typeof result == 'string'"));
     eval(t.TEST("result === 'апельсины красны, апельсины сочны.'"));
   },
@@ -284,7 +296,7 @@ unit.add(module, [
 
   // Non-matches
 
-  function test_ReplaceOneNonMatch(t) {
+  function test_replaceOneNonMatch(t) {
     'use strict';
 
     function replacer(match, capture, offset, string) {
@@ -300,10 +312,10 @@ unit.add(module, [
     var re = new RE2(/hello (world)?/);
     re.replace('hello ', replacer);
   },
-  function test_ReplaceTwoNonMatches(t) {
+  function test_replaceTwoNonMatches(t) {
     'use strict';
 
-    function replacer(match, capture1, capture2, offset, string) {
+    function replacer(match, capture1, capture2, offset, string, groups) {
       t.test(typeof offset == 'number');
       t.test(typeof match == 'string');
       t.test(typeof string == 'string');
@@ -312,10 +324,14 @@ unit.add(module, [
       t.test(offset === 1);
       t.test(match === 'b & y');
       t.test(string === 'ab & yz');
+      t.test(typeof groups == 'object');
+      t.test(Object.keys(groups).length == 2);
+      t.test(groups.a === undefined);
+      t.test(groups.b == undefined);
       return '';
     }
 
-    var re = new RE2(/b(1)? & (2)?y/);
+    var re = new RE2(/b(?<a>1)? & (?<b>2)?y/);
     var result = re.replace('ab & yz', replacer);
     eval(t.TEST("result === 'az'"));
   }
