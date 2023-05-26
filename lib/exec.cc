@@ -52,8 +52,9 @@ NAN_METHOD(WrappedRE2::Exec)
 			{
 				size_t s = getUtf8CharSize(str.data[lastIndex]);
 				lastIndex += s;
-				if (s == 4 && n >= 2) --n; // this utf8 character will take two utf16 characters
-				// the decrement above is protected to avoid an overflow of an unsigned integer
+				if (s == 4 && n >= 2)
+					--n; // this utf8 character will take two utf16 characters
+						 // the decrement above is protected to avoid an overflow of an unsigned integer
 			}
 		}
 	}
@@ -82,9 +83,10 @@ NAN_METHOD(WrappedRE2::Exec)
 		for (size_t i = 0, n = groups.size(); i < n; ++i)
 		{
 			const auto &item = groups[i];
-			if (item.data() != NULL)
+			const auto data = item.data();
+			if (data)
 			{
-				Nan::Set(result, i, Nan::CopyBuffer(item.data(), item.size()).ToLocalChecked());
+				Nan::Set(result, i, Nan::CopyBuffer(data, item.size()).ToLocalChecked());
 			}
 			else
 			{
@@ -98,9 +100,10 @@ NAN_METHOD(WrappedRE2::Exec)
 		for (size_t i = 0, n = groups.size(); i < n; ++i)
 		{
 			const auto &item = groups[i];
-			if (item.data() != NULL)
+			const auto data = item.data();
+			if (data)
 			{
-				Nan::Set(result, i, Nan::New(item.data(), item.size()).ToLocalChecked());
+				Nan::Set(result, i, Nan::New(data, item.size()).ToLocalChecked());
 			}
 			else
 			{
