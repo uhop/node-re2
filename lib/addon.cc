@@ -23,9 +23,9 @@ static NAN_METHOD(GetUtf16Length)
 	info.GetReturnValue().Set(-1);
 }
 
-static void cleanup(void* p)
+static void cleanup(void *p)
 {
-	v8::Isolate* isolate = static_cast<v8::Isolate*>(p);
+	v8::Isolate *isolate = static_cast<v8::Isolate *>(p);
 	auto p_tpl = Nan::GetIsolateData<Nan::Persistent<v8::FunctionTemplate>>(isolate);
 	delete p_tpl;
 }
@@ -71,6 +71,7 @@ v8::Local<v8::Function> WrappedRE2::Init()
 	Nan::SetAccessor(instanceTemplate, Nan::New("dotAll").ToLocalChecked(), GetDotAll);
 	Nan::SetAccessor(instanceTemplate, Nan::New("unicode").ToLocalChecked(), GetUnicode);
 	Nan::SetAccessor(instanceTemplate, Nan::New("sticky").ToLocalChecked(), GetSticky);
+	Nan::SetAccessor(instanceTemplate, Nan::New("hasIndices").ToLocalChecked(), GetHasIndices);
 	Nan::SetAccessor(instanceTemplate, Nan::New("lastIndex").ToLocalChecked(), GetLastIndex, SetLastIndex);
 	Nan::SetAccessor(instanceTemplate, Nan::New("internalSource").ToLocalChecked(), GetInternalSource);
 

@@ -11,8 +11,8 @@ class WrappedRE2 : public Nan::ObjectWrap
 {
 private:
 	WrappedRE2(const re2::StringPiece &pattern, const re2::RE2::Options &options, const std::string &src,
-			   const bool &g, const bool &i, const bool &m, const bool &s, const bool &y) : regexp(pattern, options),
-																							source(src), global(g), ignoreCase(i), multiline(m), dotAll(s), sticky(y), lastIndex(0) {}
+			   const bool &g, const bool &i, const bool &m, const bool &s, const bool &y, const bool &d) : regexp(pattern, options),
+																										   source(src), global(g), ignoreCase(i), multiline(m), dotAll(s), sticky(y), hasIndices(d), lastIndex(0) {}
 
 	static NAN_METHOD(New);
 	static NAN_METHOD(ToString);
@@ -25,6 +25,7 @@ private:
 	static NAN_GETTER(GetDotAll);
 	static NAN_GETTER(GetUnicode);
 	static NAN_GETTER(GetSticky);
+	static NAN_GETTER(GetHasIndices);
 	static NAN_GETTER(GetLastIndex);
 	static NAN_SETTER(SetLastIndex);
 	static NAN_GETTER(GetInternalSource);
@@ -70,6 +71,7 @@ public:
 	bool multiline;
 	bool dotAll;
 	bool sticky;
+	bool hasIndices;
 	size_t lastIndex;
 };
 

@@ -232,6 +232,7 @@ NAN_METHOD(WrappedRE2::New)
 	bool dotAll = false;
 	bool unicode = false;
 	bool sticky = false;
+	bool hasIndices = false;
 
 	auto context = Nan::GetCurrentContext();
 
@@ -272,6 +273,9 @@ NAN_METHOD(WrappedRE2::New)
 			case 'y':
 				sticky = true;
 				break;
+			case 'd':
+				hasIndices = true;
+				break;
 			}
 		}
 		size = 0;
@@ -306,6 +310,7 @@ NAN_METHOD(WrappedRE2::New)
 		dotAll = bool(flags & v8::RegExp::kDotAll);
 		unicode = bool(flags & v8::RegExp::kUnicode);
 		sticky = bool(flags & v8::RegExp::kSticky);
+		hasIndices = bool(flags & v8::RegExp::kHasIndices);
 	}
 	else if (info[0]->IsObject() && !info[0]->IsString())
 	{
@@ -332,6 +337,7 @@ NAN_METHOD(WrappedRE2::New)
 			dotAll = re2->dotAll;
 			unicode = true;
 			sticky = re2->sticky;
+			hasIndices = re2->hasIndices;
 		}
 	}
 	else if (info[0]->IsString())
@@ -385,7 +391,7 @@ NAN_METHOD(WrappedRE2::New)
 	options.set_dot_nl(dotAll);
 	options.set_log_errors(false); // inappropriate when embedding
 
-	std::unique_ptr<WrappedRE2> re2(new WrappedRE2(re2::StringPiece(data, size), options, source, global, ignoreCase, multiline, dotAll, sticky));
+	std::unique_ptr<WrappedRE2> re2(new WrappedRE2(re2::StringPiece(data, size), options, source, global, ignoreCase, multiline, dotAll, sticky, hasIndices));
 	if (!re2->regexp.ok())
 	{
 		return Nan::ThrowSyntaxError(re2->regexp.error().c_str());

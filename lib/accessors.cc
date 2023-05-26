@@ -39,9 +39,13 @@ NAN_GETTER(WrappedRE2::GetFlags)
 	auto re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 
 	std::string flags;
+	if (re2->hasIndices)
+	{
+		flags = "d";
+	}
 	if (re2->global)
 	{
-		flags = "g";
+		flags += "g";
 	}
 	if (re2->ignoreCase)
 	{
@@ -133,6 +137,18 @@ NAN_GETTER(WrappedRE2::GetSticky)
 
 	auto re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 	info.GetReturnValue().Set(re2->sticky);
+}
+
+NAN_GETTER(WrappedRE2::GetHasIndices)
+{
+	if (!WrappedRE2::HasInstance(info.This()))
+	{
+		info.GetReturnValue().SetUndefined();
+		return;
+	}
+
+	auto re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
+	info.GetReturnValue().Set(re2->hasIndices);
 }
 
 NAN_GETTER(WrappedRE2::GetLastIndex)

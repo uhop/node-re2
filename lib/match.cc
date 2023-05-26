@@ -82,7 +82,7 @@ NAN_METHOD(WrappedRE2::Match)
 
 	// form a result
 
-	auto result = Nan::New<v8::Array>();
+	auto result = Nan::New<v8::Array>(), indices = Nan::New<v8::Array>();
 
 	if (a.isBuffer)
 	{
@@ -93,6 +93,23 @@ NAN_METHOD(WrappedRE2::Match)
 			if (data)
 			{
 				Nan::Set(result, i, Nan::CopyBuffer(data, item.size()).ToLocalChecked());
+				if (!re2->global && re2->hasIndices)
+				{
+					auto pair = Nan::New<v8::Array>();
+					auto offset = getUtf16Length(a.data + lastIndex, data);
+					auto length = getUtf16Length(data, data + item.size());
+					Nan::Set(pair, 0, Nan::New<v8::Integer>(static_cast<int>(offset)));
+					Nan::Set(pair, 1, Nan::New<v8::Integer>(static_cast<int>(offset + length)));
+					Nan::Set(indices, i, pair);
+				}
+			}
+			else
+			{
+				Nan::Set(result, i, Nan::Undefined());
+				if (!re2->global && re2->hasIndices)
+				{
+					Nan::Set(indices, i, Nan::Undefined());
+				}
 			}
 		}
 		if (!re2->global)
@@ -110,6 +127,23 @@ NAN_METHOD(WrappedRE2::Match)
 			if (data)
 			{
 				Nan::Set(result, i, Nan::New(data, item.size()).ToLocalChecked());
+				if (!re2->global && re2->hasIndices)
+				{
+					auto pair = Nan::New<v8::Array>();
+					auto offset = getUtf16Length(a.data + lastIndex, data);
+					auto length = getUtf16Length(data, data + item.size());
+					Nan::Set(pair, 0, Nan::New<v8::Integer>(static_cast<int>(offset)));
+					Nan::Set(pair, 1, Nan::New<v8::Integer>(static_cast<int>(offset + length)));
+					Nan::Set(indices, i, pair);
+				}
+			}
+			else
+			{
+				Nan::Set(result, i, Nan::Undefined());
+				if (!re2->global && re2->hasIndices)
+				{
+					Nan::Set(indices, i, Nan::Undefined());
+				}
 			}
 		}
 		if (!re2->global)
@@ -146,11 +180,37 @@ NAN_METHOD(WrappedRE2::Match)
 			}
 
 			Nan::Set(result, Nan::New("groups").ToLocalChecked(), groups);
+
+			if (re2->hasIndices)
+			{
+				auto indexGroups = Nan::New<v8::Object>();
+				Nan::SetPrototype(indexGroups, Nan::Null());
+
+				for (auto group : groupNames)
+				{
+					auto value = Nan::Get(indices, group.first);
+					if (!value.IsEmpty())
+					{
+						Nan::Set(indexGroups, Nan::New(group.second).ToLocalChecked(), value.ToLocalChecked());
+					}
+				}
+
+				Nan::Set(indices, Nan::New("groups").ToLocalChecked(), indexGroups);
+			}
 		}
 		else
 		{
 			Nan::Set(result, Nan::New("groups").ToLocalChecked(), Nan::Undefined());
+			if (re2->hasIndices)
+			{
+				Nan::Set(indices, Nan::New("groups").ToLocalChecked(), Nan::Undefined());
+			}
 		}
+	}
+
+	if (re2->hasIndices)
+	{
+		Nan::Set(result, Nan::New("indices").ToLocalChecked(), indices);
 	}
 
 	info.GetReturnValue().Set(result);
