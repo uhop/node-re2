@@ -352,6 +352,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 ## Release history
 
+- 1.19.0 *Added `hasIndices` AKA the `d` flag. Thx, [teebu](https://github.com/teebu).*
 - 1.18.3 *Fixed bug with non-matched groups. Thx, [Dan Setterquist](https://github.com/dset).*
 - 1.18.2 *Reference to the binary module by its full name.*
 - 1.18.1 *Support for Node 16, 18, 20 + Darwin arm64 precompiled binaries.*
