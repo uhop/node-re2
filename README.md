@@ -352,6 +352,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 ## Release history
 
+- 1.18.3 *Fixed bug with non-matched groups. Thx, [Dan Setterquist](https://github.com/dset).*
 - 1.18.2 *Reference to the binary module by its full name.*
 - 1.18.1 *Support for Node 16, 18, 20 + Darwin arm64 precompiled binaries.*
 - 1.18.0 *Modified TS bindings, added a type test (thx, [Kenichi Kamiya](https://github.com/kachick) and [Jamie Magee](https://github.com/JamieMagee)).*
