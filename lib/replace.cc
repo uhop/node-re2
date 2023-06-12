@@ -107,7 +107,7 @@ inline std::string replace(const char *data, size_t size, const std::vector<re2:
 					i += 2;
 					continue;
 				case '&':
-					result += groups[0].as_string();
+					result += (std::string)groups[0];
 					i += 2;
 					continue;
 				case '`':
@@ -139,7 +139,7 @@ inline std::string replace(const char *data, size_t size, const std::vector<re2:
 							index2 = index * 10 + (ch - '0');
 							if (index2 && index2 < groups.size())
 							{
-								result += groups[index2].as_string();
+								result += (std::string)groups[index2];
 								continue;
 							}
 							result += '$';
@@ -152,7 +152,7 @@ inline std::string replace(const char *data, size_t size, const std::vector<re2:
 					i += 2;
 					if (index && index < groups.size())
 					{
-						result += groups[index].as_string();
+						result += (std::string)groups[index];
 						continue;
 					}
 					result += '$';
@@ -170,7 +170,7 @@ inline std::string replace(const char *data, size_t size, const std::vector<re2:
 							if (group != namedGroups.end())
 							{
 								index = group->second;
-								result += groups[index].as_string();
+								result += (std::string)groups[index];
 							}
 							i = nameEnd + 1 - data;
 						}
