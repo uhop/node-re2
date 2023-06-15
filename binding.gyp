@@ -57,6 +57,7 @@
       "include_dirs": [
         "<!(node -e \"require('nan')\")",
         "vendor/re2",
+        "vendor/abseil-cpp",
       ],
       "xcode_settings": {
         "MACOSX_DEPLOYMENT_TARGET": "10.7",
