@@ -414,5 +414,27 @@ xy2 (at start of line)
     } catch (e) {
       // squelch
     }
+  },
+
+  function test_hasIndexLastIndex(t) {
+    'use strict';
+
+    const re2 = new RE2('a', 'dg');
+
+    eval(t.TEST('re2.lastIndex === 0'));
+
+    let result = re2.exec('abca');
+    eval(t.TEST('re2.lastIndex === 1'));
+    eval(t.TEST('result.index === 0'));
+    eval(t.TEST('t.unify(result.indices, [[0, 1]])'));
+
+    result = re2.exec('abca');
+    eval(t.TEST('re2.lastIndex === 4'));
+    eval(t.TEST('result.index === 3'));
+    eval(t.TEST('t.unify(result.indices, [[3, 4]])'));
+
+    result = re2.exec('abca');
+    eval(t.TEST('re2.lastIndex === 0'));
+    eval(t.TEST('result === null'));
   }
 ]);

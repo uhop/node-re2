@@ -90,8 +90,8 @@ NAN_METHOD(WrappedRE2::Exec)
 				if (re2->hasIndices) {
 					auto pair = Nan::New<v8::Array>();
 					auto offset = data - str.data;
-					Nan::Set(pair, 0, Nan::New<v8::Integer>(static_cast<int>(offset)));
-					Nan::Set(pair, 1, Nan::New<v8::Integer>(static_cast<int>(offset + item.size())));
+					Nan::Set(pair, 0, Nan::New<v8::Integer>(indexOffset + static_cast<int>(offset)));
+					Nan::Set(pair, 1, Nan::New<v8::Integer>(indexOffset + static_cast<int>(offset + item.size())));
 					Nan::Set(indices, i, pair);
 				}
 			}
@@ -118,8 +118,8 @@ NAN_METHOD(WrappedRE2::Exec)
 					auto pair = Nan::New<v8::Array>();
 					auto offset = getUtf16Length(str.data + lastIndex, data);
 					auto length = getUtf16Length(data, data + item.size());
-					Nan::Set(pair, 0, Nan::New<v8::Integer>(static_cast<int>(offset)));
-					Nan::Set(pair, 1, Nan::New<v8::Integer>(static_cast<int>(offset + length)));
+					Nan::Set(pair, 0, Nan::New<v8::Integer>(indexOffset + static_cast<int>(offset)));
+					Nan::Set(pair, 1, Nan::New<v8::Integer>(indexOffset + static_cast<int>(offset + length)));
 					Nan::Set(indices, i, pair);
 				}
 			}
