@@ -151,11 +151,22 @@ unit.add(module, [
   function test_matchHasIndices(t) {
     'use strict';
 
-    var re = new RE2('(aa)(?<b>b)?(?<c>ccc)', 'd'),
+    const re = new RE2('(aa)(?<b>b)?(?<c>ccc)', 'd'),
       str1 = '1aabccc2',
       str2 = '1aaccc2';
 
     eval(t.TEST("t.unify(str1.match(re), re.exec(str1))"));
     eval(t.TEST("t.unify(str2.match(re), re.exec(str2))"));
+  },
+
+  function test_matchHasIndicesGlobal(t) {
+    'use strict';
+
+    const re = new RE2('(?<zzz>a)', 'dg'),
+      result = 'abca'.match(re);
+
+    eval(t.TEST("t.unify(result, ['a', 'a'])"));
+    eval(t.TEST("!('indices' in result)"));
+    eval(t.TEST("!('groups' in result)"));
   }
 ]);

@@ -206,11 +206,10 @@ NAN_METHOD(WrappedRE2::Match)
 				Nan::Set(indices, Nan::New("groups").ToLocalChecked(), Nan::Undefined());
 			}
 		}
-	}
-
-	if (re2->hasIndices)
-	{
-		Nan::Set(result, Nan::New("indices").ToLocalChecked(), indices);
+		if (re2->hasIndices)
+		{
+			Nan::Set(result, Nan::New("indices").ToLocalChecked(), indices);
+		}
 	}
 
 	info.GetReturnValue().Set(result);
