@@ -16,5 +16,6 @@
     "noUnusedParameters": true,
 
   },
-  "include": ["**/*.ts"]
+  "include": ["**/*.ts"],
+  "exclude": ["vendor/re2/app/**"]
 }
