@@ -77,5 +77,19 @@ unit.add(module, [
       eval(t.TEST('match[0] === expected[i]'));
       ++i;
     }
+  },
+
+  function test_matchAll_empty_match(t) {
+    'use strict';
+
+    const str = 'foo';
+    // Matches empty strings, but should not cause an infinite loop
+    const re = new RE2('(?:)', 'g');
+    const result = Array.from(str.matchAll(re));
+
+    eval(t.TEST('result.length === str.length + 1'));
+    for (let i = 0; i < result.length; i++) {
+      eval(t.TEST(`result[${i}][0] === ''`));
+    }
   }
 ]);
