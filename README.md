@@ -353,6 +353,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 ## Release history
 
+- 1.19.2 *Bugfix: infinite loop in matchAll() with empty matches. Thx, [ziyunfei](https://github.com/ziyunfei).*
 - 1.19.1 *Bugfix: indices for the `d` flag when `lastIndex` is non zero. Bugfix: the match result. Thx, [teebu](https://github.com/teebu).*
 - 1.19.0 *Added `hasIndices` AKA the `d` flag. Thx, [teebu](https://github.com/teebu).*
 - 1.18.3 *Fixed bug with non-matched groups. Thx, [Dan Setterquist](https://github.com/dset).*
