@@ -353,6 +353,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 ## Release history
 
+- 1.20.1 *Fix: files included in the npm package to build the C++ code.*
 - 1.20.0 *Updated RE2. New version uses `abseil-cpp` and required the adaptation work. Thx, [Stefano Rivera](https://github.com/stefanor).*
 - 1.19.2 *Bugfix: infinite loop in matchAll() with empty matches. Thx, [ziyunfei](https://github.com/ziyunfei).*
 - 1.19.1 *Bugfix: indices for the `d` flag when `lastIndex` is non zero. Bugfix: the match result. Thx, [teebu](https://github.com/teebu).*
