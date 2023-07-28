@@ -88,7 +88,7 @@ unit.add(module, [
     const result = Array.from(str.matchAll(re));
 
     eval(t.TEST('result.length === str.length + 1'));
-    for (let i = 0; i < result.length; i++) {
+    for (let i = 0; i < result.length; ++i) {
       eval(t.TEST(`result[${i}][0] === ''`));
     }
   }

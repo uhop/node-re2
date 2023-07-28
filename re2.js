@@ -29,7 +29,7 @@ if (typeof Symbol != 'undefined') {
       for (;;) {
         const result = re.exec(str);
         if (!result) break;
-        if (result[0] === '') re.lastIndex++;
+        if (result[0] === '') ++re.lastIndex;
         yield result;
       }
     });
