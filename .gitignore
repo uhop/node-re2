@@ -4,8 +4,8 @@ report/
 coverage/
 .AppleDouble
 vendor/*
-!vendor/re2/*
-!vendor/util/*
+!vendor/re2/re2/*
+!vendor/re2/util/*
 .vscode/
 .development
 .developmentx
