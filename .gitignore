@@ -6,6 +6,8 @@ coverage/
 vendor/*
 !vendor/re2/re2/*
 !vendor/re2/util/*
+vendor/re2/re2/testing/*
+!vendor/abseil-cpp/absl/*
 .vscode/
 .development
 .developmentx
