@@ -1,3 +1,6 @@
-[submodule "vendor"]
-	path = vendor
+[submodule "vendor/re2"]
+	path = vendor/re2
 	url = https://github.com/google/re2
+[submodule "vendor/abseil-cpp"]
+	path = vendor/abseil-cpp
+	url = https://github.com/abseil/abseil-cpp
