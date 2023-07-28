@@ -89,7 +89,7 @@ unit.add(module, [
 
     eval(t.TEST('result.length === str.length + 1'));
     for (let i = 0; i < result.length; ++i) {
-      eval(t.TEST(`result[${i}][0] === ''`));
+      eval(t.TEST('result[i][0] === ""'));
     }
   }
 ]);
