@@ -1,5 +1,7 @@
 #!/bin/bash -l
 
+set -e
+
 NVM_DIR=$HOME/.nvm
 
 curl -sS -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
