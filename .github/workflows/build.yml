@@ -102,47 +102,22 @@ jobs:
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-  build-linux-alpine-node-16:
-    name: Node.js 16 on Alpine Linux
+  build-linux-alpine:
+    name: Node.js ${{matrix.node-version}} on Alpine Linux
     needs: create-release
     runs-on: ubuntu-latest
-    continue-on-error: true
+
+    strategy:
+      matrix:
+        node-version: [16, 18, 20]
 
     steps:
     - uses: actions/checkout@v3
       with:
         submodules: true
     - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-alpine-node-16/
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
-  build-linux-alpine-node-18:
-    name: Node.js 18 on Alpine Linux
-    needs: create-release
-    runs-on: ubuntu-latest
-    continue-on-error: true
-
-    steps:
-    - uses: actions/checkout@v3
+      uses: ./.github/actions/linux-alpine-node/
       with:
-        submodules: true
-    - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-alpine-node-18/
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
-  build-linux-alpine-node-20:
-    name: Node.js 20 on Alpine Linux
-    needs: create-release
-    runs-on: ubuntu-latest
-    continue-on-error: true
-
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: true
-    - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-alpine-node-20/
+        build-args: NODE_VERSION=${{matrix.node-version}}
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
