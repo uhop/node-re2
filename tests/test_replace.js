@@ -27,29 +27,6 @@ unit.add(module, [
     result = re.replace('John Smith', '$2, $1');
     eval(t.TEST("result === 'Smith, John'"));
   },
-  function test_replaceGroupCases(t) {
-    'use strict';
-
-    var re = new RE2(/(test)/g);
-    var result = re.replace('123', '$1$20');
-    eval(t.TEST("result === '123'"));
-
-    re = new RE2(/(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)/g);
-    result = re.replace('abcdefghijklmnopqrstuvwxyz123', '$10$20');
-    eval(t.TEST("result === 'jb0wo0123'"));
-
-    re = new RE2(/(.)(.)(.)(.)(.)/g);
-    result = re.replace('abcdefghijklmnopqrstuvwxyz123', '$10$20');
-    eval(t.TEST("result === 'a0b0f0g0k0l0p0q0u0v0z123'"));
-
-    re = new RE2(/(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)/g);
-    result = re.replace('abcdefghijklmnopqrstuvwxyz123', '$10$20');
-    eval(t.TEST("result === 'jtvwxyz123'"));
-
-    re = new RE2(/abcd/g);
-    result = re.replace('abcd123', '$1$2');
-    eval(t.TEST("result === '$1$2123'"));
-  },
   function test_replaceFunReplacer(t) {
     'use strict';
 
@@ -357,5 +334,47 @@ unit.add(module, [
     var re = new RE2(/b(?<a>1)? & (?<b>2)?y/);
     var result = re.replace('ab & yz', replacer);
     eval(t.TEST("result === 'az'"));
+  },
+  function test_replaceGroupSimple(t) {
+    'use strict';
+
+    var re = new RE2(/(2)/);
+
+    var result = re.replace('123', '$0');
+    eval(t.TEST("result === '1$03'"));
+    result = re.replace('123', '$1');
+    eval(t.TEST("result === '123'"));
+    result = re.replace('123', '$2');
+    eval(t.TEST("result === '1$23'"));
+
+    result = re.replace('123', '$00');
+    eval(t.TEST("result === '1$003'"));
+    result = re.replace('123', '$01');
+    eval(t.TEST("result === '123'"));
+    result = re.replace('123', '$02');
+    eval(t.TEST("result === '1$023'"));
+  },
+  function test_replaceGroupCases(t) {
+    'use strict';
+
+    var re = new RE2(/(test)/g);
+    var result = re.replace('123', '$1$20');
+    eval(t.TEST("result === '123'"));
+
+    re = new RE2(/(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)/g);
+    result = re.replace('abcdefghijklmnopqrstuvwxyz123', '$10$20');
+    eval(t.TEST("result === 'jb0wo0123'"));
+
+    re = new RE2(/(.)(.)(.)(.)(.)/g);
+    result = re.replace('abcdefghijklmnopqrstuvwxyz123', '$10$20');
+    eval(t.TEST("result === 'a0b0f0g0k0l0p0q0u0v0z123'"));
+
+    re = new RE2(/(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)/g);
+    result = re.replace('abcdefghijklmnopqrstuvwxyz123', '$10$20');
+    eval(t.TEST("result === 'jtvwxyz123'"));
+
+    re = new RE2(/abcd/g);
+    result = re.replace('abcd123', '$1$2');
+    eval(t.TEST("result === '$1$2123'"));
   }
 ]);
