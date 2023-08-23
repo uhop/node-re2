@@ -118,6 +118,6 @@ jobs:
     - name: Install, test, and create artifact
       uses: ./.github/actions/linux-alpine-node/
       with:
-        build-args: NODE_VERSION=${{matrix.node-version}}
+        node-version: ${{matrix.node-version}}
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
