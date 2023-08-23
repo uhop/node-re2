@@ -141,7 +141,9 @@ inline std::string replace(const char *data, size_t size, const std::vector<re2:
 							{
 								result += (std::string)groups[index2];
 								continue;
-							} else if (index < groups.size()) {
+							}
+							else if (index && index < groups.size())
+							{
 								result += (std::string)groups[index];
 								result += ch;
 								continue;
