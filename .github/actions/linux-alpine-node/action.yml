@@ -8,5 +8,5 @@ inputs:
 runs:
   using: 'docker'
   image: 'Dockerfile'
-  build-args: |
+  buildArgs: |
     NODE_VERSION=${{inputs.node_version}}
