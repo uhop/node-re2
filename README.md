@@ -353,7 +353,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 ## Release history
 
-- 1.20.3 *Fix: subsequent numbers are incorporated into group if they would form a legal group reference.*
+- 1.20.3 *Fix: subsequent numbers are incorporated into group if they would form a legal group reference. Thx, [Oleksii Vasyliev](https://github.com/le0pard).*
 - 1.20.2 *Fix: added a missing C++ file, which caused a bug on Alpine Linux. Thx, [rbitanga-manticore](https://github.com/rbitanga-manticore).*
 - 1.20.1 *Fix: files included in the npm package to build the C++ code.*
 - 1.20.0 *Updated RE2. New version uses `abseil-cpp` and required the adaptation work. Thx, [Stefano Rivera](https://github.com/stefanor).*
