@@ -278,6 +278,45 @@ unit.add(module, [
 
 		re = new RE2("a", "smigyu");
 		eval(t.TEST("re.flags === 'gimsuy'"));
+	},
+	function test_flags_2nd(t) {
+		"use strict";
+
+		var re = new RE2(/a/, "u");
+		eval(t.TEST("re.flags === 'u'"));
+
+		re = new RE2(/a/gm, "iu");
+		eval(t.TEST("re.flags === 'iu'"));
+
+		re = new RE2(/a/ig, "mu");
+		eval(t.TEST("re.flags === 'mu'"));
+
+		re = new RE2(/a/g, "gu");
+		eval(t.TEST("re.flags === 'gu'"));
+
+		re = new RE2(/a/m, "yu");
+		eval(t.TEST("re.flags === 'uy'"));
+
+		re = new RE2(/a/, "yiu");
+		eval(t.TEST("re.flags === 'iuy'"));
+
+		re = new RE2(/a/gim, "yigu");
+		eval(t.TEST("re.flags === 'giuy'"));
+
+		re = new RE2(/a/gm, "miu");
+		eval(t.TEST("re.flags === 'imu'"));
+
+		re = new RE2(/a/i, "ygu");
+		eval(t.TEST("re.flags === 'guy'"));
+
+		re = new RE2(/a/g, "myu");
+		eval(t.TEST("re.flags === 'muy'"));
+
+		re = new RE2(/a/, "migyu");
+		eval(t.TEST("re.flags === 'gimuy'"));
+
+		re = new RE2(/a/s, "smigyu");
+		eval(t.TEST("re.flags === 'gimsuy'"));
 	}
 ]);
 

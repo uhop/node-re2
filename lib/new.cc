@@ -235,6 +235,7 @@ NAN_METHOD(WrappedRE2::New)
 	bool hasIndices = false;
 
 	auto context = Nan::GetCurrentContext();
+	bool needFlags = true;
 
 	if (info.Length() > 1)
 	{
@@ -279,6 +280,7 @@ NAN_METHOD(WrappedRE2::New)
 			}
 		}
 		size = 0;
+		needFlags = false;
 	}
 
 	bool needConversion = true;
@@ -303,14 +305,18 @@ NAN_METHOD(WrappedRE2::New)
 
 		source = escapeRegExp(data, size);
 
-		v8::RegExp::Flags flags = re->GetFlags();
-		global = bool(flags & v8::RegExp::kGlobal);
-		ignoreCase = bool(flags & v8::RegExp::kIgnoreCase);
-		multiline = bool(flags & v8::RegExp::kMultiline);
-		dotAll = bool(flags & v8::RegExp::kDotAll);
-		unicode = bool(flags & v8::RegExp::kUnicode);
-		sticky = bool(flags & v8::RegExp::kSticky);
-		hasIndices = bool(flags & v8::RegExp::kHasIndices);
+		if (needFlags)
+		{
+			v8::RegExp::Flags flags = re->GetFlags();
+			global = bool(flags & v8::RegExp::kGlobal);
+			ignoreCase = bool(flags & v8::RegExp::kIgnoreCase);
+			multiline = bool(flags & v8::RegExp::kMultiline);
+			dotAll = bool(flags & v8::RegExp::kDotAll);
+			unicode = bool(flags & v8::RegExp::kUnicode);
+			sticky = bool(flags & v8::RegExp::kSticky);
+			hasIndices = bool(flags & v8::RegExp::kHasIndices);
+			needFlags = false;
+		}
 	}
 	else if (info[0]->IsObject() && !info[0]->IsString())
 	{
@@ -331,13 +337,17 @@ NAN_METHOD(WrappedRE2::New)
 
 			source = re2->source;
 
-			global = re2->global;
-			ignoreCase = re2->ignoreCase;
-			multiline = re2->multiline;
-			dotAll = re2->dotAll;
-			unicode = true;
-			sticky = re2->sticky;
-			hasIndices = re2->hasIndices;
+			if (needFlags)
+			{
+				global = re2->global;
+				ignoreCase = re2->ignoreCase;
+				multiline = re2->multiline;
+				dotAll = re2->dotAll;
+				unicode = true;
+				sticky = re2->sticky;
+				hasIndices = re2->hasIndices;
+				needFlags = false;
+			}
 		}
 	}
 	else if (info[0]->IsString())
