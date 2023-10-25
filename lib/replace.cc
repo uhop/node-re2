@@ -268,7 +268,7 @@ static Nan::Maybe<std::string> replace(WrappedRE2 *re2, const StrVal &replacee, 
 		{
 			lastIndex = offset + match.size();
 		}
-		else if (offset < size)
+		else if ((size_t)offset < size)
 		{
 			auto sym_size = getUtf8CharSize(data[offset]);
 			result.append(data + offset, sym_size);
@@ -445,7 +445,7 @@ static Nan::Maybe<std::string> replace(WrappedRE2 *re2, const StrVal &replacee, 
 		{
 			lastIndex = offset + match.size();
 		}
-		else if (offset < size)
+		else if ((size_t)offset < size)
 		{
 			auto sym_size = getUtf8CharSize(data[offset]);
 			result.append(data + offset, sym_size);
