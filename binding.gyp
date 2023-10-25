@@ -141,7 +141,7 @@
             "-pthread"
           ]
         }],
-        ["OS==\"win32\"", {
+        ["OS==\"win\"", {
           "sources": [
             "vendor/abseil-cpp/absl/synchronization/internal/win32_waiter.cc"
           ]
