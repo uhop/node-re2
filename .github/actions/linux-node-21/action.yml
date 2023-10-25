@@ -1,0 +1,12 @@
+name: 'Create a binary artifact for Node 21 on Linux'
+description: 'Create a binary artifact for Node 21 on Linux using node:21-buster'
+inputs:
+  node-version:
+    description: 'Node.js version'
+    required: false
+    default: '21'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{inputs.node-version}}
