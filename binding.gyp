@@ -81,6 +81,7 @@
         "vendor/abseil-cpp/absl/strings/string_view.cc",
         "vendor/abseil-cpp/absl/synchronization/internal/create_thread_identity.cc",
         "vendor/abseil-cpp/absl/synchronization/internal/graphcycles.cc",
+        "vendor/abseil-cpp/absl/synchronization/internal/futex_waiter.cc",
         "vendor/abseil-cpp/absl/synchronization/internal/kernel_timeout.cc",
         "vendor/abseil-cpp/absl/synchronization/internal/per_thread_sem.cc",
         "vendor/abseil-cpp/absl/synchronization/internal/waiter_base.cc",
