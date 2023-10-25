@@ -82,7 +82,7 @@
         "vendor/abseil-cpp/absl/synchronization/internal/create_thread_identity.cc",
         "vendor/abseil-cpp/absl/synchronization/internal/graphcycles.cc",
         "vendor/abseil-cpp/absl/synchronization/internal/per_thread_sem.cc",
-        "vendor/abseil-cpp/absl/synchronization/internal/waiter.cc",
+        "vendor/abseil-cpp/absl/synchronization/internal/waiter_base.cc",
         "vendor/abseil-cpp/absl/synchronization/mutex.cc",
         "vendor/abseil-cpp/absl/time/clock.cc",
         "vendor/abseil-cpp/absl/time/duration.cc",
