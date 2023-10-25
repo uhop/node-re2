@@ -137,6 +137,6 @@ jobs:
       with:
         submodules: true
     - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-alpine-node-20/
+      uses: ./.github/actions/linux-alpine-node-21/
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
