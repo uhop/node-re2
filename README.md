@@ -353,6 +353,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 ## Release history
 
+- 1.20.6 *Updated deps, notably `node-gyp`.*
 - 1.20.5 *Updated deps, added Node 21 and retired Node 16 as pre-compilation targets.*
 - 1.20.4 *Updated deps. Fix: the 2nd argument of the constructor overrides flags. Thx, [gost-serb](https://github.com/gost-serb).*
 - 1.20.3 *Fix: subsequent numbers are incorporated into group if they would form a legal group reference. Thx, [Oleksii Vasyliev](https://github.com/le0pard).*
