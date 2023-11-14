@@ -48,6 +48,8 @@
         "vendor/abseil-cpp/absl/base/internal/unscaledcycleclock.cc",
         "vendor/abseil-cpp/absl/container/internal/raw_hash_set.cc",
         "vendor/abseil-cpp/absl/debugging/internal/address_is_readable.cc",
+        "vendor/abseil-cpp/absl/debugging/internal/elf_mem_image.cc",
+        "vendor/abseil-cpp/absl/debugging/internal/vdso_support.cc",
         "vendor/abseil-cpp/absl/debugging/stacktrace.cc",
         "vendor/abseil-cpp/absl/debugging/symbolize.cc",
         "vendor/abseil-cpp/absl/flags/commandlineflag.cc",
