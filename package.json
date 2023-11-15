@@ -11,7 +11,7 @@
     "test": "tests"
   },
   "dependencies": {
-    "install-artifact-from-github": "^1.3.4",
+    "install-artifact-from-github": "^1.3.5",
     "nan": "^2.18.0",
     "node-gyp": "^10.0.1"
   },
