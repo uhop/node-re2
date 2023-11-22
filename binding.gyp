@@ -46,6 +46,7 @@
         "vendor/abseil-cpp/absl/base/internal/thread_identity.cc",
         "vendor/abseil-cpp/absl/base/internal/throw_delegate.cc",
         "vendor/abseil-cpp/absl/base/internal/unscaledcycleclock.cc",
+        "vendor/abseil-cpp/absl/debugging/internal/demangle.cc",
         "vendor/abseil-cpp/absl/container/internal/raw_hash_set.cc",
         "vendor/abseil-cpp/absl/debugging/internal/address_is_readable.cc",
         "vendor/abseil-cpp/absl/debugging/internal/elf_mem_image.cc",
