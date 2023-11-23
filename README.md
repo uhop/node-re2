@@ -353,6 +353,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 ## Release history
 
+- 1.20.9 *Updated deps. Added more `absail-cpp` files that manifested itself on NixOS. Thx, [Laura Hausmann](https://github.com/zotanmew).*
 - 1.20.8 *Updated deps: `install-artifact-from-github`. A default HTTPS agent is used for fetching precompiled artifacts avoiding unnecessary long wait times.*
 - 1.20.7 *Added more `absail-cpp` files that manifested itself on ARM Alpine. Thx, [Laura Hausmann](https://github.com/zotanmew).*
 - 1.20.6 *Updated deps, notably `node-gyp`.*
