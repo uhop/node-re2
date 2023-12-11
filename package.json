@@ -7,6 +7,13 @@
   "type": "commonjs",
   "main": "re2.js",
   "types": "re2.d.ts",
+  "files": [
+    "binding.gyp",
+    "lib",
+    "re2.d.ts",
+    "scripts",
+    "vendor"
+  ],
   "dependencies": {
     "install-artifact-from-github": "^1.3.5",
     "nan": "^2.18.0",
