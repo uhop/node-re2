@@ -7,9 +7,6 @@
   "type": "commonjs",
   "main": "re2.js",
   "types": "re2.d.ts",
-  "directories": {
-    "test": "tests"
-  },
   "dependencies": {
     "install-artifact-from-github": "^1.3.5",
     "nan": "^2.18.0",
