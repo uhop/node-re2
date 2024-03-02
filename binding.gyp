@@ -121,7 +121,7 @@
         "vendor/abseil-cpp",
       ],
       "xcode_settings": {
-        "MACOSX_DEPLOYMENT_TARGET": "10.7",
+        "MACOSX_DEPLOYMENT_TARGET": "10.15",
         "CLANG_CXX_LANGUAGE_STANDARD": "c++2a",
         "CLANG_CXX_LIBRARY": "libc++",
         "OTHER_CFLAGS": [
