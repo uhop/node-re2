@@ -353,6 +353,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 ## Release history
 
+- 1.20.10 *Updated deps. Removed files the pack used for development (thx, [Haruaki OTAKE](https://github.com/aaharu)). Added arm64 Linux prebilds (thx, [Christopher M](https://github.com/cmanou)). Fixed non-`npm` `corepack` problem (thx, [Steven](https://github.com/styfle)).*
 - 1.20.9 *Updated deps. Added more `absail-cpp` files that manifested itself on NixOS. Thx, [Laura Hausmann](https://github.com/zotanmew).*
 - 1.20.8 *Updated deps: `install-artifact-from-github`. A default HTTPS agent is used for fetching precompiled artifacts avoiding unnecessary long wait times.*
 - 1.20.7 *Added more `absail-cpp` files that manifested itself on ARM Alpine. Thx, [Laura Hausmann](https://github.com/zotanmew).*
@@ -370,26 +371,6 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 - 1.18.2 *Reference to the binary module by its full name.*
 - 1.18.1 *Support for Node 16, 18, 20 + Darwin arm64 precompiled binaries.*
 - 1.18.0 *Modified TS bindings, added a type test (thx, [Kenichi Kamiya](https://github.com/kachick) and [Jamie Magee](https://github.com/JamieMagee)).*
-- 1.17.8 *Updated deps, added Node 19 as a pre-compilation target.*
-- 1.17.7 *Added support for a cross-platform fetching of a pre-compiled version by updating [install-artifact-from-github](https://github.com/uhop/install-artifact-from-github).*
-- 1.17.6 *Implemented `dotAll`. Thx [Michael Kriese](https://github.com/viceice).*
-- 1.17.5 *Updated deps, updated test/build targets, implemented `matchAll()` (thx, [ThePendulum](https://github.com/ThePendulum) and [David Sichau](https://github.com/DavidSichau)).*
-- 1.17.4 *Updated deps.*
-- 1.17.3 *Fixed bug with zero-length replacements.*
-- 1.17.2 *Added support for the enhanced local mirroring by updating [install-artifact-from-github](https://github.com/uhop/install-artifact-from-github).*
-- 1.17.1 *Fix for `lastIndex` for U+10000 - U+10FFFF UTF characters. Thx, [omg](https://github.com/omg).*
-- 1.17.0 *Updated GYP, added support for Node 17, updated deps.*
-- 1.16.0 *Updated the compiler (thx, [Sergei Dyshel](https://github.com/sergei-dyshel)), updated GYP, removed support for Node 10, added support for Node 16, updated TS bindings (thx, [BannerBomb](https://github.com/BannerBomb)).*
-- 1.15.9 *Updated deps.*
-- 1.15.8 *Updated deps.*
-- 1.15.7 *Updated deps.*
-- 1.15.6 *Technical release: less dependencies for the build.*
-- 1.15.5 *Updated deps. Fixed a `node2nix`-related problem (thx [malte-v](https://github.com/malte-v)).*
-- 1.15.4 *Updated deps. Fixed a yarn-related bug (thx [Michael Kriese](https://github.com/viceice)).*
-- 1.15.3 *Extracted caching artifacts to separate packages. Added support for `RE2_DOWNLOAD_MIRROR` environment variable for precompiled artifact download during installation.*
-- 1.15.2 *Added `linux-musl` target for precompiled images (thx [Uzlopak](https://github.com/Uzlopak)).*
-- 1.15.1 *Refreshed dependencies, updated the verification check on installation, general maintenance.*
-- 1.15.0 *Fix for multiline expressions (thx [Frederic Rudman](https://github.com/frudman)), `toString()` uses `source` now, updated deps.*
 
 The rest can be consulted in the project's wiki [Release history](https://github.com/uhop/node-re2/wiki/Release-history).
 
