@@ -11,7 +11,7 @@
     "binding.gyp",
     "lib",
     "re2.d.ts",
-    "scripts",
+    "scripts/*.js",
     "vendor"
   ],
   "dependencies": {
