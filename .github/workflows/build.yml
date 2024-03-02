@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - env:
         GH_TOKEN: ${{github.token}}
       run: |
@@ -32,11 +32,11 @@ jobs:
         node-version: [18, 20, 21]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: true
     - name: Setup Node.js ${{matrix.node-version}}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{matrix.node-version}}
     - name: Install the package and run tests
@@ -58,7 +58,7 @@ jobs:
     continue-on-error: true
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: true
     - name: Install, test, and create artifact
@@ -73,7 +73,7 @@ jobs:
     continue-on-error: true
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: true
     - name: Install, test, and create artifact
@@ -88,7 +88,7 @@ jobs:
     continue-on-error: true
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: true
     - name: Install, test, and create artifact
@@ -103,7 +103,7 @@ jobs:
     continue-on-error: true
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: true
     - name: Install, test, and create artifact
@@ -118,7 +118,7 @@ jobs:
     continue-on-error: true
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: true
     - name: Install, test, and create artifact
@@ -133,7 +133,7 @@ jobs:
     continue-on-error: true
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: true
     - name: Install, test, and create artifact
@@ -148,7 +148,7 @@ jobs:
     continue-on-error: true
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: true
     - name: Set up QEMU
@@ -167,7 +167,7 @@ jobs:
     continue-on-error: true
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: true
     - name: Set up QEMU
@@ -186,7 +186,7 @@ jobs:
     continue-on-error: true
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: true
     - name: Set up QEMU
