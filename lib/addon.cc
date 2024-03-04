@@ -1,5 +1,6 @@
 #include "./wrapped_re2.h"
 
+#include <algorithm>
 #include <node_buffer.h>
 
 static NAN_METHOD(GetUtf8Length)
@@ -14,13 +15,25 @@ static NAN_METHOD(GetUtf8Length)
 
 static NAN_METHOD(GetUtf16Length)
 {
-	if (node::Buffer::HasInstance(info[0]))
-	{
-		const auto *s = node::Buffer::Data(info[0]);
-		info.GetReturnValue().Set(static_cast<int>(getUtf16Length(s, s + node::Buffer::Length(info[0]))));
+	if (!node::Buffer::HasInstance(info[0])) {
+		info.GetReturnValue().Set(-1);
 		return;
 	}
-	info.GetReturnValue().Set(-1);
+
+	const int bufferLength = node::Buffer::Length(info[0]);
+	const int endIdx = std::clamp(
+		info[2]->IsNumber() ? Nan::To<int>(info[2]).FromMaybe(bufferLength) : bufferLength,
+		0,
+		bufferLength
+	);
+	const int startIdx = std::clamp(
+		info[1]->IsNumber() ? Nan::To<int>(info[1]).FromMaybe(0) : 0,
+		0,
+		endIdx
+	);
+
+	const auto *s = node::Buffer::Data(info[0]);
+	info.GetReturnValue().Set(static_cast<int>(getUtf16Length(s + startIdx, s + endIdx)));
 }
 
 static void cleanup(void *p)

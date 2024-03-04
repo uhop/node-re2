@@ -173,8 +173,8 @@ Two functions to calculate string sizes between
 
 * `RE2.getUtf8Length(str)` &mdash; calculates a buffer size in bytes to encode a UTF-16 string as
   a UTF-8 buffer.
-* `RE2.getUtf16Length(buf)` &mdash; calculates a string size in characters to encode a UTF-8 buffer as
-  a UTF-16 string.
+* `RE2.getUtf16Length(buf, [start, end])` &mdash; calculates a string size in characters to encode a UTF-8 buffer as
+  a UTF-16 string. Optionally, use start and end indices to only calculate the length of a slice.
 
 JavaScript supports UCS-2 strings with 16-bit characters, while node.js 0.11 supports full UTF-16 as
 a default string.
