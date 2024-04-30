@@ -1,0 +1,12 @@
+name: 'Create a binary artifact for Node 22 on Linux'
+description: 'Create a binary artifact for Node 22 on Linux using node:22-bullseye'
+inputs:
+  node-version:
+    description: 'Node.js version'
+    required: false
+    default: '22'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{inputs.node-version}}
