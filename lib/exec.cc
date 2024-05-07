@@ -89,9 +89,10 @@ NAN_METHOD(WrappedRE2::Exec)
 				Nan::Set(result, i, Nan::CopyBuffer(data, item.size()).ToLocalChecked());
 				if (re2->hasIndices) {
 					auto pair = Nan::New<v8::Array>();
-					auto offset = data - str.data;
+					auto offset = data - str.data - lastIndex;
+					auto length = item.size();
 					Nan::Set(pair, 0, Nan::New<v8::Integer>(indexOffset + static_cast<int>(offset)));
-					Nan::Set(pair, 1, Nan::New<v8::Integer>(indexOffset + static_cast<int>(offset + item.size())));
+					Nan::Set(pair, 1, Nan::New<v8::Integer>(indexOffset + static_cast<int>(offset + length)));
 					Nan::Set(indices, i, pair);
 				}
 			}
@@ -103,7 +104,7 @@ NAN_METHOD(WrappedRE2::Exec)
 				}
 			}
 		}
-		Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<v8::Integer>(indexOffset + static_cast<int>(groups[0].data() - str.data)));
+		Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<v8::Integer>(indexOffset + static_cast<int>(groups[0].data() - str.data - lastIndex)));
 	}
 	else
 	{

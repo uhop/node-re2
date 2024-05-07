@@ -436,5 +436,24 @@ xy2 (at start of line)
     result = re2.exec('abca');
     eval(t.TEST('re2.lastIndex === 0'));
     eval(t.TEST('result === null'));
+  },
+
+  function test_bufferVsString(t) {
+    'use strict';
+
+    const re2 = new RE2('.', 'g'),
+      pattern = 'abcdefg';
+
+    re2.lastIndex = 2;
+    const result1 = re2.exec(pattern);
+
+    re2.lastIndex = 2;
+    const result2 = re2.exec(Buffer.from(pattern));
+
+    eval(t.TEST("result1[0] === 'c'"));
+    eval(t.TEST("t.unify(result2[0], Buffer.from('c'))"));
+
+    eval(t.TEST('result1.index === 2'));
+    eval(t.TEST('result2.index === 2'));
   }
 ]);
