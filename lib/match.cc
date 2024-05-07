@@ -96,8 +96,8 @@ NAN_METHOD(WrappedRE2::Match)
 				if (!re2->global && re2->hasIndices)
 				{
 					auto pair = Nan::New<v8::Array>();
-					auto offset = getUtf16Length(a.data + lastIndex, data);
-					auto length = getUtf16Length(data, data + item.size());
+					auto offset = data - a.data - lastIndex;
+					auto length = item.size();
 					Nan::Set(pair, 0, Nan::New<v8::Integer>(static_cast<int>(offset)));
 					Nan::Set(pair, 1, Nan::New<v8::Integer>(static_cast<int>(offset + length)));
 					Nan::Set(indices, i, pair);

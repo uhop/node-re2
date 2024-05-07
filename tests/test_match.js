@@ -168,5 +168,22 @@ unit.add(module, [
     eval(t.TEST("t.unify(result, ['a', 'a'])"));
     eval(t.TEST("!('indices' in result)"));
     eval(t.TEST("!('groups' in result)"));
+  },
+
+  function test_matchLastIndex(t) {
+    'use strict';
+
+    const re = new RE2(/./g), pattern = 'Я123';
+
+    re.lastIndex = 2;
+    const result1 = pattern.match(re);
+    eval(t.TEST("t.unify(result1, ['Я', '1', '2', '3'])"));
+    eval(t.TEST("re.lastIndex === 0"));
+
+    const re2 = RE2(re);
+    re2.lastIndex = 2;
+    const result2 = re2.match(Buffer.from(pattern));
+    eval(t.TEST("t.unify(result2.map(b => b.toString()), ['Я', '1', '2', '3'])"));
+    eval(t.TEST("re2.lastIndex === 0"));
   }
 ]);
