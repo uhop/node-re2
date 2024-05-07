@@ -353,6 +353,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 ## Release history
 
+- 1.20.11 *Updated deps. Added support for Node 22 (thx, [Elton Leong](https://github.com/eltonkl)).*
 - 1.20.10 *Updated deps. Removed files the pack used for development (thx, [Haruaki OTAKE](https://github.com/aaharu)). Added arm64 Linux prebilds (thx, [Christopher M](https://github.com/cmanou)). Fixed non-`npm` `corepack` problem (thx, [Steven](https://github.com/styfle)).*
 - 1.20.9 *Updated deps. Added more `absail-cpp` files that manifested itself on NixOS. Thx, [Laura Hausmann](https://github.com/zotanmew).*
 - 1.20.8 *Updated deps: `install-artifact-from-github`. A default HTTPS agent is used for fetching precompiled artifacts avoiding unnecessary long wait times.*
