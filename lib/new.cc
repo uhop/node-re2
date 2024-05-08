@@ -179,7 +179,7 @@ static std::string escapeRegExp(const char *data, size_t size)
 
 bool WrappedRE2::alreadyWarnedAboutUnicode = false;
 
-static const char *depricationMessage = "BMP patterns aren't supported by node-re2. An implicit \"u\" flag is assumed by the RE2 constructor. In a future major version, calling the RE2 constructor without the \"u\" flag may become forbidden, or cause a different behavior. Please see https://github.com/uhop/node-re2/issues/21 for more information.";
+static const char *deprecationMessage = "BMP patterns aren't supported by node-re2. An implicit \"u\" flag is assumed by the RE2 constructor. In a future major version, calling the RE2 constructor without the \"u\" flag may become forbidden, or cause a different behavior. Please see https://github.com/uhop/node-re2/issues/21 for more information.";
 
 inline bool ensureUniqueNamedGroups(const std::map<int, std::string> &groups)
 {
@@ -371,14 +371,14 @@ NAN_METHOD(WrappedRE2::New)
 		switch (unicodeWarningLevel)
 		{
 		case THROW:
-			return Nan::ThrowSyntaxError(depricationMessage);
+			return Nan::ThrowSyntaxError(deprecationMessage);
 		case WARN:
-			printDeprecationWarning(depricationMessage);
+			printDeprecationWarning(deprecationMessage);
 			break;
 		case WARN_ONCE:
 			if (!alreadyWarnedAboutUnicode)
 			{
-				printDeprecationWarning(depricationMessage);
+				printDeprecationWarning(deprecationMessage);
 				alreadyWarnedAboutUnicode = true;
 			}
 			break;
