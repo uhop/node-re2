@@ -1,6 +1,6 @@
 #include "./wrapped_re2.h"
 
-#include <node_buffer.h>
+#include "./str-val.h"
 
 static NAN_METHOD(GetUtf8Length)
 {
@@ -91,3 +91,56 @@ NODE_MODULE_INIT()
 	Nan::HandleScope scope;
 	Nan::Set(module->ToObject(context).ToLocalChecked(), Nan::New("exports").ToLocalChecked(), WrappedRE2::Init());
 }
+
+// private methods
+
+void WrappedRE2::dropLastString()
+{
+	lastString.Reset();
+	if (lastStringValue)
+	{
+		delete lastStringValue;
+		lastStringValue = nullptr;
+	}
+}
+
+inline size_t countBytes(const char *data, size_t from, size_t n)
+{
+	for (; n > 0; --n)
+	{
+		size_t s = getUtf8CharSize(data[from]);
+		from += s;
+		if (s == 4 && n >= 2)
+			--n; // this utf8 character will take two utf16 characters
+					 // the decrement above is protected to avoid an overflow of an unsigned integer
+	}
+	return from;
+}
+
+void WrappedRE2::prepareLastString(const v8::Local<v8::Value> &arg, bool ignoreLastIndex)
+{
+	size_t startFrom = ignoreLastIndex ? 0 : lastIndex;
+
+	if (node::Buffer::HasInstance(arg))
+	{
+		dropLastString();
+		lastStringValue = new StrValBuffer(arg, startFrom);
+		return;
+	}
+
+	// String
+
+	// check if the same string is already in the cache
+	if (lastString == arg && lastStringValue)
+	{
+		if (!global && !sticky)
+			return; // we are good
+		lastStringValue->setIndex(startFrom);
+		return;
+	}
+
+	dropLastString();
+	lastString.Reset(arg);
+	static_cast<v8::PersistentBase<v8::Value>&>(lastString).SetWeak();
+	lastStringValue = new StrValString(arg, startFrom);
+};

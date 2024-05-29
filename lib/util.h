@@ -3,21 +3,6 @@
 
 #include "./wrapped_re2.h"
 
-#include <vector>
-
-struct StrVal
-{
-	std::vector<char> buffer;
-	char *data;
-	size_t size, length;
-	bool isBuffer;
-
-	StrVal() : data(NULL), size(0), length(0), isBuffer(false) {}
-	StrVal(const v8::Local<v8::Value> &arg);
-
-	operator re2::StringPiece() const { return re2::StringPiece(data, size); }
-};
-
 template <typename R, typename P, typename L>
 inline v8::MaybeLocal<R> bind(v8::MaybeLocal<P> param, L lambda)
 {

@@ -1,5 +1,5 @@
 #include "./wrapped_re2.h"
-#include "./util.h"
+#include "./str-val.h"
 
 NAN_METHOD(WrappedRE2::Search)
 {
@@ -13,19 +13,20 @@ NAN_METHOD(WrappedRE2::Search)
 		return;
 	}
 
-	StrVal a = info[0];
-	if (!a.data)
-	{
+	re2->prepareLastString(info[0], true);
+	StrValBase &str = *re2->lastStringValue;
+	if (str.isBad) return; // throws an exception
+
+	if (!str.data)
 		return;
-	}
 
 	// actual work
 
 	re2::StringPiece match;
 
-	if (re2->regexp.Match(a, 0, a.size, re2->sticky ? re2::RE2::ANCHOR_START : re2::RE2::UNANCHORED, &match, 1))
+	if (re2->regexp.Match(str, 0, str.size, re2->sticky ? re2::RE2::ANCHOR_START : re2::RE2::UNANCHORED, &match, 1))
 	{
-		info.GetReturnValue().Set(static_cast<int>(a.isBuffer ? match.data() - a.data : getUtf16Length(a.data, match.data())));
+		info.GetReturnValue().Set(static_cast<int>(str.isBuffer ? match.data() - str.data : getUtf16Length(str.data, match.data())));
 		return;
 	}
 

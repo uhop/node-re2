@@ -1,5 +1,5 @@
 #include "./wrapped_re2.h"
-#include "./util.h"
+#include "./str-val.h"
 
 #include <algorithm>
 #include <limits>
@@ -20,13 +20,9 @@ NAN_METHOD(WrappedRE2::Split)
 		return;
 	}
 
-	StrVal a = info[0];
-	if (!a.data)
-	{
-		return;
-	}
-
-	re2::StringPiece str = a;
+	re2->prepareLastString(info[0], true);
+	StrValBase &str = *re2->lastStringValue;
+	if (str.isBad) return; // throws an exception
 
 	size_t limit = std::numeric_limits<size_t>::max();
 	if (info.Length() > 1 && info[1]->IsNumber())
@@ -42,30 +38,30 @@ NAN_METHOD(WrappedRE2::Split)
 
 	std::vector<re2::StringPiece> groups(re2->regexp.NumberOfCapturingGroups() + 1), pieces;
 	const auto &match = groups[0];
-	size_t lastIndex = 0;
+	size_t byteIndex = 0;
 
-	while (lastIndex < a.size && re2->regexp.Match(str, lastIndex, a.size, RE2::UNANCHORED, &groups[0], groups.size()))
+	while (byteIndex < str.size && re2->regexp.Match(str, byteIndex, str.size, RE2::UNANCHORED, &groups[0], groups.size()))
 	{
 		if (match.size())
 		{
-			pieces.push_back(re2::StringPiece(a.data + lastIndex, match.data() - a.data - lastIndex));
-			lastIndex = match.data() - a.data + match.size();
+			pieces.push_back(re2::StringPiece(str.data + byteIndex, match.data() - str.data - byteIndex));
+			byteIndex = match.data() - str.data + match.size();
 			pieces.insert(pieces.end(), groups.begin() + 1, groups.end());
 		}
 		else
 		{
-			size_t sym_size = getUtf8CharSize(a.data[lastIndex]);
-			pieces.push_back(re2::StringPiece(a.data + lastIndex, sym_size));
-			lastIndex += sym_size;
+			size_t sym_size = getUtf8CharSize(str.data[byteIndex]);
+			pieces.push_back(re2::StringPiece(str.data + byteIndex, sym_size));
+			byteIndex += sym_size;
 		}
 		if (pieces.size() >= limit)
 		{
 			break;
 		}
 	}
-	if (pieces.size() < limit && (lastIndex < a.size || (lastIndex == a.size && match.size())))
+	if (pieces.size() < limit && (byteIndex < str.size || (byteIndex == str.size && match.size())))
 	{
-		pieces.push_back(re2::StringPiece(a.data + lastIndex, a.size - lastIndex));
+		pieces.push_back(re2::StringPiece(str.data + byteIndex, str.size - byteIndex));
 	}
 
 	if (pieces.empty())
@@ -77,7 +73,7 @@ NAN_METHOD(WrappedRE2::Split)
 
 	// form a result
 
-	if (a.isBuffer)
+	if (str.isBuffer)
 	{
 		for (size_t i = 0, n = std::min(pieces.size(), limit); i < n; ++i)
 		{

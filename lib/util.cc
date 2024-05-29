@@ -1,34 +1,5 @@
 #include "./util.h"
 
-#include <sys/types.h>
-#include <string>
-
-#include <node_buffer.h>
-
-StrVal::StrVal(const v8::Local<v8::Value> &arg) : data(NULL), size(0), isBuffer(false)
-{
-	if (node::Buffer::HasInstance(arg))
-	{
-		isBuffer = true;
-		size = length = node::Buffer::Length(arg);
-		data = node::Buffer::Data(arg);
-	}
-	else
-	{
-		auto t = arg->ToString(Nan::GetCurrentContext());
-		if (!t.IsEmpty())
-		{
-			auto s = t.ToLocalChecked();
-			length = Nan::DecodeBytes(s);
-			size = Nan::DecodeBytes(s, Nan::UTF8);
-			buffer.resize(size + 1);
-			data = &buffer[0];
-			Nan::DecodeWrite(data, size, s, Nan::UTF8);
-			buffer[size] = '\0';
-		}
-	}
-}
-
 void consoleCall(const v8::Local<v8::String> &methodName, v8::Local<v8::Value> text)
 {
 	auto context = Nan::GetCurrentContext();

@@ -1,14 +1,15 @@
 #include "./wrapped_re2.h"
-#include "./util.h"
+#include "./str-val.h"
 
 #include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include <node_buffer.h>
-
-inline int getMaxSubmatch(const char *data, size_t size, const std::map<std::string, int> &namedGroups)
+inline int getMaxSubmatch(
+	const char *data,
+	size_t size,
+	const std::map<std::string, int> &namedGroups)
 {
 	int maxSubmatch = 0, index, index2;
 	const char *nameBegin;
@@ -86,7 +87,12 @@ inline int getMaxSubmatch(const char *data, size_t size, const std::map<std::str
 	return maxSubmatch;
 }
 
-inline std::string replace(const char *data, size_t size, const std::vector<re2::StringPiece> &groups, const re2::StringPiece &str, const std::map<std::string, int> &namedGroups)
+inline std::string replace(
+	const char *data,
+	size_t size,
+	const std::vector<re2::StringPiece> &groups,
+	const re2::StringPiece &str,
+	const std::map<std::string, int> &namedGroups)
 {
 	std::string result;
 	size_t index, index2;
@@ -205,7 +211,11 @@ inline std::string replace(const char *data, size_t size, const std::vector<re2:
 	return result;
 }
 
-static Nan::Maybe<std::string> replace(WrappedRE2 *re2, const StrVal &replacee, const char *replacer, size_t replacer_size)
+static Nan::Maybe<std::string> replace(
+	WrappedRE2 *re2,
+	const StrValBase &replacee,
+	const char *replacer,
+	size_t replacer_size)
 {
 	const re2::StringPiece str = replacee;
 	const char *data = str.data();
@@ -216,67 +226,50 @@ static Nan::Maybe<std::string> replace(WrappedRE2 *re2, const StrVal &replacee, 
 	std::vector<re2::StringPiece> groups(std::min(re2->regexp.NumberOfCapturingGroups(), getMaxSubmatch(replacer, replacer_size, namedGroups)) + 1);
 	const auto &match = groups[0];
 
-	size_t lastIndex = 0;
+	size_t byteIndex = 0;
 	std::string result;
 	auto anchor = re2::RE2::UNANCHORED;
 
 	if (re2->sticky)
 	{
 		if (!re2->global)
-		{
-			if (replacee.isBuffer)
-			{
-				lastIndex = re2->lastIndex;
-			}
-			else
-			{
-				for (size_t n = re2->lastIndex; n; --n)
-				{
-					size_t s = getUtf8CharSize(data[lastIndex]);
-					lastIndex += s;
-					if (s == 4 && n >= 2)
-					{
-						--n; // this utf8 character will take two utf16 characters
-					}
-					// the decrement above is protected to avoid an overflow of an unsigned integer
-				}
-			}
-		}
+			byteIndex = replacee.byteIndex;
 		anchor = re2::RE2::ANCHOR_START;
 	}
 
-	if (lastIndex)
+	if (byteIndex)
 	{
-		result = std::string(data, lastIndex);
+		result = std::string(data, byteIndex);
 	}
 
 	bool noMatch = true;
-	while (lastIndex <= size && re2->regexp.Match(str, lastIndex, size, anchor, &groups[0], groups.size()))
+	while (byteIndex <= size && re2->regexp.Match(str, byteIndex, size, anchor, &groups[0], groups.size()))
 	{
 		noMatch = false;
 		auto offset = match.data() - data;
 		if (!re2->global && re2->sticky)
 		{
-			re2->lastIndex += replacee.isBuffer ? offset + match.size() - lastIndex : getUtf16Length(data + lastIndex, match.data() + match.size());
+			re2->lastIndex +=
+				replacee.isBuffer ? offset + match.size() - byteIndex : getUtf16Length(data + byteIndex, match.data() + match.size());
 		}
-		if (match.data() == data || offset > static_cast<long>(lastIndex))
+		if (match.data() == data || offset > static_cast<long>(byteIndex))
 		{
-			result += std::string(data + lastIndex, offset - lastIndex);
+			result += std::string(data + byteIndex, offset - byteIndex);
 		}
 		result += replace(replacer, replacer_size, groups, str, namedGroups);
 		if (match.size())
 		{
-			lastIndex = offset + match.size();
+			byteIndex = offset + match.size();
 		}
 		else if ((size_t)offset < size)
 		{
 			auto sym_size = getUtf8CharSize(data[offset]);
 			result.append(data + offset, sym_size);
-			lastIndex = offset + sym_size;
+			byteIndex = offset + sym_size;
 		}
 		else
 		{
-			lastIndex = size;
+			byteIndex = size;
 			break;
 		}
 		if (!re2->global)
@@ -284,9 +277,9 @@ static Nan::Maybe<std::string> replace(WrappedRE2 *re2, const StrVal &replacee, 
 			break;
 		}
 	}
-	if (lastIndex < size)
+	if (byteIndex < size)
 	{
-		result += std::string(data + lastIndex, size - lastIndex);
+		result += std::string(data + byteIndex, size - byteIndex);
 	}
 
 	if (re2->global)
@@ -296,15 +289,19 @@ static Nan::Maybe<std::string> replace(WrappedRE2 *re2, const StrVal &replacee, 
 	else if (re2->sticky)
 	{
 		if (noMatch)
-		{
 			re2->lastIndex = 0;
-		}
 	}
 
 	return Nan::Just(result);
 }
 
-inline Nan::Maybe<std::string> replace(const Nan::Callback *replacer, const std::vector<re2::StringPiece> &groups, const re2::StringPiece &str, const v8::Local<v8::Value> &input, bool useBuffers, const std::map<std::string, int> &namedGroups)
+inline Nan::Maybe<std::string> replace(
+	const Nan::Callback *replacer,
+	const std::vector<re2::StringPiece> &groups,
+	const re2::StringPiece &str,
+	const v8::Local<v8::Value> &input,
+	bool useBuffers,
+	const std::map<std::string, int> &namedGroups)
 {
 	std::vector<v8::Local<v8::Value>> argv;
 
@@ -373,11 +370,16 @@ inline Nan::Maybe<std::string> replace(const Nan::Callback *replacer, const std:
 		return Nan::Just(std::string(node::Buffer::Data(result), node::Buffer::Length(result)));
 	}
 
-	StrVal val = result;
+	StrValString val(result);
 	return Nan::Just(std::string(val.data, val.size));
 }
 
-static Nan::Maybe<std::string> replace(WrappedRE2 *re2, const StrVal &replacee, const Nan::Callback *replacer, const v8::Local<v8::Value> &input, bool useBuffers)
+static Nan::Maybe<std::string> replace(
+	WrappedRE2 *re2,
+	const StrValBase &replacee,
+	const Nan::Callback *replacer,
+	const v8::Local<v8::Value> &input,
+	bool useBuffers)
 {
 	const re2::StringPiece str = replacee;
 	const char *data = str.data();
@@ -386,54 +388,36 @@ static Nan::Maybe<std::string> replace(WrappedRE2 *re2, const StrVal &replacee, 
 	std::vector<re2::StringPiece> groups(re2->regexp.NumberOfCapturingGroups() + 1);
 	const auto &match = groups[0];
 
-	size_t lastIndex = 0;
+	size_t byteIndex = 0;
 	std::string result;
 	auto anchor = re2::RE2::UNANCHORED;
 
 	if (re2->sticky)
 	{
 		if (!re2->global)
-		{
-			if (replacee.isBuffer)
-			{
-				lastIndex = re2->lastIndex;
-			}
-			else
-			{
-				for (size_t n = re2->lastIndex; n; --n)
-				{
-					size_t s = getUtf8CharSize(data[lastIndex]);
-					lastIndex += s;
-					if (s == 4 && n >= 2)
-					{
-						--n; // this utf8 character will take two utf16 characters
-					}
-					// the decrement above is protected to avoid an overflow of an unsigned integer
-				}
-			}
-		}
+			byteIndex = replacee.byteIndex;
 		anchor = RE2::ANCHOR_START;
 	}
 
-	if (lastIndex)
+	if (byteIndex)
 	{
-		result = std::string(data, lastIndex);
+		result = std::string(data, byteIndex);
 	}
 
 	const auto &namedGroups = re2->regexp.NamedCapturingGroups();
 
 	bool noMatch = true;
-	while (lastIndex <= size && re2->regexp.Match(str, lastIndex, size, anchor, &groups[0], groups.size()))
+	while (byteIndex <= size && re2->regexp.Match(str, byteIndex, size, anchor, &groups[0], groups.size()))
 	{
 		noMatch = false;
 		auto offset = match.data() - data;
 		if (!re2->global && re2->sticky)
 		{
-			re2->lastIndex += replacee.isBuffer ? offset + match.size() - lastIndex : getUtf16Length(data + lastIndex, match.data() + match.size());
+			re2->lastIndex += replacee.isBuffer ? offset + match.size() - byteIndex : getUtf16Length(data + byteIndex, match.data() + match.size());
 		}
-		if (match.data() == data || offset > static_cast<long>(lastIndex))
+		if (match.data() == data || offset > static_cast<long>(byteIndex))
 		{
-			result += std::string(data + lastIndex, offset - lastIndex);
+			result += std::string(data + byteIndex, offset - byteIndex);
 		}
 		const auto part = replace(replacer, groups, str, input, useBuffers, namedGroups);
 		if (part.IsNothing())
@@ -443,17 +427,17 @@ static Nan::Maybe<std::string> replace(WrappedRE2 *re2, const StrVal &replacee, 
 		result += part.FromJust();
 		if (match.size())
 		{
-			lastIndex = offset + match.size();
+			byteIndex = offset + match.size();
 		}
 		else if ((size_t)offset < size)
 		{
 			auto sym_size = getUtf8CharSize(data[offset]);
 			result.append(data + offset, sym_size);
-			lastIndex = offset + sym_size;
+			byteIndex = offset + sym_size;
 		}
 		else
 		{
-			lastIndex = size;
+			byteIndex = size;
 			break;
 		}
 		if (!re2->global)
@@ -461,9 +445,9 @@ static Nan::Maybe<std::string> replace(WrappedRE2 *re2, const StrVal &replacee, 
 			break;
 		}
 	}
-	if (lastIndex < size)
+	if (byteIndex < size)
 	{
-		result += std::string(data + lastIndex, size - lastIndex);
+		result += std::string(data + byteIndex, size - byteIndex);
 	}
 
 	if (re2->global)
@@ -508,8 +492,11 @@ NAN_METHOD(WrappedRE2::Replace)
 		return;
 	}
 
-	StrVal replacee = info[0];
-	if (!replacee.data)
+	re2->prepareLastString(info[0]);
+	StrValBase &replacee = *re2->lastStringValue;
+	if (replacee.isBad) return; // throws an exception
+
+	if (!replacee.isIndexValid)
 	{
 		info.GetReturnValue().Set(info[0]);
 		return;
@@ -531,13 +518,15 @@ NAN_METHOD(WrappedRE2::Replace)
 	}
 	else
 	{
-		StrVal replacer = info[1];
-		if (!replacer.data)
+		StrValBase *replacer = StrValBase::New(info[1]);
+		if (replacer->isBad) return; // throws an exception
+
+		if (!replacer->data)
 		{
 			info.GetReturnValue().Set(info[0]);
 			return;
 		}
-		const auto replaced = replace(re2, replacee, replacer.data, replacer.size);
+		const auto replaced = replace(re2, replacee, replacer->data, replacer->size);
 		if (replaced.IsNothing())
 		{
 			info.GetReturnValue().Set(info[0]);

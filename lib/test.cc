@@ -1,9 +1,7 @@
 #include "./wrapped_re2.h"
-#include "./util.h"
+#include "./str-val.h"
 
 #include <vector>
-
-#include <node_buffer.h>
 
 NAN_METHOD(WrappedRE2::Test)
 {
@@ -17,62 +15,33 @@ NAN_METHOD(WrappedRE2::Test)
 		return;
 	}
 
-	StrVal str = info[0];
-	if (!str.data)
+	re2->prepareLastString(info[0]);
+	StrValBase &str = *re2->lastStringValue;
+	if (str.isBad) return; // throws an exception
+
+	if (!re2->global && !re2->sticky)
 	{
+		info.GetReturnValue().Set(re2->regexp.Match(str, 0, str.size, re2::RE2::UNANCHORED, NULL, 0));
 		return;
 	}
 
-	size_t lastIndex = 0;
-
-	if (str.isBuffer)
+	if (!str.isIndexValid)
 	{
-		if ((re2->global || re2->sticky) && re2->lastIndex)
-		{
-			if (re2->lastIndex > str.size)
-			{
-				re2->lastIndex = 0;
-				info.GetReturnValue().Set(false);
-				return;
-			}
-			lastIndex = re2->lastIndex;
-		}
-	}
-	else
-	{
-		if ((re2->global || re2->sticky) && re2->lastIndex)
-		{
-			if (re2->lastIndex > str.length)
-			{
-				re2->lastIndex = 0;
-				info.GetReturnValue().Set(false);
-				return;
-			}
-			for (size_t n = re2->lastIndex; n; --n)
-			{
-				size_t s = getUtf8CharSize(str.data[lastIndex]);
-				lastIndex += s;
-				if (s == 4 && n >= 2) --n; // this utf8 character will take two utf16 characters
-				// the decrement above is protected to avoid an overflow of an unsigned integer
-			}
-		}
+		re2->lastIndex = 0;
+		info.GetReturnValue().SetNull();
+		return;
 	}
 
 	// actual work
 
-	if (re2->global || re2->sticky)
+	re2::StringPiece match;
+	if (re2->regexp.Match(str, str.byteIndex, str.size, re2->sticky ? re2::RE2::ANCHOR_START : re2::RE2::UNANCHORED, &match, 1))
 	{
-		re2::StringPiece match;
-		if (re2->regexp.Match(str, lastIndex, str.size, re2->sticky ? re2::RE2::ANCHOR_START : re2::RE2::UNANCHORED, &match, 1))
-		{
-			re2->lastIndex += str.isBuffer ? match.data() - str.data + match.size() - lastIndex : getUtf16Length(str.data + lastIndex, match.data() + match.size());
-			info.GetReturnValue().Set(true);
-			return;
-		}
-		re2->lastIndex = 0;
-		info.GetReturnValue().Set(false);
+		re2->lastIndex +=
+			str.isBuffer ? match.data() - str.data + match.size() - str.byteIndex : getUtf16Length(str.data + str.byteIndex, match.data() + match.size());
+		info.GetReturnValue().Set(true);
 		return;
 	}
-
-	info.GetReturnValue().Set(re2->regexp.Match(str, lastIndex, str.size, re2::RE2::UNANCHORED, NULL, 0));
+	re2->lastIndex = 0;
+	info.GetReturnValue().Set(false);
 }

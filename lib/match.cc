@@ -1,5 +1,5 @@
 #include "./wrapped_re2.h"
-#include "./util.h"
+#include "./str-val.h"
 
 #include <vector>
 
@@ -15,15 +15,19 @@ NAN_METHOD(WrappedRE2::Match)
 		return;
 	}
 
-	StrVal a(info[0]);
-	if (!a.data)
+	re2->prepareLastString(info[0], re2->global);
+	StrValBase &str = *re2->lastStringValue;
+	if (str.isBad) return; // throws an exception
+
+	if (!str.isIndexValid)
 	{
+		re2->lastIndex = 0;
+		info.GetReturnValue().SetNull();
 		return;
 	}
 
 	std::vector<re2::StringPiece> groups;
-	re2::StringPiece str(a);
-	size_t lastIndex = 0;
+	size_t byteIndex = 0;
 	auto anchor = re2::RE2::UNANCHORED;
 
 	// actual work
@@ -39,10 +43,10 @@ NAN_METHOD(WrappedRE2::Match)
 			anchor = re2::RE2::ANCHOR_START;
 		}
 
-		while (re2->regexp.Match(str, lastIndex, a.size, anchor, &match, 1))
+		while (re2->regexp.Match(str, byteIndex, str.size, anchor, &match, 1))
 		{
 			groups.push_back(match);
-			lastIndex = match.data() - a.data + match.size();
+			byteIndex = match.data() - str.data + match.size();
 		}
 
 		if (groups.empty())
@@ -57,24 +61,15 @@ NAN_METHOD(WrappedRE2::Match)
 
 		if (re2->sticky)
 		{
-			for (size_t n = re2->lastIndex; n; --n)
-			{
-				size_t s = getUtf8CharSize(a.data[lastIndex]);
-				lastIndex += s;
-				if (s == 4 && n >= 2)
-					--n; // this utf8 character will take two utf16 characters
-						 // the decrement above is protected to avoid an overflow of an unsigned integer
-			}
+			byteIndex = str.byteIndex;
 			anchor = RE2::ANCHOR_START;
 		}
 
 		groups.resize(re2->regexp.NumberOfCapturingGroups() + 1);
-		if (!re2->regexp.Match(str, lastIndex, a.size, anchor, &groups[0], groups.size()))
+		if (!re2->regexp.Match(str, byteIndex, str.size, anchor, &groups[0], groups.size()))
 		{
 			if (re2->sticky)
-			{
 				re2->lastIndex = 0;
-			}
 			info.GetReturnValue().SetNull();
 			return;
 		}
@@ -84,7 +79,7 @@ NAN_METHOD(WrappedRE2::Match)
 
 	auto result = Nan::New<v8::Array>(), indices = Nan::New<v8::Array>();
 
-	if (a.isBuffer)
+	if (str.isBuffer)
 	{
 		for (size_t i = 0, n = groups.size(); i < n; ++i)
 		{
@@ -96,7 +91,7 @@ NAN_METHOD(WrappedRE2::Match)
 				if (!re2->global && re2->hasIndices)
 				{
 					auto pair = Nan::New<v8::Array>();
-					auto offset = data - a.data - lastIndex;
+					auto offset = data - str.data - byteIndex;
 					auto length = item.size();
 					Nan::Set(pair, 0, Nan::New<v8::Integer>(static_cast<int>(offset)));
 					Nan::Set(pair, 1, Nan::New<v8::Integer>(static_cast<int>(offset + length)));
@@ -107,14 +102,12 @@ NAN_METHOD(WrappedRE2::Match)
 			{
 				Nan::Set(result, i, Nan::Undefined());
 				if (!re2->global && re2->hasIndices)
-				{
 					Nan::Set(indices, i, Nan::Undefined());
-				}
 			}
 		}
 		if (!re2->global)
 		{
-			Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<v8::Integer>(static_cast<int>(groups[0].data() - a.data)));
+			Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<v8::Integer>(static_cast<int>(groups[0].data() - str.data)));
 			Nan::Set(result, Nan::New("input").ToLocalChecked(), info[0]);
 		}
 	}
@@ -130,7 +123,7 @@ NAN_METHOD(WrappedRE2::Match)
 				if (!re2->global && re2->hasIndices)
 				{
 					auto pair = Nan::New<v8::Array>();
-					auto offset = getUtf16Length(a.data + lastIndex, data);
+					auto offset = getUtf16Length(str.data + byteIndex, data);
 					auto length = getUtf16Length(data, data + item.size());
 					Nan::Set(pair, 0, Nan::New<v8::Integer>(static_cast<int>(offset)));
 					Nan::Set(pair, 1, Nan::New<v8::Integer>(static_cast<int>(offset + length)));
@@ -148,7 +141,7 @@ NAN_METHOD(WrappedRE2::Match)
 		}
 		if (!re2->global)
 		{
-			Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<v8::Integer>(static_cast<int>(getUtf16Length(a.data, groups[0].data()))));
+			Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<v8::Integer>(static_cast<int>(getUtf16Length(str.data, groups[0].data()))));
 			Nan::Set(result, Nan::New("input").ToLocalChecked(), info[0]);
 		}
 	}
@@ -159,7 +152,8 @@ NAN_METHOD(WrappedRE2::Match)
 	}
 	else if (re2->sticky)
 	{
-		re2->lastIndex += a.isBuffer ? groups[0].data() - a.data + groups[0].size() - lastIndex : getUtf16Length(a.data + lastIndex, groups[0].data() + groups[0].size());
+		re2->lastIndex +=
+			str.isBuffer ? groups[0].data() - str.data + groups[0].size() - byteIndex : getUtf16Length(str.data + byteIndex, groups[0].data() + groups[0].size());
 	}
 
 	if (!re2->global)
