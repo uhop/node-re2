@@ -353,6 +353,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 ## Release history
 
+- 1.21.0 *Fixed the performance problem reported by [matthewvalentine](https://github.com/matthewvalentine) (thx!). The change improves performance for multiple use cases.*
 - 1.20.12 *Updated deps. Maintenance chores. Fixes for buffer-related bugs: `exec()` index (reported by [matthewvalentine](https://github.com/matthewvalentine), thx) and `match()` index.*
 - 1.20.11 *Updated deps. Added support for Node 22 (thx, [Elton Leong](https://github.com/eltonkl)).*
 - 1.20.10 *Updated deps. Removed files the pack used for development (thx, [Haruaki OTAKE](https://github.com/aaharu)). Added arm64 Linux prebilds (thx, [Christopher M](https://github.com/cmanou)). Fixed non-`npm` `corepack` problem (thx, [Steven](https://github.com/styfle)).*
