@@ -117,6 +117,12 @@ inline size_t countBytes(const char *data, size_t from, size_t n)
 	return from;
 }
 
+void WrappedRE2::weakLastStringCallback(const Nan::WeakCallbackInfo<WrappedRE2> &data)
+{
+	WrappedRE2* re2 = data.GetParameter();
+	re2->dropLastString();
+}
+
 void WrappedRE2::prepareLastString(const v8::Local<v8::Value> &arg, bool ignoreLastIndex)
 {
 	size_t startFrom = ignoreLastIndex ? 0 : lastIndex;
@@ -140,7 +146,12 @@ void WrappedRE2::prepareLastString(const v8::Local<v8::Value> &arg, bool ignoreL
 	}
 
 	dropLastString();
+
 	lastString.Reset(arg);
 	static_cast<v8::PersistentBase<v8::Value>&>(lastString).SetWeak();
+
+	Nan::Persistent<v8::Value> dummy(arg);
+	dummy.SetWeak(this, weakLastStringCallback, Nan::WeakCallbackType::kParameter);
+
 	lastStringValue = new StrValString(arg, startFrom);
 };

@@ -101,6 +101,8 @@ private:
 	Nan::Persistent<v8::Value> lastString; // weak pointer
 	StrValBase *lastStringValue;
 
+	static void weakLastStringCallback(const Nan::WeakCallbackInfo<WrappedRE2> &data);
+
 	void dropLastString();
 	void prepareLastString(const v8::Local<v8::Value> &arg, bool ignoreLastIndex = false);
 };
