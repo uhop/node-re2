@@ -20,7 +20,7 @@
     "node-gyp": "^10.1.0"
   },
   "devDependencies": {
-    "@types/node": "^20.12.12",
+    "@types/node": "^20.14.1",
     "heya-unit": "^0.3.0",
     "typescript": "^5.4.5"
   },
