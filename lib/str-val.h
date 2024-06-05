@@ -11,6 +11,7 @@ struct StrValBase
 	bool isBuffer, isIndexValid, isBad;
 
 	StrValBase() : data(NULL), size(0), length(0), index(0), byteIndex(0), isBuffer(false), isIndexValid(false), isBad(false) {}
+	virtual ~StrValBase() {}
 
 	operator re2::StringPiece() const { return re2::StringPiece(data, size); }
 
