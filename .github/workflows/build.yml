@@ -29,7 +29,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, windows-latest, macos-12]
-        node-version: [18, 20, 21, 22]
+        node-version: [18, 20, 22]
 
     steps:
     - uses: actions/checkout@v4
@@ -81,21 +81,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-  build-linux-node-21:
-    name: Node.js 21 on Debian Bullseye
-    needs: create-release
-    runs-on: ubuntu-latest
-    continue-on-error: true
-
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
-    - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-node-21/
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
   build-linux-node-22:
     name: Node.js 22 on Debian Bullseye
     needs: create-release
@@ -138,21 +123,6 @@ jobs:
         submodules: true
     - name: Install, test, and create artifact
       uses: ./.github/actions/linux-alpine-node-20/
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
-  build-linux-alpine-node-21:
-    name: Node.js 21 on Alpine Linux
-    needs: create-release
-    runs-on: ubuntu-latest
-    continue-on-error: true
-
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
-    - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-alpine-node-21/
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
@@ -206,25 +176,6 @@ jobs:
         platforms: arm64
     - name: Install, test, and create artifact
       uses: ./.github/actions/linux-arm64-node-20/
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
-  build-linux-arm64-node-21:
-    name: Node.js 21 on Debian Bullseye on ARM64
-    needs: create-release
-    runs-on: ubuntu-latest
-    continue-on-error: true
-
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
-      with:
-        platforms: arm64
-    - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-arm64-node-21/
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
