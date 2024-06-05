@@ -94,7 +94,28 @@ NODE_MODULE_INIT()
 	Nan::Set(module->ToObject(context).ToLocalChecked(), Nan::New("exports").ToLocalChecked(), WrappedRE2::Init());
 }
 
+WrappedRE2::~WrappedRE2()
+{
+	for (auto ptr : callbackRegistry)
+	{
+		*ptr = nullptr;
+	}
+	dropLastString();
+}
+
 // private methods
+
+WrappedRE2::PtrWrappedRE2 *WrappedRE2::registerCallback()
+{
+	PtrWrappedRE2 *ptr = new PtrWrappedRE2(this);
+	callbackRegistry.insert(ptr);
+	return ptr;
+}
+
+void WrappedRE2::unregisterCallback(PtrWrappedRE2 *ptr)
+{
+	callbackRegistry.erase(ptr);
+}
 
 void WrappedRE2::dropLastString()
 {
@@ -106,10 +127,15 @@ void WrappedRE2::dropLastString()
 	}
 }
 
-void WrappedRE2::weakLastStringCallback(const Nan::WeakCallbackInfo<WrappedRE2> &data)
+void WrappedRE2::weakLastStringCallback(const Nan::WeakCallbackInfo<PtrWrappedRE2> &data)
 {
-	WrappedRE2* re2 = data.GetParameter();
-	re2->dropLastString();
+	PtrWrappedRE2 *re2 = data.GetParameter();
+	if (*re2)
+	{
+		(*re2)->unregisterCallback(re2);
+		(*re2)->dropLastString();
+	}
+	delete re2;
 }
 
 void WrappedRE2::prepareLastString(const v8::Local<v8::Value> &arg, bool ignoreLastIndex)
@@ -137,10 +163,10 @@ void WrappedRE2::prepareLastString(const v8::Local<v8::Value> &arg, bool ignoreL
 	dropLastString();
 
 	lastString.Reset(arg);
-	static_cast<v8::PersistentBase<v8::Value>&>(lastString).SetWeak();
+	static_cast<v8::PersistentBase<v8::Value> &>(lastString).SetWeak();
 
 	Nan::Persistent<v8::Value> dummy(arg);
-	dummy.SetWeak(this, weakLastStringCallback, Nan::WeakCallbackType::kParameter);
+	dummy.SetWeak(registerCallback(), weakLastStringCallback, Nan::WeakCallbackType::kParameter);
 
 	lastStringValue = new StrValString(arg, startFrom);
 };

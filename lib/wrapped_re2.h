@@ -6,6 +6,7 @@
 #include <re2/re2.h>
 
 #include <string>
+#include <unordered_set>
 
 struct StrValBase;
 
@@ -67,10 +68,7 @@ private:
 	static NAN_SETTER(SetUnicodeWarningLevel);
 
 public:
-	~WrappedRE2()
-	{
-		dropLastString();
-	}
+	~WrappedRE2();
 
 	static v8::Local<v8::Function> Init();
 
@@ -108,7 +106,13 @@ private:
 	Nan::Persistent<v8::Value> lastString; // weak pointer
 	StrValBase *lastStringValue;
 
-	static void weakLastStringCallback(const Nan::WeakCallbackInfo<WrappedRE2> &data);
+	typedef WrappedRE2 *PtrWrappedRE2;
+
+	std::unordered_set<PtrWrappedRE2 *> callbackRegistry;
+	PtrWrappedRE2 *registerCallback();
+	void unregisterCallback(PtrWrappedRE2 *re2);
+
+	static void weakLastStringCallback(const Nan::WeakCallbackInfo<PtrWrappedRE2> &data);
 
 	void dropLastString();
 	void prepareLastString(const v8::Local<v8::Value> &arg, bool ignoreLastIndex = false);
@@ -116,11 +120,13 @@ private:
 
 struct PrepareLastString
 {
-	PrepareLastString(WrappedRE2 *re2, const v8::Local<v8::Value> &arg, bool ignoreLastIndex = false) : re2(re2) {
+	PrepareLastString(WrappedRE2 *re2, const v8::Local<v8::Value> &arg, bool ignoreLastIndex = false) : re2(re2)
+	{
 		re2->prepareLastString(arg, ignoreLastIndex);
 	}
 
-	~PrepareLastString() {
+	~PrepareLastString()
+	{
 		if (!re2->enabledCache || !(re2->global || re2->sticky))
 			re2->dropLastString();
 	}
