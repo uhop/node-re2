@@ -353,6 +353,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 ## Release history
 
+- 1.21.1 *Fixed a memory regression reported by [matthewvalentine](https://github.com/matthewvalentine), thx! Updated deps.*
 - 1.21.0 *Fixed the performance problem reported by [matthewvalentine](https://github.com/matthewvalentine) (thx!). The change improves performance for multiple use cases.*
 - 1.20.12 *Updated deps. Maintenance chores. Fixes for buffer-related bugs: `exec()` index (reported by [matthewvalentine](https://github.com/matthewvalentine), thx) and `match()` index.*
 - 1.20.11 *Updated deps. Added support for Node 22 (thx, [Elton Leong](https://github.com/eltonkl)).*
@@ -367,16 +368,9 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 - 1.20.2 *Fix: added a missing C++ file, which caused a bug on Alpine Linux. Thx, [rbitanga-manticore](https://github.com/rbitanga-manticore).*
 - 1.20.1 *Fix: files included in the npm package to build the C++ code.*
 - 1.20.0 *Updated RE2. New version uses `abseil-cpp` and required the adaptation work. Thx, [Stefano Rivera](https://github.com/stefanor).*
-- 1.19.2 *Bugfix: infinite loop in matchAll() with empty matches. Thx, [ziyunfei](https://github.com/ziyunfei).*
-- 1.19.1 *Bugfix: indices for the `d` flag when `lastIndex` is non zero. Bugfix: the match result. Thx, [teebu](https://github.com/teebu).*
-- 1.19.0 *Added `hasIndices` AKA the `d` flag. Thx, [teebu](https://github.com/teebu).*
-- 1.18.3 *Fixed bug with non-matched groups. Thx, [Dan Setterquist](https://github.com/dset).*
-- 1.18.2 *Reference to the binary module by its full name.*
-- 1.18.1 *Support for Node 16, 18, 20 + Darwin arm64 precompiled binaries.*
-- 1.18.0 *Modified TS bindings, added a type test (thx, [Kenichi Kamiya](https://github.com/kachick) and [Jamie Magee](https://github.com/JamieMagee)).*
 
 The rest can be consulted in the project's wiki [Release history](https://github.com/uhop/node-re2/wiki/Release-history).
 
 ## License
 
-BSD
+BSD-3-Clause
