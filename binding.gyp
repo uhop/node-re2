@@ -71,6 +71,7 @@
         "vendor/abseil-cpp/absl/log/internal/log_sink_set.cc",
         "vendor/abseil-cpp/absl/log/internal/nullguard.cc",
         "vendor/abseil-cpp/absl/log/internal/proto.cc",
+        "vendor/abseil-cpp/absl/log/log_sink.cc",
         "vendor/abseil-cpp/absl/numeric/int128.cc",
         "vendor/abseil-cpp/absl/strings/ascii.cc",
         "vendor/abseil-cpp/absl/strings/charconv.cc",
