@@ -74,6 +74,8 @@ v8::Local<v8::Function> WrappedRE2::Init()
 	Nan::SetAccessor(instanceTemplate, Nan::New("hasIndices").ToLocalChecked(), GetHasIndices);
 	Nan::SetAccessor(instanceTemplate, Nan::New("lastIndex").ToLocalChecked(), GetLastIndex, SetLastIndex);
 	Nan::SetAccessor(instanceTemplate, Nan::New("internalSource").ToLocalChecked(), GetInternalSource);
+	Nan::SetAccessor(instanceTemplate, Nan::New("enabledCache").ToLocalChecked(), GetEnabledCache);
+	Nan::SetAccessor(instanceTemplate, Nan::New("isCached").ToLocalChecked(), GetIsCached);
 
 	auto ctr = Nan::GetFunction(tpl).ToLocalChecked();
 
@@ -102,19 +104,6 @@ void WrappedRE2::dropLastString()
 		delete lastStringValue;
 		lastStringValue = nullptr;
 	}
-}
-
-inline size_t countBytes(const char *data, size_t from, size_t n)
-{
-	for (; n > 0; --n)
-	{
-		size_t s = getUtf8CharSize(data[from]);
-		from += s;
-		if (s == 4 && n >= 2)
-			--n; // this utf8 character will take two utf16 characters
-					 // the decrement above is protected to avoid an overflow of an unsigned integer
-	}
-	return from;
 }
 
 void WrappedRE2::weakLastStringCallback(const Nan::WeakCallbackInfo<WrappedRE2> &data)

@@ -233,6 +233,7 @@ NAN_METHOD(WrappedRE2::New)
 	bool unicode = false;
 	bool sticky = false;
 	bool hasIndices = false;
+	bool enabledCache = false;
 
 	auto context = Nan::GetCurrentContext();
 	bool needFlags = true;
@@ -256,6 +257,9 @@ NAN_METHOD(WrappedRE2::New)
 		{
 			switch (data[i])
 			{
+			case '\b':
+				enabledCache = true;
+				break;
 			case 'g':
 				global = true;
 				break;
@@ -339,6 +343,7 @@ NAN_METHOD(WrappedRE2::New)
 
 			if (needFlags)
 			{
+				enabledCache = re2->enabledCache;
 				global = re2->global;
 				ignoreCase = re2->ignoreCase;
 				multiline = re2->multiline;
@@ -401,7 +406,7 @@ NAN_METHOD(WrappedRE2::New)
 	options.set_dot_nl(dotAll);
 	options.set_log_errors(false); // inappropriate when embedding
 
-	std::unique_ptr<WrappedRE2> re2(new WrappedRE2(re2::StringPiece(data, size), options, source, global, ignoreCase, multiline, dotAll, sticky, hasIndices));
+	std::unique_ptr<WrappedRE2> re2(new WrappedRE2(re2::StringPiece(data, size), options, source, enabledCache, global, ignoreCase, multiline, dotAll, sticky, hasIndices));
 	if (!re2->regexp.ok())
 	{
 		return Nan::ThrowSyntaxError(re2->regexp.error().c_str());

@@ -3,8 +3,10 @@
     {
       "target_name": "re2",
       "sources": [
-        "lib/str-val.cc",
         "lib/addon.cc",
+        "lib/accessors.cc",
+        "lib/str-val.cc",
+        "lib/util.cc",
         "lib/new.cc",
         "lib/exec.cc",
         "lib/test.cc",
@@ -13,9 +15,6 @@
         "lib/search.cc",
         "lib/split.cc",
         "lib/to_string.cc",
-        "lib/accessors.cc",
-        "lib/util.cc",
-        "lib/str-val.cc",
         "vendor/re2/re2/bitmap256.cc",
         "vendor/re2/re2/bitstate.cc",
         "vendor/re2/re2/compile.cc",

@@ -24,7 +24,7 @@ if (typeof Symbol != 'undefined') {
       if (!this.global) {
         throw TypeError('String.prototype.matchAll called with a non-global RE2 argument');
       }
-      const re = new RE2(this);
+      const re = new RE2(this, this.flags + '\b');
       re.lastIndex = this.lastIndex;
       for (;;) {
         const result = re.exec(str);

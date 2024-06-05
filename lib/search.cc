@@ -13,7 +13,7 @@ NAN_METHOD(WrappedRE2::Search)
 		return;
 	}
 
-	re2->prepareLastString(info[0], true);
+	PrepareLastString prepare(re2, info[0], true);
 	StrValBase &str = *re2->lastStringValue;
 	if (str.isBad) return; // throws an exception
 
