@@ -1,4 +1,5 @@
 #pragma once
+
 #include <vector>
 #include <nan.h>
 #include <re2/re2.h>

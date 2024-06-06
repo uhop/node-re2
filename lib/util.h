@@ -1,5 +1,4 @@
-#ifndef UTIL_H_
-#define UTIL_H_
+#pragma once
 
 #include "./wrapped_re2.h"
 
@@ -13,5 +12,3 @@ void consoleCall(const v8::Local<v8::String> &methodName, v8::Local<v8::Value> t
 void printDeprecationWarning(const char *warning);
 
 v8::Local<v8::String> callToString(const v8::Local<v8::Object> &object);
-
-#endif

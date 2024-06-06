@@ -74,8 +74,6 @@ v8::Local<v8::Function> WrappedRE2::Init()
 	Nan::SetAccessor(instanceTemplate, Nan::New("hasIndices").ToLocalChecked(), GetHasIndices);
 	Nan::SetAccessor(instanceTemplate, Nan::New("lastIndex").ToLocalChecked(), GetLastIndex, SetLastIndex);
 	Nan::SetAccessor(instanceTemplate, Nan::New("internalSource").ToLocalChecked(), GetInternalSource);
-	Nan::SetAccessor(instanceTemplate, Nan::New("enabledCache").ToLocalChecked(), GetEnabledCache);
-	Nan::SetAccessor(instanceTemplate, Nan::New("isCached").ToLocalChecked(), GetIsCached);
 
 	auto ctr = Nan::GetFunction(tpl).ToLocalChecked();
 
@@ -96,46 +94,31 @@ NODE_MODULE_INIT()
 
 WrappedRE2::~WrappedRE2()
 {
-	for (auto ptr : callbackRegistry)
-	{
-		*ptr = nullptr;
-	}
 	dropLastString();
 }
 
 // private methods
 
-WrappedRE2::PtrWrappedRE2 *WrappedRE2::registerCallback()
-{
-	PtrWrappedRE2 *ptr = new PtrWrappedRE2(this);
-	callbackRegistry.insert(ptr);
-	return ptr;
-}
-
-void WrappedRE2::unregisterCallback(PtrWrappedRE2 *ptr)
-{
-	callbackRegistry.erase(ptr);
-}
-
 void WrappedRE2::dropLastString()
 {
-	lastString.Reset();
-	if (lastStringValue)
+	if (!lastString.IsEmpty())
 	{
-		delete lastStringValue;
-		lastStringValue = nullptr;
+		// lastString.ClearWeak();
+		lastString.Reset();
 	}
+	if (!lastCache.IsEmpty())
+	{
+		// lastCache.ClearWeak();
+		lastCache.Reset();
+	}
+	lastStringValue = nullptr;
 }
 
-void WrappedRE2::weakLastStringCallback(const Nan::WeakCallbackInfo<PtrWrappedRE2> &data)
+static void weakLastCacheCallback(const Nan::WeakCallbackInfo<StrValBase> &data)
 {
-	PtrWrappedRE2 *re2 = data.GetParameter();
-	if (*re2)
-	{
-		(*re2)->unregisterCallback(re2);
-		(*re2)->dropLastString();
-	}
-	delete re2;
+	StrValBase *lastStringValue = data.GetParameter();
+	Nan::AdjustExternalMemory(-(long)(lastStringValue->size));
+	delete lastStringValue;
 }
 
 void WrappedRE2::prepareLastString(const v8::Local<v8::Value> &arg, bool ignoreLastIndex)
@@ -152,21 +135,37 @@ void WrappedRE2::prepareLastString(const v8::Local<v8::Value> &arg, bool ignoreL
 	// String
 
 	// check if the same string is already in the cache
-	if (lastString == arg && lastStringValue)
+	if (lastString == arg && !lastCache.IsEmpty())
 	{
 		if (!global && !sticky)
 			return; // we are good
+		lastStringValue = static_cast<StrValString *>(Nan::GetInternalFieldPointer(Nan::New(lastCache), 0));
 		lastStringValue->setIndex(startFrom);
 		return;
 	}
 
 	dropLastString();
 
+	// cache the string
+	lastStringValue = new StrValString(arg, startFrom);
+	if (lastStringValue->isBad) return;
+	Nan::AdjustExternalMemory(lastStringValue->size);
+
+	// keep a weak pointer to the string
 	lastString.Reset(arg);
 	static_cast<v8::PersistentBase<v8::Value> &>(lastString).SetWeak();
 
-	Nan::Persistent<v8::Value> dummy(arg);
-	dummy.SetWeak(registerCallback(), weakLastStringCallback, Nan::WeakCallbackType::kParameter);
+	// create a holder object for the cache
+	v8::Local<v8::ObjectTemplate> objectTemplate = Nan::New<v8::ObjectTemplate>();
+	objectTemplate->SetInternalFieldCount(1);
+	v8::Local<v8::Object> object = Nan::NewInstance(objectTemplate).ToLocalChecked();
+	Nan::SetInternalFieldPointer(object, 0, lastStringValue);
 
-	lastStringValue = new StrValString(arg, startFrom);
+	// invalidate the cache if the holder object is garbage collected
+	Nan::Persistent<v8::Object> placeHolderForCache(object);
+	placeHolderForCache.SetWeak(lastStringValue, weakLastCacheCallback, Nan::WeakCallbackType::kParameter);
+
+	// keep a weak pointer to the cache
+	lastCache.Reset(object);
+	static_cast<v8::PersistentBase<v8::Object> &>(lastCache).SetWeak();
 };

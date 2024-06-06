@@ -28,30 +28,6 @@ NAN_GETTER(WrappedRE2::GetInternalSource)
 	info.GetReturnValue().Set(Nan::New(re2->regexp.pattern()).ToLocalChecked());
 }
 
-NAN_GETTER(WrappedRE2::GetEnabledCache)
-{
-	if (!WrappedRE2::HasInstance(info.This()))
-	{
-		info.GetReturnValue().SetUndefined();
-		return;
-	}
-
-	auto re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
-	info.GetReturnValue().Set(re2->enabledCache);
-}
-
-NAN_GETTER(WrappedRE2::GetIsCached)
-{
-	if (!WrappedRE2::HasInstance(info.This()))
-	{
-		info.GetReturnValue().SetUndefined();
-		return;
-	}
-
-	auto re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
-	info.GetReturnValue().Set(!!re2->lastStringValue);
-}
-
 NAN_GETTER(WrappedRE2::GetFlags)
 {
 	if (!WrappedRE2::HasInstance(info.This()))
@@ -63,10 +39,6 @@ NAN_GETTER(WrappedRE2::GetFlags)
 	auto re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(info.This());
 
 	std::string flags;
-	if (re2->enabledCache)
-	{
-		flags += "\b";
-	}
 	if (re2->hasIndices)
 	{
 		flags += "d";

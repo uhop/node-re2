@@ -1,12 +1,8 @@
-#ifndef WRAPPED_RE2_H_
-#define WRAPPED_RE2_H_
-
-#include <nan.h>
-
-#include <re2/re2.h>
+#pragma once
 
 #include <string>
-#include <unordered_set>
+#include <nan.h>
+#include <re2/re2.h>
 
 struct StrValBase;
 
@@ -17,7 +13,6 @@ private:
 		const re2::StringPiece &pattern,
 		const re2::RE2::Options &options,
 		const std::string &src,
-		const bool &c,
 		const bool &g,
 		const bool &i,
 		const bool &m,
@@ -25,7 +20,6 @@ private:
 		const bool &y,
 		const bool &d) : regexp(pattern, options),
 						 source(src),
-						 enabledCache(c),
 						 global(g),
 						 ignoreCase(i),
 						 multiline(m),
@@ -50,8 +44,6 @@ private:
 	static NAN_GETTER(GetLastIndex);
 	static NAN_SETTER(SetLastIndex);
 	static NAN_GETTER(GetInternalSource);
-	static NAN_GETTER(GetEnabledCache);
-	static NAN_GETTER(GetIsCached);
 
 	// RegExp methods
 	static NAN_METHOD(Exec);
@@ -91,7 +83,6 @@ public:
 
 	re2::RE2 regexp;
 	std::string source;
-	bool enabledCache;
 	bool global;
 	bool ignoreCase;
 	bool multiline;
@@ -104,15 +95,8 @@ public:
 
 private:
 	Nan::Persistent<v8::Value> lastString; // weak pointer
+	Nan::Persistent<v8::Object> lastCache; // weak pointer
 	StrValBase *lastStringValue;
-
-	typedef WrappedRE2 *PtrWrappedRE2;
-
-	std::unordered_set<PtrWrappedRE2 *> callbackRegistry;
-	PtrWrappedRE2 *registerCallback();
-	void unregisterCallback(PtrWrappedRE2 *re2);
-
-	static void weakLastStringCallback(const Nan::WeakCallbackInfo<PtrWrappedRE2> &data);
 
 	void dropLastString();
 	void prepareLastString(const v8::Local<v8::Value> &arg, bool ignoreLastIndex = false);
@@ -123,12 +107,6 @@ struct PrepareLastString
 	PrepareLastString(WrappedRE2 *re2, const v8::Local<v8::Value> &arg, bool ignoreLastIndex = false) : re2(re2)
 	{
 		re2->prepareLastString(arg, ignoreLastIndex);
-	}
-
-	~PrepareLastString()
-	{
-		if (!re2->enabledCache || !(re2->global || re2->sticky))
-			re2->dropLastString();
 	}
 
 	WrappedRE2 *re2;
@@ -211,5 +189,3 @@ inline size_t getUtf8CharSize(char ch)
 {
 	return ((0xE5000000 >> ((ch >> 3) & 0x1E)) & 3) + 1;
 }
-
-#endif
