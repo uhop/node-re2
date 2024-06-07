@@ -2,16 +2,13 @@
 
 const RE2 = require('./build/Release/re2.node');
 
-const setAliases = (object, dict, force) => {
-  for (let [name, aliases] of Object.entries(dict)) {
-    if (typeof aliases == 'string') aliases = aliases.split(/\s*,\s*/);
-    if (!Array.isArray(aliases)) aliases = [aliases];
-    for (const alias of aliases) {
-      const descriptor = Object.getOwnPropertyDescriptor(object, name);
-      if (!descriptor) continue;
-      if (!force && object.hasOwnProperty(alias)) continue;
-      Object.defineProperty(object, alias, descriptor);
-    }
+const setAliases = (object, dict) => {
+  for (let [name, alias] of Object.entries(dict)) {
+    Object.defineProperty(
+      object,
+      alias,
+      Object.getOwnPropertyDescriptor(object, name)
+    );
   }
 };
 
