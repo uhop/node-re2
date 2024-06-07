@@ -2,37 +2,40 @@
 
 const RE2 = require('./build/Release/re2.node');
 
-if (typeof Symbol != 'undefined') {
-  Symbol.match &&
-    (RE2.prototype[Symbol.match] = function (str) {
-      return this.match(str);
-    });
-  Symbol.search &&
-    (RE2.prototype[Symbol.search] = function (str) {
-      return this.search(str);
-    });
-  Symbol.replace &&
-    (RE2.prototype[Symbol.replace] = function (str, repl) {
-      return this.replace(str, repl);
-    });
-  Symbol.split &&
-    (RE2.prototype[Symbol.split] = function (str, limit) {
-      return this.split(str, limit);
-    });
-  Symbol.matchAll &&
-    (RE2.prototype[Symbol.matchAll] = function* (str) {
-      if (!this.global) {
-        throw TypeError('String.prototype.matchAll called with a non-global RE2 argument');
-      }
-      const re = new RE2(this);
-      re.lastIndex = this.lastIndex;
-      for (;;) {
-        const result = re.exec(str);
-        if (!result) break;
-        if (result[0] === '') ++re.lastIndex;
-        yield result;
-      }
-    });
-}
+const setAliases = (object, dict, force) => {
+  for (let [name, aliases] of Object.entries(dict)) {
+    if (typeof aliases == 'string') aliases = aliases.split(/\s*,\s*/);
+    if (!Array.isArray(aliases)) aliases = [aliases];
+    for (const alias of aliases) {
+      const descriptor = Object.getOwnPropertyDescriptor(object, name);
+      if (!descriptor) continue;
+      if (!force && object.hasOwnProperty(alias)) continue;
+      Object.defineProperty(object, alias, descriptor);
+    }
+  }
+};
+
+setAliases(RE2.prototype, {
+  match: Symbol.match,
+  search: Symbol.search,
+  replace: Symbol.replace,
+  split: Symbol.split
+});
+
+RE2.prototype[Symbol.matchAll] = function* (str) {
+  if (!this.global)
+    throw TypeError(
+      'String.prototype.matchAll() is called with a non-global RE2 argument'
+    );
+
+  const re = new RE2(this);
+  re.lastIndex = this.lastIndex;
+  for (;;) {
+    const result = re.exec(str);
+    if (!result) break;
+    if (result[0] === '') ++re.lastIndex;
+    yield result;
+  }
+};
 
 module.exports = RE2;
