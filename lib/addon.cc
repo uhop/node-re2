@@ -1,7 +1,5 @@
 #include "./wrapped_re2.h"
 
-#include "./str-val.h"
-
 static NAN_METHOD(GetUtf8Length)
 {
 	auto t = info[0]->ToString(Nan::GetCurrentContext());

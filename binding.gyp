@@ -5,7 +5,6 @@
       "sources": [
         "lib/addon.cc",
         "lib/accessors.cc",
-        "lib/str-val.cc",
         "lib/util.cc",
         "lib/new.cc",
         "lib/exec.cc",
