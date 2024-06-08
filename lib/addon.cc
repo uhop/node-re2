@@ -94,12 +94,12 @@ NODE_MODULE_INIT()
 
 WrappedRE2::~WrappedRE2()
 {
-	dropLastString();
+	dropCache();
 }
 
 // private methods
 
-void WrappedRE2::dropLastString()
+void WrappedRE2::dropCache()
 {
 	if (!lastString.IsEmpty())
 	{
@@ -111,61 +111,120 @@ void WrappedRE2::dropLastString()
 		// lastCache.ClearWeak();
 		lastCache.Reset();
 	}
-	lastStringValue = nullptr;
+	lastStringValue.clear();
 }
 
-static void weakLastCacheCallback(const Nan::WeakCallbackInfo<StrValBase> &data)
-{
-	StrValBase *lastStringValue = data.GetParameter();
-	Nan::AdjustExternalMemory(-(long)(lastStringValue->size));
-	delete lastStringValue;
-}
-
-void WrappedRE2::prepareLastString(const v8::Local<v8::Value> &arg, bool ignoreLastIndex)
+const StrVal& WrappedRE2::prepareArgument(const v8::Local<v8::Value> &arg, bool ignoreLastIndex)
 {
 	size_t startFrom = ignoreLastIndex ? 0 : lastIndex;
 
+	if (lastString == arg && !node::Buffer::HasInstance(arg) && !lastCache.IsEmpty())
+	{
+		// we have a properly cached string
+		lastStringValue.setIndex(startFrom);
+		return lastStringValue;
+	}
+
+	dropCache();
+
 	if (node::Buffer::HasInstance(arg))
 	{
-		dropLastString();
-		lastStringValue = new StrValBuffer(arg, startFrom);
+		// no need to cache buffers
+
+		lastString.Reset(arg);
+		static_cast<v8::PersistentBase<v8::Value> &>(lastString).SetWeak();
+
+		auto argSize = node::Buffer::Length(arg);
+		lastStringValue.reset(arg, argSize, argSize, startFrom, true);
+
+		return lastStringValue;
+	}
+
+	// caching the string
+
+	auto t = arg->ToString(Nan::GetCurrentContext());
+	if (t.IsEmpty())
+	{
+		// do not process bad strings
+		lastStringValue.isBad = true;
+		return lastStringValue;
+	}
+
+	lastString.Reset(arg);
+	static_cast<v8::PersistentBase<v8::Value> &>(lastString).SetWeak();
+
+	auto s = t.ToLocalChecked();
+	auto argLength = Nan::DecodeBytes(s);
+
+	auto buffer = node::Buffer::New(v8::Isolate::GetCurrent(), s).ToLocalChecked();
+	lastCache.Reset(buffer);
+	static_cast<v8::PersistentBase<v8::Object> &>(lastCache).SetWeak();
+
+	auto argSize = node::Buffer::Length(buffer);
+	lastStringValue.reset(buffer, argSize, argLength, startFrom);
+
+	return lastStringValue;
+};
+
+// StrVal
+
+inline size_t countBytes(const char *data, size_t from, size_t n)
+{
+	for (; n > 0; --n)
+	{
+		size_t s = getUtf8CharSize(data[from]);
+		from += s;
+		if (s == 4 && n >= 2)
+			--n; // this utf8 character will take two utf16 characters
+				 // the decrement above is protected to avoid an overflow of an unsigned integer
+	}
+	return from;
+}
+
+void StrVal::setIndex(size_t newIndex)
+{
+	isIndexValid = newIndex <= length;
+	if (!isIndexValid)
+	{
+		index = newIndex;
+		byteIndex = 0;
+		return;
+	}
+
+	if (newIndex == index)
+		return;
+
+	if (isBuffer)
+	{
+		byteIndex = index = newIndex;
 		return;
 	}
 
 	// String
 
-	// check if the same string is already in the cache
-	if (lastString == arg && !lastCache.IsEmpty())
+	if (!newIndex)
 	{
-		if (!global && !sticky)
-			return; // we are good
-		lastStringValue = static_cast<StrValString *>(Nan::GetInternalFieldPointer(Nan::New(lastCache), 0));
-		lastStringValue->setIndex(startFrom);
+		byteIndex = index = 0;
 		return;
 	}
 
-	dropLastString();
+	if (newIndex == length)
+	{
+		byteIndex = size;
+		index = length;
+		return;
+	}
 
-	// cache the string
-	lastStringValue = new StrValString(arg, startFrom);
-	if (lastStringValue->isBad) return;
-	Nan::AdjustExternalMemory(lastStringValue->size);
+	byteIndex = index < newIndex ? countBytes(data, byteIndex, newIndex - index) : countBytes(data, 0, newIndex);
+	index = newIndex;
+}
 
-	// keep a weak pointer to the string
-	lastString.Reset(arg);
-	static_cast<v8::PersistentBase<v8::Value> &>(lastString).SetWeak();
-
-	// create a holder object for the cache
-	v8::Local<v8::ObjectTemplate> objectTemplate = Nan::New<v8::ObjectTemplate>();
-	objectTemplate->SetInternalFieldCount(1);
-	v8::Local<v8::Object> object = Nan::NewInstance(objectTemplate).ToLocalChecked();
-	Nan::SetInternalFieldPointer(object, 0, lastStringValue);
-
-	// invalidate the cache if the holder object is garbage collected
-	Nan::Persistent<v8::Object> placeHolderForCache(object);
-	placeHolderForCache.SetWeak(lastStringValue, weakLastCacheCallback, Nan::WeakCallbackType::kParameter);
-
-	// keep a weak pointer to the cache
-	lastCache.Reset(object);
-	static_cast<v8::PersistentBase<v8::Object> &>(lastCache).SetWeak();
-};
+void StrVal::reset(const v8::Local<v8::Value> &arg, size_t argSize, size_t argLength, size_t newIndex, bool buffer)
+{
+	clear();
+	isBuffer = buffer;
+	size = argSize;
+	length = argLength;
+	data = node::Buffer::Data(arg);
+	setIndex(newIndex);
+}

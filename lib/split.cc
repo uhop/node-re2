@@ -1,5 +1,4 @@
 #include "./wrapped_re2.h"
-#include "./str-val.h"
 
 #include <algorithm>
 #include <limits>
@@ -20,8 +19,7 @@ NAN_METHOD(WrappedRE2::Split)
 		return;
 	}
 
-	PrepareLastString prepare(re2, info[0], true);
-	StrValBase &str = *re2->lastStringValue;
+	auto str = re2->prepareArgument(info[0], true);
 	if (str.isBad) return; // throws an exception
 
 	size_t limit = std::numeric_limits<size_t>::max();

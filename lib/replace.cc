@@ -1,5 +1,4 @@
 #include "./wrapped_re2.h"
-#include "./str-val.h"
 
 #include <algorithm>
 #include <memory>
@@ -213,7 +212,7 @@ inline std::string replace(
 
 static Nan::Maybe<std::string> replace(
 	WrappedRE2 *re2,
-	const StrValBase &replacee,
+	const StrVal &replacee,
 	const char *replacer,
 	size_t replacer_size)
 {
@@ -370,13 +369,19 @@ inline Nan::Maybe<std::string> replace(
 		return Nan::Just(std::string(node::Buffer::Data(result), node::Buffer::Length(result)));
 	}
 
-	StrValString val(result);
-	return Nan::Just(std::string(val.data, val.size));
+	auto t = result->ToString(Nan::GetCurrentContext());
+	if (t.IsEmpty())
+	{
+		return Nan::Nothing<std::string>();
+	}
+
+	v8::String::Utf8Value s(v8::Isolate::GetCurrent(), t.ToLocalChecked());
+	return Nan::Just(std::string(*s));
 }
 
 static Nan::Maybe<std::string> replace(
 	WrappedRE2 *re2,
-	const StrValBase &replacee,
+	const StrVal &replacee,
 	const Nan::Callback *replacer,
 	const v8::Local<v8::Value> &input,
 	bool useBuffers)
@@ -492,8 +497,7 @@ NAN_METHOD(WrappedRE2::Replace)
 		return;
 	}
 
-	PrepareLastString prepare(re2, info[0]);
-	StrValBase &replacee = *re2->lastStringValue;
+	auto replacee = re2->prepareArgument(info[0]);
 	if (replacee.isBad) return; // throws an exception
 
 	if (!replacee.isIndexValid)
@@ -518,15 +522,29 @@ NAN_METHOD(WrappedRE2::Replace)
 	}
 	else
 	{
-		StrValBase *replacer = StrValBase::New(info[1]);
-		if (replacer->isBad) return; // throws an exception
+		v8::Local<v8::Object> replacer;
+		if (node::Buffer::HasInstance(info[1]))
+		{
+			replacer = info[1].As<v8::Object>();
+		}
+		else
+		{
+			auto t = info[1]->ToString(Nan::GetCurrentContext());
+			if (t.IsEmpty())
+				return; // throws an exception
+			replacer = node::Buffer::New(v8::Isolate::GetCurrent(), t.ToLocalChecked()).ToLocalChecked();
+		}
 
-		if (!replacer->data)
+		auto data = node::Buffer::Data(replacer);
+		auto size = node::Buffer::Length(replacer);
+
+		if (!data)
 		{
 			info.GetReturnValue().Set(info[0]);
 			return;
 		}
-		const auto replaced = replace(re2, replacee, replacer->data, replacer->size);
+
+		const auto replaced = replace(re2, replacee, data, size);
 		if (replaced.IsNothing())
 		{
 			info.GetReturnValue().Set(info[0]);

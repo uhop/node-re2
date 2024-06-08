@@ -1,5 +1,4 @@
 #include "./wrapped_re2.h"
-#include "./str-val.h"
 
 #include <vector>
 
@@ -15,8 +14,7 @@ NAN_METHOD(WrappedRE2::Match)
 		return;
 	}
 
-	PrepareLastString prepare(re2, info[0], re2->global);
-	StrValBase &str = *re2->lastStringValue;
+	auto str = re2->prepareArgument(info[0], re2->global);
 	if (str.isBad) return; // throws an exception
 
 	if (!str.isIndexValid)

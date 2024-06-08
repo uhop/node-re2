@@ -1,5 +1,4 @@
 #include "./wrapped_re2.h"
-#include "./str-val.h"
 
 NAN_METHOD(WrappedRE2::Search)
 {
@@ -13,8 +12,7 @@ NAN_METHOD(WrappedRE2::Search)
 		return;
 	}
 
-	PrepareLastString prepare(re2, info[0], true);
-	StrValBase &str = *re2->lastStringValue;
+	auto str = re2->prepareArgument(info[0], true);
 	if (str.isBad) return; // throws an exception
 
 	if (!str.data)

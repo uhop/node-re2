@@ -4,7 +4,27 @@
 #include <nan.h>
 #include <re2/re2.h>
 
-struct StrValBase;
+struct StrVal
+{
+	char *data;
+	size_t size, length;
+	size_t index, byteIndex;
+	bool isBuffer, isIndexValid, isBad;
+
+	StrVal() : data(NULL), size(0), length(0), index(0), byteIndex(0), isBuffer(false), isIndexValid(false), isBad(false) {}
+
+	operator re2::StringPiece() const { return re2::StringPiece(data, size); }
+
+	void setIndex(size_t newIndex = 0);
+	void reset(const v8::Local<v8::Value> &arg, size_t size, size_t length, size_t newIndex = 0, bool buffer = false);
+
+	void clear()
+	{
+		isBad = isBuffer = isIndexValid = false;
+		size = length = index = byteIndex = 0;
+		data = nullptr;
+	}
+};
 
 class WrappedRE2 : public Nan::ObjectWrap
 {
@@ -26,8 +46,7 @@ private:
 						 dotAll(s),
 						 sticky(y),
 						 hasIndices(d),
-						 lastIndex(0),
-						 lastStringValue(nullptr) {}
+						 lastIndex(0) {}
 
 	static NAN_METHOD(New);
 	static NAN_METHOD(ToString);
@@ -91,25 +110,15 @@ public:
 	bool hasIndices;
 	size_t lastIndex;
 
-	friend class PrepareLastString;
+	friend struct PrepareLastString;
 
 private:
 	Nan::Persistent<v8::Value> lastString; // weak pointer
 	Nan::Persistent<v8::Object> lastCache; // weak pointer
-	StrValBase *lastStringValue;
+	StrVal lastStringValue;
 
-	void dropLastString();
-	void prepareLastString(const v8::Local<v8::Value> &arg, bool ignoreLastIndex = false);
-};
-
-struct PrepareLastString
-{
-	PrepareLastString(WrappedRE2 *re2, const v8::Local<v8::Value> &arg, bool ignoreLastIndex = false) : re2(re2)
-	{
-		re2->prepareLastString(arg, ignoreLastIndex);
-	}
-
-	WrappedRE2 *re2;
+	void dropCache();
+	const StrVal &prepareArgument(const v8::Local<v8::Value> &arg, bool ignoreLastIndex = false);
 };
 
 // utilities
