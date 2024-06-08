@@ -3,7 +3,6 @@ build/
 report/
 coverage/
 .AppleDouble
-.vscode/
 /.development
 /.developmentx
 /.xdevelopment

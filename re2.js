@@ -1,6 +1,7 @@
 'use strict';
 
 const RE2 = require('./build/Release/re2.node');
+// const RE2 = require('./build/Debug/re2.node');
 
 const setAliases = (object, dict) => {
   for (let [name, alias] of Object.entries(dict)) {
