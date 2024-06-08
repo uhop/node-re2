@@ -166,19 +166,6 @@ const StrVal& WrappedRE2::prepareArgument(const v8::Local<v8::Value> &arg, bool 
 
 // StrVal
 
-inline size_t countBytes(const char *data, size_t from, size_t n)
-{
-	for (; n > 0; --n)
-	{
-		size_t s = getUtf8CharSize(data[from]);
-		from += s;
-		if (s == 4 && n >= 2)
-			--n; // this utf8 character will take two utf16 characters
-				 // the decrement above is protected to avoid an overflow of an unsigned integer
-	}
-	return from;
-}
-
 void StrVal::setIndex(size_t newIndex)
 {
 	isIndexValid = newIndex <= length;
@@ -213,7 +200,7 @@ void StrVal::setIndex(size_t newIndex)
 		return;
 	}
 
-	byteIndex = index < newIndex ? countBytes(data, byteIndex, newIndex - index) : countBytes(data, 0, newIndex);
+	byteIndex = index < newIndex ? getUtf16PositionByCounter(data, byteIndex, newIndex - index) : getUtf16PositionByCounter(data, 0, newIndex);
 	index = newIndex;
 }
 

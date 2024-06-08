@@ -198,3 +198,16 @@ inline size_t getUtf8CharSize(char ch)
 {
 	return ((0xE5000000 >> ((ch >> 3) & 0x1E)) & 3) + 1;
 }
+
+inline size_t getUtf16PositionByCounter(const char *data, size_t from, size_t n)
+{
+	for (; n > 0; --n)
+	{
+		size_t s = getUtf8CharSize(data[from]);
+		from += s;
+		if (s == 4 && n >= 2)
+			--n; // this utf8 character will take two utf16 characters
+				 // the decrement above is protected to avoid an overflow of an unsigned integer
+	}
+	return from;
+}
