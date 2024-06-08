@@ -168,8 +168,8 @@ const StrVal& WrappedRE2::prepareArgument(const v8::Local<v8::Value> &arg, bool 
 
 void StrVal::setIndex(size_t newIndex)
 {
-	isIndexValid = newIndex <= length;
-	if (!isIndexValid)
+	isValidIndex = newIndex <= length;
+	if (!isValidIndex)
 	{
 		index = newIndex;
 		byteIndex = 0;

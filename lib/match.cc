@@ -17,7 +17,7 @@ NAN_METHOD(WrappedRE2::Match)
 	auto str = re2->prepareArgument(info[0], re2->global);
 	if (str.isBad) return; // throws an exception
 
-	if (!str.isIndexValid)
+	if (!str.isValidIndex)
 	{
 		re2->lastIndex = 0;
 		info.GetReturnValue().SetNull();

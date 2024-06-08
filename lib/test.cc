@@ -23,7 +23,7 @@ NAN_METHOD(WrappedRE2::Test)
 		return;
 	}
 
-	if (!str.isIndexValid)
+	if (!str.isValidIndex)
 	{
 		re2->lastIndex = 0;
 		info.GetReturnValue().SetNull();

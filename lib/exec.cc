@@ -19,7 +19,7 @@ NAN_METHOD(WrappedRE2::Exec)
 
 	if (re2->global || re2->sticky)
 	{
-		if (!str.isIndexValid)
+		if (!str.isValidIndex)
 		{
 			re2->lastIndex = 0;
 			info.GetReturnValue().SetNull();

@@ -500,7 +500,7 @@ NAN_METHOD(WrappedRE2::Replace)
 	auto replacee = re2->prepareArgument(info[0]);
 	if (replacee.isBad) return; // throws an exception
 
-	if (!replacee.isIndexValid)
+	if (!replacee.isValidIndex)
 	{
 		info.GetReturnValue().Set(info[0]);
 		return;

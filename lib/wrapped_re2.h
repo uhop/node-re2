@@ -9,9 +9,9 @@ struct StrVal
 	char *data;
 	size_t size, length;
 	size_t index, byteIndex;
-	bool isBuffer, isIndexValid, isBad;
+	bool isBuffer, isValidIndex, isBad;
 
-	StrVal() : data(NULL), size(0), length(0), index(0), byteIndex(0), isBuffer(false), isIndexValid(false), isBad(false) {}
+	StrVal() : data(NULL), size(0), length(0), index(0), byteIndex(0), isBuffer(false), isValidIndex(false), isBad(false) {}
 
 	operator re2::StringPiece() const { return re2::StringPiece(data, size); }
 
@@ -20,7 +20,7 @@ struct StrVal
 
 	void clear()
 	{
-		isBad = isBuffer = isIndexValid = false;
+		isBad = isBuffer = isValidIndex = false;
 		size = length = index = byteIndex = 0;
 		data = nullptr;
 	}
