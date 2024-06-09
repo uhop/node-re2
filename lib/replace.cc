@@ -538,12 +538,6 @@ NAN_METHOD(WrappedRE2::Replace)
 		auto data = node::Buffer::Data(replacer);
 		auto size = node::Buffer::Length(replacer);
 
-		if (!data)
-		{
-			info.GetReturnValue().Set(info[0]);
-			return;
-		}
-
 		const auto replaced = replace(re2, replacee, data, size);
 		if (replaced.IsNothing())
 		{

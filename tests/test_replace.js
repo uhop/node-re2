@@ -376,5 +376,10 @@ unit.add(module, [
     re = new RE2(/abcd/g);
     result = re.replace('abcd123', '$1$2');
     eval(t.TEST("result === '$1$2123'"));
+  },
+  function test_emptyReplacement(t) {
+    'use strict';
+
+    eval(t.TEST("'ac' === 'abc'.replace(RE2('b'), '')"));
   }
 ]);
