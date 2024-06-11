@@ -353,6 +353,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 ## Release history
 
+- 1.21.2 *Fixed another memory regression reported by [matthewvalentine](https://github.com/matthewvalentine), thx! Updated deps. Added more tests and benchmarks.*
 - 1.21.1 *Fixed a memory regression reported by [matthewvalentine](https://github.com/matthewvalentine), thx! Updated deps.*
 - 1.21.0 *Fixed the performance problem reported by [matthewvalentine](https://github.com/matthewvalentine) (thx!). The change improves performance for multiple use cases.*
 - 1.20.12 *Updated deps. Maintenance chores. Fixes for buffer-related bugs: `exec()` index (reported by [matthewvalentine](https://github.com/matthewvalentine), thx) and `match()` index.*
