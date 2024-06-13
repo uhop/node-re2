@@ -1,6 +1,6 @@
 {
   "name": "re2",
-  "version": "1.21.2",
+  "version": "1.21.3",
   "description": "Bindings for RE2: fast, safe alternative to backtracking regular expression engines.",
   "homepage": "https://github.com/uhop/node-re2",
   "bugs": "https://github.com/uhop/node-re2/issues",
@@ -16,7 +16,7 @@
   ],
   "dependencies": {
     "install-artifact-from-github": "^1.3.5",
-    "nan": "^2.19.0",
+    "nan": "^2.20.0",
     "node-gyp": "^10.1.0"
   },
   "devDependencies": {
@@ -34,8 +34,8 @@
     "build": "node-gyp -j max build",
     "rebuild:dev": "node-gyp -j max rebuild --debug",
     "rebuild": "node-gyp -j max rebuild",
-    "clean": "node-gyp clean",
-    "reconfigure": "node-gyp configure"
+    "clean": "node-gyp clean && node-gyp configure",
+    "clean-build": "node-gyp clean"
   },
   "github": "https://github.com/uhop/node-re2",
   "repository": {
