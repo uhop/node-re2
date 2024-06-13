@@ -455,5 +455,17 @@ xy2 (at start of line)
 
     eval(t.TEST('result1.index === 2'));
     eval(t.TEST('result2.index === 2'));
+  },
+
+  function test_foundEmptyString(t) {
+    'use strict';
+
+    const re2 = new RE2('^.*?'),
+      match = re2.exec('');
+
+    eval(t.TEST("match[0] === ''"));
+    eval(t.TEST("match.index === 0"));
+    eval(t.TEST("match.input === ''"));
+    eval(t.TEST('match.groups === undefined'));
   }
 ]);

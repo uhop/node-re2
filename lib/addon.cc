@@ -112,7 +112,7 @@ void WrappedRE2::dropCache()
 	lastStringValue.clear();
 }
 
-const StrVal& WrappedRE2::prepareArgument(const v8::Local<v8::Value> &arg, bool ignoreLastIndex)
+const StrVal &WrappedRE2::prepareArgument(const v8::Local<v8::Value> &arg, bool ignoreLastIndex)
 {
 	size_t startFrom = ignoreLastIndex ? 0 : lastIndex;
 
@@ -204,12 +204,14 @@ void StrVal::setIndex(size_t newIndex)
 	index = newIndex;
 }
 
+static char null_buffer[] = {'\0'};
+
 void StrVal::reset(const v8::Local<v8::Value> &arg, size_t argSize, size_t argLength, size_t newIndex, bool buffer)
 {
 	clear();
 	isBuffer = buffer;
 	size = argSize;
 	length = argLength;
-	data = node::Buffer::Data(arg);
+	data = size ? node::Buffer::Data(arg) : null_buffer;
 	setIndex(newIndex);
 }
