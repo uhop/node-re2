@@ -197,3 +197,49 @@ jobs:
       uses: ./.github/actions/linux-arm64-node-22/
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+  build-linux-arm64-alpine-node-18:
+    name: Node.js 18 on Alpine Linux on ARM64
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+    - name: Install, test, and create artifact
+      uses: ./.github/actions/linux-arm64-alpine-node-18/
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+  build-linux-arm64-alpine-node-20:
+    name: Node.js 20 on Alpine Linux on ARM64
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+    - name: Install, test, and create artifact
+      uses: ./.github/actions/linux-arm64-alpine-node-20/
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+  build-linux-arm64-alpine-node-22:
+    name: Node.js 22 on Alpine Linux on ARM64
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+    - name: Install, test, and create artifact
+      uses: ./.github/actions/linux-arm64-alpine-node-22/
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
