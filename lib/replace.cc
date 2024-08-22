@@ -497,7 +497,8 @@ NAN_METHOD(WrappedRE2::Replace)
 		return;
 	}
 
-	auto replacee = re2->prepareArgument(info[0]);
+	PrepareLastString prep(re2, info[0]);
+	StrVal& replacee = prep;
 	if (replacee.isBad) return; // throws an exception
 
 	if (!replacee.isValidIndex)

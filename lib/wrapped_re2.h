@@ -119,6 +119,30 @@ private:
 
 	void dropCache();
 	const StrVal &prepareArgument(const v8::Local<v8::Value> &arg, bool ignoreLastIndex = false);
+	void doneWithLastString();
+
+	friend class PrepareLastString;
+};
+
+struct PrepareLastString
+{
+	PrepareLastString(WrappedRE2 *re2, const v8::Local<v8::Value> &arg, bool ignoreLastIndex = false) : re2(re2) {
+		re2->prepareArgument(arg, ignoreLastIndex);
+	}
+
+	~PrepareLastString() {
+		re2->doneWithLastString();
+	}
+
+	operator const StrVal&() const {
+		return re2->lastStringValue;
+	}
+
+	operator StrVal&() {
+		return re2->lastStringValue;
+	}
+
+	WrappedRE2 *re2;
 };
 
 // utilities

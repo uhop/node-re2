@@ -12,7 +12,8 @@ NAN_METHOD(WrappedRE2::Search)
 		return;
 	}
 
-	auto str = re2->prepareArgument(info[0], true);
+	PrepareLastString prep(re2, info[0]);
+	StrVal& str = prep;
 	if (str.isBad) return; // throws an exception
 
 	if (!str.data)

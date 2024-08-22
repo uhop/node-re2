@@ -119,6 +119,8 @@ const StrVal &WrappedRE2::prepareArgument(const v8::Local<v8::Value> &arg, bool 
 	if (lastString == arg && !node::Buffer::HasInstance(arg) && !lastCache.IsEmpty())
 	{
 		// we have a properly cached string
+		lastString.ClearWeak();
+		lastCache.ClearWeak();
 		lastStringValue.setIndex(startFrom);
 		return lastStringValue;
 	}
@@ -130,7 +132,6 @@ const StrVal &WrappedRE2::prepareArgument(const v8::Local<v8::Value> &arg, bool 
 		// no need to cache buffers
 
 		lastString.Reset(arg);
-		static_cast<v8::PersistentBase<v8::Value> &>(lastString).SetWeak();
 
 		auto argSize = node::Buffer::Length(arg);
 		lastStringValue.reset(arg, argSize, argSize, startFrom, true);
@@ -149,20 +150,31 @@ const StrVal &WrappedRE2::prepareArgument(const v8::Local<v8::Value> &arg, bool 
 	}
 
 	lastString.Reset(arg);
-	static_cast<v8::PersistentBase<v8::Value> &>(lastString).SetWeak();
 
 	auto s = t.ToLocalChecked();
 	auto argLength = Nan::DecodeBytes(s);
 
 	auto buffer = node::Buffer::New(v8::Isolate::GetCurrent(), s).ToLocalChecked();
 	lastCache.Reset(buffer);
-	static_cast<v8::PersistentBase<v8::Object> &>(lastCache).SetWeak();
 
 	auto argSize = node::Buffer::Length(buffer);
 	lastStringValue.reset(buffer, argSize, argLength, startFrom);
 
 	return lastStringValue;
 };
+
+void WrappedRE2::doneWithLastString()
+{
+	if (!lastString.IsEmpty())
+	{
+		static_cast<v8::PersistentBase<v8::Value> &>(lastString).SetWeak();
+	}
+
+	if (!lastCache.IsEmpty())
+	{
+		static_cast<v8::PersistentBase<v8::Object> &>(lastCache).SetWeak();
+	}
+}
 
 // StrVal
 
