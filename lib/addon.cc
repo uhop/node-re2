@@ -116,11 +116,18 @@ const StrVal &WrappedRE2::prepareArgument(const v8::Local<v8::Value> &arg, bool 
 {
 	size_t startFrom = ignoreLastIndex ? 0 : lastIndex;
 
+	if (!lastString.IsEmpty())
+	{
+		lastString.ClearWeak();
+	}
+	if (!lastCache.IsEmpty())
+	{
+		lastCache.ClearWeak();
+	}
+
 	if (lastString == arg && !node::Buffer::HasInstance(arg) && !lastCache.IsEmpty())
 	{
 		// we have a properly cached string
-		lastString.ClearWeak();
-		lastCache.ClearWeak();
 		lastStringValue.setIndex(startFrom);
 		return lastStringValue;
 	}
