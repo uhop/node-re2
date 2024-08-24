@@ -52,7 +52,7 @@ jobs:
       run: npm run save-to-github
 
   build-linux-node-18:
-    name: Node.js 18 on Debian Buster
+    name: Node.js 18 on Debian Bullseye
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -67,7 +67,7 @@ jobs:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-node-20:
-    name: Node.js 20 on Debian Buster
+    name: Node.js 20 on Debian Bullseye
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -142,7 +142,7 @@ jobs:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-arm64-node-18:
-    name: Node.js 18 on Debian Buster on ARM64
+    name: Node.js 18 on Debian Bullseye on ARM64
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -161,7 +161,7 @@ jobs:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-arm64-node-20:
-    name: Node.js 20 on Debian Buster on ARM64
+    name: Node.js 20 on Debian Bullseye on ARM64
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true

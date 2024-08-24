@@ -1,4 +1,4 @@
-FROM node:20-buster
+FROM node:20-bullseye
 
 RUN apt install python3 make gcc g++
 

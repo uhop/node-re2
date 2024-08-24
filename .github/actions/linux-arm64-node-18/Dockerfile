@@ -1,4 +1,4 @@
-FROM --platform=linux/arm64 node:18-buster
+FROM --platform=linux/arm64 node:18-bullseye
 
 RUN apt install python3 make gcc g++
 
