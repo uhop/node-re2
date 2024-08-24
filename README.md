@@ -353,6 +353,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 ## Release history
 
+- 1.21.4 *Fixed a regression reported by [caroline-matsec](https://github.com/caroline-matsec), thx! Added pre-compilation targets for Alpine Linux on ARM. Updated deps.*
 - 1.21.3 *Fixed an empty string regression reported by [Rhys Arkins](https://github.com/rarkins), thx! Updated deps.*
 - 1.21.2 *Fixed another memory regression reported by [matthewvalentine](https://github.com/matthewvalentine), thx! Updated deps. Added more tests and benchmarks.*
 - 1.21.1 *Fixed a memory regression reported by [matthewvalentine](https://github.com/matthewvalentine), thx! Updated deps.*

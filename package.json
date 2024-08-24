@@ -1,6 +1,6 @@
 {
   "name": "re2",
-  "version": "1.21.3",
+  "version": "1.21.4",
   "description": "Bindings for RE2: fast, safe alternative to backtracking regular expression engines.",
   "homepage": "https://github.com/uhop/node-re2",
   "bugs": "https://github.com/uhop/node-re2/issues",
@@ -17,12 +17,12 @@
   "dependencies": {
     "install-artifact-from-github": "^1.3.5",
     "nan": "^2.20.0",
-    "node-gyp": "^10.1.0"
+    "node-gyp": "^10.2.0"
   },
   "devDependencies": {
-    "@types/node": "^20.14.2",
+    "@types/node": "^22.5.0",
     "heya-unit": "^0.3.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.4"
   },
   "scripts": {
     "test": "node tests/tests.js",
