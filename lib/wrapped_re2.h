@@ -121,7 +121,7 @@ private:
 	const StrVal &prepareArgument(const v8::Local<v8::Value> &arg, bool ignoreLastIndex = false);
 	void doneWithLastString();
 
-	friend class PrepareLastString;
+	friend struct PrepareLastString;
 };
 
 struct PrepareLastString
