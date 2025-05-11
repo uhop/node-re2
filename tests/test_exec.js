@@ -464,7 +464,7 @@ xy2 (at start of line)
       match = re2.exec('');
 
     eval(t.TEST("match[0] === ''"));
-    eval(t.TEST("match.index === 0"));
+    eval(t.TEST('match.index === 0'));
     eval(t.TEST("match.input === ''"));
     eval(t.TEST('match.groups === undefined'));
   }

@@ -369,7 +369,9 @@ unit.add(module, [
     result = re.replace('abcdefghijklmnopqrstuvwxyz123', '$10$20');
     eval(t.TEST("result === 'a0b0f0g0k0l0p0q0u0v0z123'"));
 
-    re = new RE2(/(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)/g);
+    re = new RE2(
+      /(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)(.)/g
+    );
     result = re.replace('abcdefghijklmnopqrstuvwxyz123', '$10$20');
     eval(t.TEST("result === 'jtvwxyz123'"));
 
