@@ -159,7 +159,7 @@ const StrVal &WrappedRE2::prepareArgument(const v8::Local<v8::Value> &arg, bool 
 	lastString.Reset(arg);
 
 	auto s = t.ToLocalChecked();
-	auto argLength = Nan::DecodeBytes(s);
+	auto argLength = Nan::DecodeBytes(s, Nan::UTF8);
 
 	auto buffer = node::Buffer::New(v8::Isolate::GetCurrent(), s).ToLocalChecked();
 	lastCache.Reset(buffer);
