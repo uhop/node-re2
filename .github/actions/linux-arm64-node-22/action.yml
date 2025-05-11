@@ -1,5 +1,5 @@
-name: 'Create a binary artifact for Node 22 on Linux on ARM64'
-description: 'Create a binary artifact for Node 22 on Linux on ARM64 using node:22-bullseye'
+name: 'Create a binary artifact for Node 22 on Debian Bullseye Linux on ARM64'
+description: 'Create a binary artifact for Node 22 on Debian Bullseye Linux on ARM64'
 inputs:
   node-version:
     description: 'Node.js version'

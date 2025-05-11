@@ -1,5 +1,5 @@
-name: 'Create a binary artifact for Node 20 on Linux'
-description: 'Create a binary artifact for Node 20 on Linux using node:20-buster'
+name: 'Create a binary artifact for Node 20 on Debian Bullseye Linux'
+description: 'Create a binary artifact for Node 20 on Debian Bullseye Linux'
 inputs:
   node-version:
     description: 'Node.js version'

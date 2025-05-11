@@ -13,13 +13,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - env:
-        GH_TOKEN: ${{github.token}}
-      run: |
-        REF=${{github.ref}}
-        TAG=${REF#"refs/tags/"}
-        gh release create -t "Release ${TAG}" -n "" "${{github.ref}}"
+      - uses: actions/checkout@v4
+      - env:
+          GH_TOKEN: ${{github.token}}
+        run: |
+          REF=${{github.ref}}
+          TAG=${REF#"refs/tags/"}
+          gh release create -t "Release ${TAG}" -n "" "${{github.ref}}"
 
   build:
     name: Node.js ${{matrix.node-version}} on ${{matrix.os}}
@@ -29,91 +29,57 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, windows-latest, macos-12, windows-11-arm]
-        node-version: [18, 20, 22]
-        exclude:
-          # Windows ARM64 support is not available for v18
-          - os: windows-11-arm
-            node-version: 18
+        node-version: [20, 22, 23, 24]
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
-    - name: Setup Node.js ${{matrix.node-version}}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{matrix.node-version}}
-    - name: Install the package and run tests
-      env:
-        DEVELOPMENT_SKIP_GETTING_ASSET: true
-      run: |
-        npm i
-        npm run build --if-present
-        npm test
-    - name: Save to GitHub
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      run: npm run save-to-github
-
-  build-linux-node-18:
-    name: Node.js 18 on Debian Bullseye
-    needs: create-release
-    runs-on: ubuntu-latest
-    continue-on-error: true
-
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
-    - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-node-18/
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Setup Node.js ${{matrix.node-version}}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{matrix.node-version}}
+      - name: Install the package and run tests
+        env:
+          DEVELOPMENT_SKIP_GETTING_ASSET: true
+        run: |
+          npm i
+          npm run build --if-present
+          npm test
+      - name: Save to GitHub
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        run: npm run save-to-github
 
   build-linux-node-20:
-    name: Node.js 20 on Debian Bullseye
+    name: Node.js 20 on Debian Bullseye Linux
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
-    - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-node-20/
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-node-20/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-node-22:
-    name: Node.js 22 on Debian Bullseye
+    name: Node.js 22 on Debian Bullseye Linux
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
-    - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-node-22/
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
-  build-linux-alpine-node-18:
-    name: Node.js 18 on Alpine Linux
-    needs: create-release
-    runs-on: ubuntu-latest
-    continue-on-error: true
-
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
-    - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-alpine-node-18/
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-node-22/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-alpine-node-20:
     name: Node.js 20 on Alpine Linux
@@ -122,13 +88,13 @@ jobs:
     continue-on-error: true
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
-    - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-alpine-node-20/
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-alpine-node-20/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-alpine-node-22:
     name: Node.js 22 on Alpine Linux
@@ -137,89 +103,51 @@ jobs:
     continue-on-error: true
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
-    - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-alpine-node-22/
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
-  build-linux-arm64-node-18:
-    name: Node.js 18 on Debian Bullseye on ARM64
-    needs: create-release
-    runs-on: ubuntu-latest
-    continue-on-error: true
-
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
-      with:
-        platforms: arm64
-    - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-arm64-node-18/
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-alpine-node-22/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-arm64-node-20:
-    name: Node.js 20 on Debian Bullseye on ARM64
+    name: Node.js 20 on Debian Bullseye Linux on ARM64
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
-      with:
-        platforms: arm64
-    - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-arm64-node-20/
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-arm64-node-20/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-arm64-node-22:
-    name: Node.js 22 on Debian Bullseye on ARM64
+    name: Node.js 22 on Debian Bullseye Linux on ARM64
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
-      with:
-        platforms: arm64
-    - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-arm64-node-22/
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
-  build-linux-arm64-alpine-node-18:
-    name: Node.js 18 on Alpine Linux on ARM64
-    needs: create-release
-    runs-on: ubuntu-latest
-    continue-on-error: true
-
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
-      with:
-        platforms: arm64
-    - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-arm64-alpine-node-18/
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-arm64-node-22/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-arm64-alpine-node-20:
     name: Node.js 20 on Alpine Linux on ARM64
@@ -228,17 +156,17 @@ jobs:
     continue-on-error: true
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
-      with:
-        platforms: arm64
-    - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-arm64-alpine-node-20/
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-arm64-alpine-node-20/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-arm64-alpine-node-22:
     name: Node.js 22 on Alpine Linux on ARM64
@@ -247,14 +175,150 @@ jobs:
     continue-on-error: true
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
-      with:
-        platforms: arm64
-    - name: Install, test, and create artifact
-      uses: ./.github/actions/linux-arm64-alpine-node-22/
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-arm64-alpine-node-22/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+  build-linux-node-23:
+    name: Node.js 23 on Debian Bullseye Linux
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-node-23/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+  build-linux-alpine-node-23:
+    name: Node.js 23 on Alpine Linux
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-alpine-node-23/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+  build-linux-arm64-node-23:
+    name: Node.js 23 on Debian Bullseye Linux on ARM64
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-arm64-node-23/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+  build-linux-arm64-alpine-node-23:
+    name: Node.js 23 on Alpine Linux on ARM64
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-arm64-alpine-node-23/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+  build-linux-node-24:
+    name: Node.js 24 on Debian Bullseye Linux
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-node-24/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+  build-linux-alpine-node-24:
+    name: Node.js 24 on Alpine Linux
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-alpine-node-24/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+  build-linux-arm64-node-24:
+    name: Node.js 24 on Debian Bullseye Linux on ARM64
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-arm64-node-24/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+  build-linux-arm64-alpine-node-24:
+    name: Node.js 24 on Alpine Linux on ARM64
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-arm64-alpine-node-24/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

@@ -1,0 +1,12 @@
+name: 'Create a binary artifact for Node 23 on Debian Bullseye Linux on ARM64'
+description: 'Create a binary artifact for Node 23 on Debian Bullseye Linux on ARM64'
+inputs:
+  node-version:
+    description: 'Node.js version'
+    required: false
+    default: '23'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{inputs.node-version}}
