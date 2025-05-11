@@ -52,7 +52,7 @@ jobs:
         run: npm run save-to-github
 
   build-linux-node-20:
-    name: Node.js 20 on Debian Bullseye Linux
+    name: Node.js 20 on Bullseye
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -67,7 +67,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-node-22:
-    name: Node.js 22 on Debian Bullseye Linux
+    name: Node.js 22 on Bullseye
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -82,7 +82,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-alpine-node-20:
-    name: Node.js 20 on Alpine Linux
+    name: Node.js 20 on Alpine
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -97,7 +97,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-alpine-node-22:
-    name: Node.js 22 on Alpine Linux
+    name: Node.js 22 on Alpine
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -112,7 +112,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-arm64-node-20:
-    name: Node.js 20 on Debian Bullseye Linux on ARM64
+    name: Node.js 20 on Bullseye ARM64
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -131,7 +131,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-arm64-node-22:
-    name: Node.js 22 on Debian Bullseye Linux on ARM64
+    name: Node.js 22 on Bullseye ARM64
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -150,7 +150,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-arm64-alpine-node-20:
-    name: Node.js 20 on Alpine Linux on ARM64
+    name: Node.js 20 on Alpine ARM64
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -169,7 +169,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-arm64-alpine-node-22:
-    name: Node.js 22 on Alpine Linux on ARM64
+    name: Node.js 22 on Alpine ARM64
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -188,7 +188,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-node-23:
-    name: Node.js 23 on Debian Bullseye Linux
+    name: Node.js 23 on Bullseye
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -203,7 +203,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-alpine-node-23:
-    name: Node.js 23 on Alpine Linux
+    name: Node.js 23 on Alpine
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -218,7 +218,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-arm64-node-23:
-    name: Node.js 23 on Debian Bullseye Linux on ARM64
+    name: Node.js 23 on Bullseye ARM64
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -237,7 +237,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-arm64-alpine-node-23:
-    name: Node.js 23 on Alpine Linux on ARM64
+    name: Node.js 23 on Alpine ARM64
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -256,7 +256,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-node-24:
-    name: Node.js 24 on Debian Bullseye Linux
+    name: Node.js 24 on Bullseye
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -271,7 +271,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-alpine-node-24:
-    name: Node.js 24 on Alpine Linux
+    name: Node.js 24 on Alpine
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -286,7 +286,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-arm64-node-24:
-    name: Node.js 24 on Debian Bullseye Linux on ARM64
+    name: Node.js 24 on Bullseye ARM64
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -305,7 +305,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   build-linux-arm64-alpine-node-24:
-    name: Node.js 24 on Alpine Linux on ARM64
+    name: Node.js 24 on Alpine ARM64
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
