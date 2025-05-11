@@ -14,20 +14,20 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
-        node-version: [18, 20, 22]
+        node-version: [20, 22, 23, 24]
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
-    - name: Setup Node.js ${{matrix.node-version}}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{matrix.node-version}}
-    - name: Install the package and run tests
-      env:
-        DEVELOPMENT_SKIP_GETTING_ASSET: true
-      run: |
-        npm i
-        npm run build --if-present
-        npm test && npm run ts-test
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Setup Node.js ${{matrix.node-version}}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{matrix.node-version}}
+      - name: Install the package and run tests
+        env:
+          DEVELOPMENT_SKIP_GETTING_ASSET: true
+        run: |
+          npm i
+          npm run build --if-present
+          npm test && npm run ts-test
