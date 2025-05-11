@@ -205,28 +205,24 @@ NAN_SETTER(WrappedRE2::SetUnicodeWarningLevel)
 {
 	if (value->IsString())
 	{
-		auto size = Nan::DecodeBytes(value, Nan::UTF8);
-		std::vector<char> buffer(size + 1);
-		auto data = &buffer[0];
-		Nan::DecodeWrite(data, size, value, Nan::UTF8);
-		buffer[size] = '\0';
-		if (!strcmp(data, "throw"))
+		Nan::Utf8String s(value);
+		if (!strcmp(*s, "throw"))
 		{
 			unicodeWarningLevel = THROW;
 			return;
 		}
-		if (!strcmp(data, "warn"))
+		if (!strcmp(*s, "warn"))
 		{
 			unicodeWarningLevel = WARN;
 			return;
 		}
-		if (!strcmp(data, "warnOnce"))
+		if (!strcmp(*s, "warnOnce"))
 		{
 			unicodeWarningLevel = WARN_ONCE;
 			alreadyWarnedAboutUnicode = false;
 			return;
 		}
-		if (!strcmp(data, "nothing"))
+		if (!strcmp(*s, "nothing"))
 		{
 			unicodeWarningLevel = NOTHING;
 			return;
