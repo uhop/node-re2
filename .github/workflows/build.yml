@@ -32,7 +32,7 @@ jobs:
 
     permissions:
       id-token: write
-      contents: read
+      contents: write
       attestations: write
 
     steps:
@@ -67,6 +67,11 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
 
+    permissions:
+      id-token: write
+      contents: write
+      attestations: write
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -75,12 +80,23 @@ jobs:
         uses: ./.github/actions/linux-node-20/
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
   build-linux-node-22:
     name: Node.js 22 on Bullseye
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
+
+    permissions:
+      id-token: write
+      contents: write
+      attestations: write
 
     steps:
       - uses: actions/checkout@v4
@@ -90,12 +106,23 @@ jobs:
         uses: ./.github/actions/linux-node-22/
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
   build-linux-alpine-node-20:
     name: Node.js 20 on Alpine
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
+
+    permissions:
+      id-token: write
+      contents: write
+      attestations: write
 
     steps:
       - uses: actions/checkout@v4
@@ -105,12 +132,23 @@ jobs:
         uses: ./.github/actions/linux-alpine-node-20/
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
   build-linux-alpine-node-22:
     name: Node.js 22 on Alpine
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
+
+    permissions:
+      id-token: write
+      contents: write
+      attestations: write
 
     steps:
       - uses: actions/checkout@v4
@@ -120,12 +158,23 @@ jobs:
         uses: ./.github/actions/linux-alpine-node-22/
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
   build-linux-arm64-node-20:
     name: Node.js 20 on Bullseye ARM64
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
+
+    permissions:
+      id-token: write
+      contents: write
+      attestations: write
 
     steps:
       - uses: actions/checkout@v4
@@ -139,12 +188,23 @@ jobs:
         uses: ./.github/actions/linux-arm64-node-20/
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
   build-linux-arm64-node-22:
     name: Node.js 22 on Bullseye ARM64
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
+
+    permissions:
+      id-token: write
+      contents: write
+      attestations: write
 
     steps:
       - uses: actions/checkout@v4
@@ -158,12 +218,23 @@ jobs:
         uses: ./.github/actions/linux-arm64-node-22/
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
   build-linux-arm64-alpine-node-20:
     name: Node.js 20 on Alpine ARM64
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
+
+    permissions:
+      id-token: write
+      contents: write
+      attestations: write
 
     steps:
       - uses: actions/checkout@v4
@@ -177,12 +248,23 @@ jobs:
         uses: ./.github/actions/linux-arm64-alpine-node-20/
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
   build-linux-arm64-alpine-node-22:
     name: Node.js 22 on Alpine ARM64
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
+
+    permissions:
+      id-token: write
+      contents: write
+      attestations: write
 
     steps:
       - uses: actions/checkout@v4
@@ -196,12 +278,23 @@ jobs:
         uses: ./.github/actions/linux-arm64-alpine-node-22/
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
   build-linux-node-23:
     name: Node.js 23 on Bullseye
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
+
+    permissions:
+      id-token: write
+      contents: write
+      attestations: write
 
     steps:
       - uses: actions/checkout@v4
@@ -211,12 +304,23 @@ jobs:
         uses: ./.github/actions/linux-node-23/
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
   build-linux-alpine-node-23:
     name: Node.js 23 on Alpine
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
+
+    permissions:
+      id-token: write
+      contents: write
+      attestations: write
 
     steps:
       - uses: actions/checkout@v4
@@ -226,12 +330,23 @@ jobs:
         uses: ./.github/actions/linux-alpine-node-23/
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
   build-linux-arm64-node-23:
     name: Node.js 23 on Bullseye ARM64
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
+
+    permissions:
+      id-token: write
+      contents: write
+      attestations: write
 
     steps:
       - uses: actions/checkout@v4
@@ -245,12 +360,23 @@ jobs:
         uses: ./.github/actions/linux-arm64-node-23/
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
   build-linux-arm64-alpine-node-23:
     name: Node.js 23 on Alpine ARM64
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
+
+    permissions:
+      id-token: write
+      contents: write
+      attestations: write
 
     steps:
       - uses: actions/checkout@v4
@@ -264,12 +390,23 @@ jobs:
         uses: ./.github/actions/linux-arm64-alpine-node-23/
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
   build-linux-node-24:
     name: Node.js 24 on Bullseye
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
+
+    permissions:
+      id-token: write
+      contents: write
+      attestations: write
 
     steps:
       - uses: actions/checkout@v4
@@ -279,12 +416,23 @@ jobs:
         uses: ./.github/actions/linux-node-24/
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
   build-linux-alpine-node-24:
     name: Node.js 24 on Alpine
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
+
+    permissions:
+      id-token: write
+      contents: write
+      attestations: write
 
     steps:
       - uses: actions/checkout@v4
@@ -294,12 +442,23 @@ jobs:
         uses: ./.github/actions/linux-alpine-node-24/
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
   build-linux-arm64-node-24:
     name: Node.js 24 on Bullseye ARM64
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
+
+    permissions:
+      id-token: write
+      contents: write
+      attestations: write
 
     steps:
       - uses: actions/checkout@v4
@@ -313,12 +472,23 @@ jobs:
         uses: ./.github/actions/linux-arm64-node-24/
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
   build-linux-arm64-alpine-node-24:
     name: Node.js 24 on Alpine ARM64
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
+
+    permissions:
+      id-token: write
+      contents: write
+      attestations: write
 
     steps:
       - uses: actions/checkout@v4
@@ -332,3 +502,9 @@ jobs:
         uses: ./.github/actions/linux-arm64-alpine-node-24/
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
