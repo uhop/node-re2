@@ -61,23 +61,18 @@ jobs:
           subject-name: '${{ env.CREATED_ASSET_NAME }}'
           subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
-  build-linux:
-    name: linux${{matrix.processor}}${{matrix.linux-version}}-node-${{matrix.node-version}}
+  build-linux-node-20:
+    name: Node.js 20 on Bullseye
     needs: create-release
     runs-on: ubuntu-latest
     continue-on-error: true
-    strategy:
-      matrix:
-        linux-version: ['', '-alpine']
-        processor: ['', '-arm64']
-        node-version: [20, 22, 23, 24]
 
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: true
       - name: Install, test, and create artifact
-        uses: ./.github/actions/linux${{matrix.processor}}${{matrix.linux-version}}-node-${{matrix.node-version}}/
+        uses: ./.github/actions/linux-node-20/
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       - name: Attest
@@ -87,370 +82,349 @@ jobs:
           subject-name: '${{ env.CREATED_ASSET_NAME }}'
           subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
-  # build-linux-node-20:
-  #   name: Node.js 20 on Bullseye
-  #   needs: create-release
-  #   runs-on: ubuntu-latest
-  #   continue-on-error: true
+  build-linux-node-22:
+    name: Node.js 22 on Bullseye
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
 
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         submodules: true
-  #     - name: Install, test, and create artifact
-  #       uses: ./.github/actions/linux-node-20/
-  #       env:
-  #         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  #     - name: Attest
-  #       if: env.CREATED_ASSET_NAME != ''
-  #       uses: actions/attest-build-provenance@v2
-  #       with:
-  #         subject-name: '${{ env.CREATED_ASSET_NAME }}'
-  #         subject-path: '${{ github.workspace }}/build/Release/re2.node'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-node-22/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
-  # build-linux-node-22:
-  #   name: Node.js 22 on Bullseye
-  #   needs: create-release
-  #   runs-on: ubuntu-latest
-  #   continue-on-error: true
+  build-linux-alpine-node-20:
+    name: Node.js 20 on Alpine
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
 
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         submodules: true
-  #     - name: Install, test, and create artifact
-  #       uses: ./.github/actions/linux-node-22/
-  #       env:
-  #         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  #     - name: Attest
-  #       if: env.CREATED_ASSET_NAME != ''
-  #       uses: actions/attest-build-provenance@v2
-  #       with:
-  #         subject-name: '${{ env.CREATED_ASSET_NAME }}'
-  #         subject-path: '${{ github.workspace }}/build/Release/re2.node'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-alpine-node-20/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
-  # build-linux-alpine-node-20:
-  #   name: Node.js 20 on Alpine
-  #   needs: create-release
-  #   runs-on: ubuntu-latest
-  #   continue-on-error: true
+  build-linux-alpine-node-22:
+    name: Node.js 22 on Alpine
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
 
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         submodules: true
-  #     - name: Install, test, and create artifact
-  #       uses: ./.github/actions/linux-alpine-node-20/
-  #       env:
-  #         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  #     - name: Attest
-  #       if: env.CREATED_ASSET_NAME != ''
-  #       uses: actions/attest-build-provenance@v2
-  #       with:
-  #         subject-name: '${{ env.CREATED_ASSET_NAME }}'
-  #         subject-path: '${{ github.workspace }}/build/Release/re2.node'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-alpine-node-22/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
-  # build-linux-alpine-node-22:
-  #   name: Node.js 22 on Alpine
-  #   needs: create-release
-  #   runs-on: ubuntu-latest
-  #   continue-on-error: true
+  build-linux-arm64-node-20:
+    name: Node.js 20 on Bullseye ARM64
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
 
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         submodules: true
-  #     - name: Install, test, and create artifact
-  #       uses: ./.github/actions/linux-alpine-node-22/
-  #       env:
-  #         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  #     - name: Attest
-  #       if: env.CREATED_ASSET_NAME != ''
-  #       uses: actions/attest-build-provenance@v2
-  #       with:
-  #         subject-name: '${{ env.CREATED_ASSET_NAME }}'
-  #         subject-path: '${{ github.workspace }}/build/Release/re2.node'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-arm64-node-20/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
-  # build-linux-arm64-node-20:
-  #   name: Node.js 20 on Bullseye ARM64
-  #   needs: create-release
-  #   runs-on: ubuntu-latest
-  #   continue-on-error: true
+  build-linux-arm64-node-22:
+    name: Node.js 22 on Bullseye ARM64
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
 
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         submodules: true
-  #     - name: Set up QEMU
-  #       uses: docker/setup-qemu-action@v3
-  #       with:
-  #         platforms: arm64
-  #     - name: Install, test, and create artifact
-  #       uses: ./.github/actions/linux-arm64-node-20/
-  #       env:
-  #         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  #     - name: Attest
-  #       if: env.CREATED_ASSET_NAME != ''
-  #       uses: actions/attest-build-provenance@v2
-  #       with:
-  #         subject-name: '${{ env.CREATED_ASSET_NAME }}'
-  #         subject-path: '${{ github.workspace }}/build/Release/re2.node'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-arm64-node-22/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
-  # build-linux-arm64-node-22:
-  #   name: Node.js 22 on Bullseye ARM64
-  #   needs: create-release
-  #   runs-on: ubuntu-latest
-  #   continue-on-error: true
+  build-linux-arm64-alpine-node-20:
+    name: Node.js 20 on Alpine ARM64
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
 
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         submodules: true
-  #     - name: Set up QEMU
-  #       uses: docker/setup-qemu-action@v3
-  #       with:
-  #         platforms: arm64
-  #     - name: Install, test, and create artifact
-  #       uses: ./.github/actions/linux-arm64-node-22/
-  #       env:
-  #         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  #     - name: Attest
-  #       if: env.CREATED_ASSET_NAME != ''
-  #       uses: actions/attest-build-provenance@v2
-  #       with:
-  #         subject-name: '${{ env.CREATED_ASSET_NAME }}'
-  #         subject-path: '${{ github.workspace }}/build/Release/re2.node'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-arm64-alpine-node-20/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
-  # build-linux-arm64-alpine-node-20:
-  #   name: Node.js 20 on Alpine ARM64
-  #   needs: create-release
-  #   runs-on: ubuntu-latest
-  #   continue-on-error: true
+  build-linux-arm64-alpine-node-22:
+    name: Node.js 22 on Alpine ARM64
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
 
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         submodules: true
-  #     - name: Set up QEMU
-  #       uses: docker/setup-qemu-action@v3
-  #       with:
-  #         platforms: arm64
-  #     - name: Install, test, and create artifact
-  #       uses: ./.github/actions/linux-arm64-alpine-node-20/
-  #       env:
-  #         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  #     - name: Attest
-  #       if: env.CREATED_ASSET_NAME != ''
-  #       uses: actions/attest-build-provenance@v2
-  #       with:
-  #         subject-name: '${{ env.CREATED_ASSET_NAME }}'
-  #         subject-path: '${{ github.workspace }}/build/Release/re2.node'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-arm64-alpine-node-22/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
-  # build-linux-arm64-alpine-node-22:
-  #   name: Node.js 22 on Alpine ARM64
-  #   needs: create-release
-  #   runs-on: ubuntu-latest
-  #   continue-on-error: true
+  build-linux-node-23:
+    name: Node.js 23 on Bullseye
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
 
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         submodules: true
-  #     - name: Set up QEMU
-  #       uses: docker/setup-qemu-action@v3
-  #       with:
-  #         platforms: arm64
-  #     - name: Install, test, and create artifact
-  #       uses: ./.github/actions/linux-arm64-alpine-node-22/
-  #       env:
-  #         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  #     - name: Attest
-  #       if: env.CREATED_ASSET_NAME != ''
-  #       uses: actions/attest-build-provenance@v2
-  #       with:
-  #         subject-name: '${{ env.CREATED_ASSET_NAME }}'
-  #         subject-path: '${{ github.workspace }}/build/Release/re2.node'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-node-23/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
-  # build-linux-node-23:
-  #   name: Node.js 23 on Bullseye
-  #   needs: create-release
-  #   runs-on: ubuntu-latest
-  #   continue-on-error: true
+  build-linux-alpine-node-23:
+    name: Node.js 23 on Alpine
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
 
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         submodules: true
-  #     - name: Install, test, and create artifact
-  #       uses: ./.github/actions/linux-node-23/
-  #       env:
-  #         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  #     - name: Attest
-  #       if: env.CREATED_ASSET_NAME != ''
-  #       uses: actions/attest-build-provenance@v2
-  #       with:
-  #         subject-name: '${{ env.CREATED_ASSET_NAME }}'
-  #         subject-path: '${{ github.workspace }}/build/Release/re2.node'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-alpine-node-23/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
-  # build-linux-alpine-node-23:
-  #   name: Node.js 23 on Alpine
-  #   needs: create-release
-  #   runs-on: ubuntu-latest
-  #   continue-on-error: true
+  build-linux-arm64-node-23:
+    name: Node.js 23 on Bullseye ARM64
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
 
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         submodules: true
-  #     - name: Install, test, and create artifact
-  #       uses: ./.github/actions/linux-alpine-node-23/
-  #       env:
-  #         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  #     - name: Attest
-  #       if: env.CREATED_ASSET_NAME != ''
-  #       uses: actions/attest-build-provenance@v2
-  #       with:
-  #         subject-name: '${{ env.CREATED_ASSET_NAME }}'
-  #         subject-path: '${{ github.workspace }}/build/Release/re2.node'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-arm64-node-23/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
-  # build-linux-arm64-node-23:
-  #   name: Node.js 23 on Bullseye ARM64
-  #   needs: create-release
-  #   runs-on: ubuntu-latest
-  #   continue-on-error: true
+  build-linux-arm64-alpine-node-23:
+    name: Node.js 23 on Alpine ARM64
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
 
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         submodules: true
-  #     - name: Set up QEMU
-  #       uses: docker/setup-qemu-action@v3
-  #       with:
-  #         platforms: arm64
-  #     - name: Install, test, and create artifact
-  #       uses: ./.github/actions/linux-arm64-node-23/
-  #       env:
-  #         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  #     - name: Attest
-  #       if: env.CREATED_ASSET_NAME != ''
-  #       uses: actions/attest-build-provenance@v2
-  #       with:
-  #         subject-name: '${{ env.CREATED_ASSET_NAME }}'
-  #         subject-path: '${{ github.workspace }}/build/Release/re2.node'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-arm64-alpine-node-23/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
-  # build-linux-arm64-alpine-node-23:
-  #   name: Node.js 23 on Alpine ARM64
-  #   needs: create-release
-  #   runs-on: ubuntu-latest
-  #   continue-on-error: true
+  build-linux-node-24:
+    name: Node.js 24 on Bullseye
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
 
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         submodules: true
-  #     - name: Set up QEMU
-  #       uses: docker/setup-qemu-action@v3
-  #       with:
-  #         platforms: arm64
-  #     - name: Install, test, and create artifact
-  #       uses: ./.github/actions/linux-arm64-alpine-node-23/
-  #       env:
-  #         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  #     - name: Attest
-  #       if: env.CREATED_ASSET_NAME != ''
-  #       uses: actions/attest-build-provenance@v2
-  #       with:
-  #         subject-name: '${{ env.CREATED_ASSET_NAME }}'
-  #         subject-path: '${{ github.workspace }}/build/Release/re2.node'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-node-24/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
-  # build-linux-node-24:
-  #   name: Node.js 24 on Bullseye
-  #   needs: create-release
-  #   runs-on: ubuntu-latest
-  #   continue-on-error: true
+  build-linux-alpine-node-24:
+    name: Node.js 24 on Alpine
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
 
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         submodules: true
-  #     - name: Install, test, and create artifact
-  #       uses: ./.github/actions/linux-node-24/
-  #       env:
-  #         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  #     - name: Attest
-  #       if: env.CREATED_ASSET_NAME != ''
-  #       uses: actions/attest-build-provenance@v2
-  #       with:
-  #         subject-name: '${{ env.CREATED_ASSET_NAME }}'
-  #         subject-path: '${{ github.workspace }}/build/Release/re2.node'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-alpine-node-24/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
-  # build-linux-alpine-node-24:
-  #   name: Node.js 24 on Alpine
-  #   needs: create-release
-  #   runs-on: ubuntu-latest
-  #   continue-on-error: true
+  build-linux-arm64-node-24:
+    name: Node.js 24 on Bullseye ARM64
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
 
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         submodules: true
-  #     - name: Install, test, and create artifact
-  #       uses: ./.github/actions/linux-alpine-node-24/
-  #       env:
-  #         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  #     - name: Attest
-  #       if: env.CREATED_ASSET_NAME != ''
-  #       uses: actions/attest-build-provenance@v2
-  #       with:
-  #         subject-name: '${{ env.CREATED_ASSET_NAME }}'
-  #         subject-path: '${{ github.workspace }}/build/Release/re2.node'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-arm64-node-24/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
-  # build-linux-arm64-node-24:
-  #   name: Node.js 24 on Bullseye ARM64
-  #   needs: create-release
-  #   runs-on: ubuntu-latest
-  #   continue-on-error: true
+  build-linux-arm64-alpine-node-24:
+    name: Node.js 24 on Alpine ARM64
+    needs: create-release
+    runs-on: ubuntu-latest
+    continue-on-error: true
 
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         submodules: true
-  #     - name: Set up QEMU
-  #       uses: docker/setup-qemu-action@v3
-  #       with:
-  #         platforms: arm64
-  #     - name: Install, test, and create artifact
-  #       uses: ./.github/actions/linux-arm64-node-24/
-  #       env:
-  #         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  #     - name: Attest
-  #       if: env.CREATED_ASSET_NAME != ''
-  #       uses: actions/attest-build-provenance@v2
-  #       with:
-  #         subject-name: '${{ env.CREATED_ASSET_NAME }}'
-  #         subject-path: '${{ github.workspace }}/build/Release/re2.node'
-
-  # build-linux-arm64-alpine-node-24:
-  #   name: Node.js 24 on Alpine ARM64
-  #   needs: create-release
-  #   runs-on: ubuntu-latest
-  #   continue-on-error: true
-
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         submodules: true
-  #     - name: Set up QEMU
-  #       uses: docker/setup-qemu-action@v3
-  #       with:
-  #         platforms: arm64
-  #     - name: Install, test, and create artifact
-  #       uses: ./.github/actions/linux-arm64-alpine-node-24/
-  #       env:
-  #         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  #     - name: Attest
-  #       if: env.CREATED_ASSET_NAME != ''
-  #       uses: actions/attest-build-provenance@v2
-  #       with:
-  #         subject-name: '${{ env.CREATED_ASSET_NAME }}'
-  #         subject-path: '${{ github.workspace }}/build/Release/re2.node'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - name: Install, test, and create artifact
+        uses: ./.github/actions/linux-arm64-alpine-node-24/
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
+          subject-path: '${{ github.workspace }}/build/Release/re2.node'
