@@ -55,8 +55,10 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         run: npm run save-to-github
       - name: Attest
+        if: env.CREATED_ASSET_NAME != ''
         uses: actions/attest-build-provenance@v2
         with:
+          subject-name: '${{ env.CREATED_ASSET_NAME }}'
           subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
   build-linux-node-20:
