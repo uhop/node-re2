@@ -351,6 +351,14 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 `RE2` always works in the Unicode mode. See `RE2.unicodeWarningLevel` above for more details on how to control warnings about this feature.
 
+#### Unicode classes
+
+`RE2` supports a subset of Unicode classes as defined in [RE2 Syntax](https://github.com/google/re2/wiki/Syntax). Native Google RE2 supports only short names, e.g., `L` for `Letter`, `N` for `Number`, etc. Like `RegExp`, `RE2` supports both short and long names, e.g., `Letter` for `L`, by translating them to short names.
+
+The extended form `\p{name=value}` is not supported. Only form `\p{name}` is supported.
+
+The same applies to `\P{name}`.
+
 ## Release history
 
 - 1.21.5 *Updated all dependencies and the list of pre-compiled targets. Fixed minor bugs. C++ style fix (thx, [Benjamin Brienen](https://github.com/BenjaminBrienen)). Added Windows 11 ARM build runner [Kagami Sascha Rosylight](https://github.com/saschanaz).*
