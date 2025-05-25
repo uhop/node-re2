@@ -355,12 +355,14 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 `RE2` supports a subset of Unicode classes as defined in [RE2 Syntax](https://github.com/google/re2/wiki/Syntax). Native Google RE2 supports only short names, e.g., `L` for `Letter`, `N` for `Number`, etc. Like `RegExp`, `RE2` supports both short and long names, e.g., `Letter` for `L`, by translating them to short names.
 
-The extended form `\p{name=value}` is not supported. Only form `\p{name}` is supported.
+Generally, the extended form `\p{name=value}` is not supported. Only form `\p{name}` is supported.
+The exception is `Script` and `sc` names, e.g., `\p{Script=Latin}` and `\p{sc=Cyrillic}`.
 
-The same applies to `\P{name}`.
+The same applies to `\P{...}`.
 
 ## Release history
 
+- 1.22.1 *Added support for translation of scripts as Unicode classes.*
 - 1.22.0 *Added support for translation of Unicode classes (thx, [John Livingston](https://github.com/JohnXLivingston)). Added [attestations](https://github.com/uhop/node-re2/attestations).*
 - 1.21.5 *Updated all dependencies and the list of pre-compiled targets. Fixed minor bugs. C++ style fix (thx, [Benjamin Brienen](https://github.com/BenjaminBrienen)). Added Windows 11 ARM build runner (thx, [Kagami Sascha Rosylight](https://github.com/saschanaz)).*
 - 1.21.4 *Fixed a regression reported by [caroline-matsec](https://github.com/caroline-matsec), thx! Added pre-compilation targets for Alpine Linux on ARM. Updated deps.*
