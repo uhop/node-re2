@@ -24,5 +24,13 @@ unit.add(module, [
     re2 = new RE2(/\p{Uppercase_Letter}/u);
     eval(t.TEST("re2.test('A') === true"));
     eval(t.TEST("re2.test('a') === false"));
+
+    re2 = new RE2(/\p{Script=Latin}/u);
+    eval(t.TEST("re2.test('a') === true"));
+    eval(t.TEST("re2.test('ф') === false"));
+
+    re2 = new RE2(/\p{sc=Cyrillic}/u);
+    eval(t.TEST("re2.test('a') === false"));
+    eval(t.TEST("re2.test('ф') === true"));
   }
 ]);

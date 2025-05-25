@@ -152,6 +152,10 @@ static bool translateRegExp(const char *data, size_t size, bool multiline, std::
 								std::string name(data + i + 3, j - i - 3);
 								if (unicodeClasses.find(name) != unicodeClasses.end()) {
 									name = unicodeClasses[name];
+								} else if (name.starts_with("Script=")) {
+									name = name.substr(7);
+								} else if (name.starts_with("sc=")) {
+									name = name.substr(3);
 								}
 								if (name.size() == 1) {
 									result += name;
