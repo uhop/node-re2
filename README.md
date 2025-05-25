@@ -361,7 +361,8 @@ The same applies to `\P{name}`.
 
 ## Release history
 
-- 1.21.5 *Updated all dependencies and the list of pre-compiled targets. Fixed minor bugs. C++ style fix (thx, [Benjamin Brienen](https://github.com/BenjaminBrienen)). Added Windows 11 ARM build runner [Kagami Sascha Rosylight](https://github.com/saschanaz).*
+- 1.22.0 *Added support for translation of Unicode classes (thx, [John Livingston](https://github.com/JohnXLivingston)).*
+- 1.21.5 *Updated all dependencies and the list of pre-compiled targets. Fixed minor bugs. C++ style fix (thx, [Benjamin Brienen](https://github.com/BenjaminBrienen)). Added Windows 11 ARM build runner (thx, [Kagami Sascha Rosylight](https://github.com/saschanaz)).*
 - 1.21.4 *Fixed a regression reported by [caroline-matsec](https://github.com/caroline-matsec), thx! Added pre-compilation targets for Alpine Linux on ARM. Updated deps.*
 - 1.21.3 *Fixed an empty string regression reported by [Rhys Arkins](https://github.com/rarkins), thx! Updated deps.*
 - 1.21.2 *Fixed another memory regression reported by [matthewvalentine](https://github.com/matthewvalentine), thx! Updated deps. Added more tests and benchmarks.*
