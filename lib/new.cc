@@ -1,6 +1,7 @@
 #include "./wrapped_re2.h"
 #include "./util.h"
 
+#include <map>
 #include <memory>
 #include <string>
 #include <unordered_set>
@@ -17,6 +18,47 @@ inline bool isHexadecimal(char ch)
 {
 	return ('0' <= ch && ch <= '9') || ('A' <= ch && ch <= 'Z') || ('a' <= ch && ch <= 'z');
 }
+
+static std::map<std::string, std::string> unicodeClasses = {
+	{"Uppercase_Letter", "Lu"},
+	{"Lowercase_Letter", "Ll"},
+	{"Titlecase_Letter", "Lt"},
+	{"Cased_Letter", "LC"},
+	{"Modifier_Letter", "Lm"},
+	{"Other_Letter", "Lo"},
+	{"Letter", "L"},
+	{"Nonspacing_Mark", "Mn"},
+	{"Spacing_Mark", "Mc"},
+	{"Enclosing_Mark", "Me"},
+	{"Mark", "M"},
+	{"Decimal_Number", "Nd"},
+	{"Letter_Number", "Nl"},
+	{"Other_Number", "No"},
+	{"Number", "N"},
+	{"Connector_Punctuation", "Pc"},
+	{"Dash_Punctuation", "Pd"},
+	{"Open_Punctuation", "Ps"},
+	{"Close_Punctuation", "Pe"},
+	{"Initial_Punctuation", "Pi"},
+	{"Final_Punctuation", "Pf"},
+	{"Other_Punctuation", "Po"},
+	{"Punctuation", "P"},
+	{"Math_Symbol", "Sm"},
+	{"Currency_Symbol", "Sc"},
+	{"Modifier_Symbol", "Sk"},
+	{"Other_Symbol", "So"},
+	{"Symbol", "S"},
+	{"Space_Separator", "Zs"},
+	{"Line_Separator", "Zl"},
+	{"Paragraph_Separator", "Zp"},
+	{"Separator", "Z"},
+	{"Control", "Cc"},
+	{"Format", "Cf"},
+	{"Surrogate", "Cs"},
+	{"Private_Use", "Co"},
+	{"Unassigned", "Cn"},
+	{"Other", "C"},
+};
 
 static bool translateRegExp(const char *data, size_t size, bool multiline, std::vector<char> &buffer)
 {
@@ -96,6 +138,36 @@ static bool translateRegExp(const char *data, size_t size, bool multiline, std::
 						}
 					}
 					result += "\\u";
+					i += 2;
+					continue;
+				case 'p':
+				case 'P':
+					if (i + 2 < size) {
+						if (data[i + 2] == '{') {
+							size_t j = i + 3;
+							while (j < size && data[j] != '}') ++j;
+							if (j < size) {
+								result += "\\";
+								result += data[i + 1];
+								std::string name(data + i + 3, j - i - 3);
+								if (unicodeClasses.find(name) != unicodeClasses.end()) {
+									name = unicodeClasses[name];
+								}
+								if (name.size() == 1) {
+									result += name;
+								} else {
+									result += "{";
+									result += name;
+									result += "}";
+								}
+								i = j + 1;
+								changed = true;
+								continue;
+							}
+						}
+					}
+					result += "\\";
+					result += data[i + 1];
 					i += 2;
 					continue;
 				default:
