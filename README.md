@@ -351,7 +351,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 `RE2` always works in the Unicode mode. See `RE2.unicodeWarningLevel` above for more details on how to control warnings about this feature.
 
-#### Unicode classes
+#### Unicode classes `\p{...}` and `\P{...}`
 
 `RE2` supports a subset of Unicode classes as defined in [RE2 Syntax](https://github.com/google/re2/wiki/Syntax). Native Google RE2 supports only short names, e.g., `L` for `Letter`, `N` for `Number`, etc. Like `RegExp`, `RE2` supports both short and long names, e.g., `Letter` for `L`, by translating them to short names.
 
