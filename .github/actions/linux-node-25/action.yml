@@ -1,5 +1,5 @@
-name: 'Create a binary artifact for Node 25 on Debian Bullseye Linux'
-description: 'Create a binary artifact for Node 25 on Debian Bullseye Linux'
+name: 'Create a binary artifact for Node 25 on Debian Trixie Linux'
+description: 'Create a binary artifact for Node 25 on Debian Trixie Linux'
 inputs:
   node-version:
     description: 'Node.js version'
