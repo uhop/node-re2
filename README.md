@@ -362,6 +362,7 @@ The same applies to `\P{...}`.
 
 ## Release history
 
+- 1.22.3 *Technical release: upgraded QEMU emulations to native ARM runners to speed up the build process.*
 - 1.22.2 *Updated all dependencies and the list of pre-compiled targets: Node 20, 22, 24, 25 (thx, [Jiayu Liu](https://github.com/jimexist)).*
 - 1.22.1 *Added support for translation of scripts as Unicode classes.*
 - 1.22.0 *Added support for translation of Unicode classes (thx, [John Livingston](https://github.com/JohnXLivingston)). Added [attestations](https://github.com/uhop/node-re2/attestations).*
