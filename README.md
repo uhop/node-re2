@@ -362,7 +362,7 @@ The same applies to `\P{...}`.
 
 ## Release history
 
-- 1.22.2 *Updated all dependencies and the list of pre-compiled targets: Node 20, 22, 24, 25.*
+- 1.22.2 *Updated all dependencies and the list of pre-compiled targets: Node 20, 22, 24, 25 (thx, [Jiayu Liu](https://github.com/jimexist)).*
 - 1.22.1 *Added support for translation of scripts as Unicode classes.*
 - 1.22.0 *Added support for translation of Unicode classes (thx, [John Livingston](https://github.com/JohnXLivingston)). Added [attestations](https://github.com/uhop/node-re2/attestations).*
 - 1.21.5 *Updated all dependencies and the list of pre-compiled targets. Fixed minor bugs. C++ style fix (thx, [Benjamin Brienen](https://github.com/BenjaminBrienen)). Added Windows 11 ARM build runner (thx, [Kagami Sascha Rosylight](https://github.com/saschanaz)).*
