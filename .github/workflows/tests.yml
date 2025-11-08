@@ -14,14 +14,14 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
-        node-version: [20, 22, 23, 24]
+        node-version: [20, 22, 24, 25]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: true
       - name: Setup Node.js ${{matrix.node-version}}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{matrix.node-version}}
       - name: Install the package and run tests
