@@ -5,6 +5,7 @@
       "sources": [
         "lib/addon.cc",
         "lib/accessors.cc",
+        "lib/pattern.cc",
         "lib/util.cc",
         "lib/new.cc",
         "lib/exec.cc",
@@ -14,6 +15,7 @@
         "lib/search.cc",
         "lib/split.cc",
         "lib/to_string.cc",
+        "lib/set.cc",
         "vendor/re2/re2/bitmap256.cc",
         "vendor/re2/re2/bitstate.cc",
         "vendor/re2/re2/compile.cc",

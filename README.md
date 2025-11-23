@@ -165,6 +165,34 @@ RE2("б").replace("абв", bufReplacer);
 This feature works for string and buffer inputs. If a buffer was used as an input, its output will be returned as
 a buffer too, otherwise a string will be returned.
 
+### `RE2.Set`
+
+When the same string must be tested against many patterns, [`RE2::Set`](https://github.com/google/re2/wiki/SetSyntax) builds a single automaton for all of them. It frequently beats running a large list of individual regular expressions one by one.
+
+* `new RE2.Set(patterns[, flagsOrOptions][, options])`
+  * `patterns` is any iterable of strings, `Buffer`s, `RegExp`, or `RE2` instances; flags (if provided) apply to the whole set.
+  * `flagsOrOptions` can be a string/`Buffer` with flags (`i`, `m`, `s`, `u`, `g`, `y`, `d`) or an options object.
+  * `options.anchor` can be `'unanchored'` (default), `'start'`, or `'both'`.
+* `set.match(str)` returns an array of indexes of matching patterns.
+* `set.test(str)` returns `true` if any pattern matches.
+* Read-only properties:
+  * `set.size`, `set.flags`, `set.anchor`
+  * `set.source` (all patterns joined with `|`), `set.sources` (individual pattern sources)
+
+Example:
+
+```js
+const routes = new RE2.Set([
+  '^/users/\\d+$',
+  '^/posts/\\d+$'
+], 'i', {anchor: 'start'});
+
+routes.test('/posts/42');      // true
+routes.match('/users/7');      // [0]
+routes.sources;                // ['^/users/\\d+$', '^/posts/\\d+$']
+routes.toString();             // '/^/users/\\d+$|^/posts/\\d+$/iu'
+```
+
 ### Calculate length
 
 Two functions to calculate string sizes between
