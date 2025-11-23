@@ -1,4 +1,5 @@
 #include "./wrapped_re2.h"
+#include "./wrapped_re2_set.h"
 
 static NAN_METHOD(GetUtf8Length)
 {
@@ -75,6 +76,9 @@ v8::Local<v8::Function> WrappedRE2::Init()
 	Nan::SetAccessor(instanceTemplate, Nan::New("internalSource").ToLocalChecked(), GetInternalSource);
 
 	auto ctr = Nan::GetFunction(tpl).ToLocalChecked();
+	auto setCtr = WrappedRE2Set::Init();
+
+	Nan::Set(ctr, Nan::New("Set").ToLocalChecked(), setCtr);
 
 	// properties
 

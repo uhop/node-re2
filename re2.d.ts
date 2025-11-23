@@ -35,6 +35,28 @@ declare module 're2' {
     split<K extends String | Buffer>(str: K, limit?: number): K[];
   }
 
+  interface RE2SetOptions {
+    anchor?: 'unanchored' | 'start' | 'both';
+  }
+
+  interface RE2Set {
+    readonly size: number;
+    readonly source: string;
+    readonly sources: string[];
+    readonly flags: string;
+    readonly anchor: 'unanchored' | 'start' | 'both';
+
+    match(str: string | Buffer): number[];
+    test(str: string | Buffer): boolean;
+    toString(): string;
+  }
+
+  interface RE2SetConstructor {
+    new(patterns: Iterable<Buffer | RegExp | RE2 | string>, flagsOrOptions?: string | Buffer | RE2SetOptions, options?: RE2SetOptions): RE2Set;
+    (patterns: Iterable<Buffer | RegExp | RE2 | string>, flagsOrOptions?: string | Buffer | RE2SetOptions, options?: RE2SetOptions): RE2Set;
+    readonly prototype: RE2Set;
+  }
+
   interface RE2Constructor extends RegExpConstructor {
     new(pattern: Buffer | RegExp | RE2 | string): RE2;
     new(pattern: Buffer | string, flags?: string | Buffer): RE2;
@@ -45,6 +67,8 @@ declare module 're2' {
     unicodeWarningLevel: 'nothing' | 'warnOnce' | 'warn' | 'throw';
     getUtf8Length(value: string): number;
     getUtf16Length(value: Buffer): number;
+
+    Set: RE2SetConstructor;
   }
 
   var RE2: RE2Constructor;

@@ -24,5 +24,15 @@ function test_matchTypes() {
   assertType<string | undefined>(result.groups['verb'])
 }
 
+function test_setTypes() {
+  const set = new RE2.Set(['alpha', Buffer.from('beta')], 'i', {anchor: 'start'})
+  assertType<number[]>(set.match('alphabet'))
+  assertType<boolean>(set.test(Buffer.from('alphabet')))
+  assertType<'unanchored' | 'start' | 'both'>(set.anchor)
+  assertType<string[]>(set.sources)
+  assertType<string>(set.flags)
+}
+
 test_execTypes()
 test_matchTypes()
+test_setTypes()

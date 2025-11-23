@@ -12,6 +12,7 @@ require('./test_matchAll');
 require('./test_replace');
 require('./test_search');
 require('./test_split');
+require('./test_set');
 require('./test_invalid');
 require('./test_symbols');
 require('./test_prototype');
