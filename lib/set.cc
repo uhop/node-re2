@@ -39,7 +39,7 @@ static bool parseFlags(const v8::Local<v8::Value> &arg, SetFlags &flags)
 		size = s->Utf8Length(isolate);
 		buffer.resize(size + 1);
 		s->WriteUtf8(isolate, &buffer[0], buffer.size());
-		buffer[size] = '\0';
+		buffer[buffer.size() - 1] = '\0';
 		data = &buffer[0];
 	}
 	else if (node::Buffer::HasInstance(arg))
