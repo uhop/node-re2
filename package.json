@@ -16,11 +16,11 @@
   ],
   "dependencies": {
     "install-artifact-from-github": "^1.4.0",
-    "nan": "^2.23.1",
-    "node-gyp": "^11.5.0"
+    "nan": "^2.24.0",
+    "node-gyp": "^12.1.0"
   },
   "devDependencies": {
-    "@types/node": "^24.10.0",
+    "@types/node": "^24.10.1",
     "heya-unit": "^0.3.0",
     "typescript": "^5.9.3"
   },
