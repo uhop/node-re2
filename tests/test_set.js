@@ -53,6 +53,63 @@ unit.add(module, [
     eval(t.TEST('set.test("ABC") === true'));
     eval(t.TEST('set.flags === "iu"'));
   },
+  function test_setUnicodeInputs(t) {
+    var patterns = ['🙂', '猫', '🍣+', '東京', '\\p{Hiragana}+'];
+    var set = new RE2.Set(patterns, 'u');
+    var input = 'prefix🙂と猫と🍣🍣を食べる東京ひらがな';
+
+    var result = set.match(input);
+    eval(t.TEST('result.length === 5'));
+    eval(t.TEST('result.indexOf(0) !== -1'));
+    eval(t.TEST('result.indexOf(1) !== -1'));
+    eval(t.TEST('result.indexOf(2) !== -1'));
+    eval(t.TEST('result.indexOf(3) !== -1'));
+    eval(t.TEST('result.indexOf(4) !== -1'));
+
+    var buf = Buffer.from(input);
+    var bufResult = set.match(buf);
+    eval(t.TEST('bufResult.length === 5'));
+    eval(t.TEST('set.test(buf) === true'));
+
+    var miss = new RE2.Set(['🚀', '漢字'], 'u');
+    eval(t.TEST('miss.test(input) === false'));
+    eval(t.TEST('miss.match(input).length === 0'));
+  },
+  function test_setEmptyAndDuplicates(t) {
+    var emptySet = new RE2.Set([]);
+    eval(t.TEST('emptySet.size === 0'));
+    eval(t.TEST('emptySet.test("anything") === false'));
+
+    var dup = new RE2.Set(['foo', 'foo', 'bar']);
+    var r = dup.match('foo bar');
+    // two foo entries plus bar
+    eval(t.TEST('r.length === 3'));
+    eval(t.TEST('r[0] === 0'));
+    eval(t.TEST('r[1] === 1'));
+    eval(t.TEST('r[2] === 2'));
+  },
+  function test_setInconsistentFlags(t) {
+    try {
+      var set = new RE2.Set([/abc/i, /abc/m]);
+      t.test(false);
+    } catch (e) {
+      eval(t.TEST('e instanceof TypeError'));
+    }
+  },
+  function test_setInvalidFlagsChar(t) {
+    try {
+      var set = new RE2.Set(['foo'], 'q');
+      t.test(false);
+    } catch (e) {
+      eval(t.TEST('e instanceof TypeError'));
+    }
+  },
+  function test_setAnchorOptionWithFlags(t) {
+    var set = new RE2.Set(['^foo', '^bar'], 'i', {anchor: 'both'});
+    eval(t.TEST('set.anchor === "both"'));
+    eval(t.TEST('set.match("foo").length === 1'));
+    eval(t.TEST('set.match("xfoo").length === 0'));
+  },
   function test_setInvalid(t) {
     try {
       var set = new RE2.Set([null]);
