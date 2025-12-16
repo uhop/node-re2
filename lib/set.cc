@@ -219,12 +219,11 @@ static bool collectIterable(const v8::Local<v8::Value> &input, std::vector<v8::L
 	return true;
 }
 
-static bool parseAnchor(const v8::Local<v8::Value> &arg, re2::RE2::Anchor &anchor, std::string &anchorName)
+static bool parseAnchor(const v8::Local<v8::Value> &arg, re2::RE2::Anchor &anchor)
 {
 	if (arg.IsEmpty() || arg->IsUndefined() || arg->IsNull())
 	{
 		anchor = re2::RE2::UNANCHORED;
-		anchorName = "unanchored";
 		return true;
 	}
 
@@ -242,7 +241,6 @@ static bool parseAnchor(const v8::Local<v8::Value> &arg, re2::RE2::Anchor &ancho
 		if (value->IsUndefined() || value->IsNull())
 		{
 			anchor = re2::RE2::UNANCHORED;
-			anchorName = "unanchored";
 			return true;
 		}
 	}
@@ -258,19 +256,16 @@ static bool parseAnchor(const v8::Local<v8::Value> &arg, re2::RE2::Anchor &ancho
 	if (text == "unanchored")
 	{
 		anchor = re2::RE2::UNANCHORED;
-		anchorName = text;
 		return true;
 	}
 	if (text == "start")
 	{
 		anchor = re2::RE2::ANCHOR_START;
-		anchorName = text;
 		return true;
 	}
 	if (text == "both")
 	{
 		anchor = re2::RE2::ANCHOR_BOTH;
-		anchorName = text;
 		return true;
 	}
 
@@ -393,15 +388,13 @@ NAN_METHOD(WrappedRE2Set::New)
 	}
 
 	re2::RE2::Anchor anchor = re2::RE2::UNANCHORED;
-	std::string anchorName = "unanchored";
 	if (!optionsArg.IsEmpty())
 	{
-		if (!parseAnchor(optionsArg, anchor, anchorName))
+		if (!parseAnchor(optionsArg, anchor))
 		{
 			return Nan::ThrowTypeError("Invalid anchor option for RE2.Set.");
 		}
 	}
-	(void)anchorName;
 
 	std::vector<v8::Local<v8::Value>> patterns;
 	if (!collectIterable(info[0], patterns))
