@@ -50,6 +50,7 @@
         "vendor/abseil-cpp/absl/base/internal/throw_delegate.cc",
         "vendor/abseil-cpp/absl/base/internal/unscaledcycleclock.cc",
         "vendor/abseil-cpp/absl/container/internal/hashtablez_sampler.cc",
+        "vendor/abseil-cpp/absl/container/internal/hashtablez_sampler_force_weak_definition.cc",
         "vendor/abseil-cpp/absl/container/internal/raw_hash_set.cc",
         "vendor/abseil-cpp/absl/debugging/internal/decode_rust_punycode.cc",
         "vendor/abseil-cpp/absl/debugging/internal/demangle.cc",
