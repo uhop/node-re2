@@ -22,8 +22,20 @@ function test(msg) {
   msg && console.log(isMainThread ? 'Main' : 'Worker', msg);
 
   const a = new RE2('^\\d+$');
-  console.log(isMainThread, a.test('123'), a.test('abc'), a.test('123abc'), a instanceof RE2);
+  console.log(
+    isMainThread,
+    a.test('123'),
+    a.test('abc'),
+    a.test('123abc'),
+    a instanceof RE2
+  );
 
   const b = RE2('^\\d+$');
-  console.log(isMainThread, b.test('123'), b.test('abc'), b.test('123abc'), b instanceof RE2);
+  console.log(
+    isMainThread,
+    b.test('123'),
+    b.test('abc'),
+    b.test('123abc'),
+    b instanceof RE2
+  );
 }

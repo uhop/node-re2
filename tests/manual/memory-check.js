@@ -23,6 +23,8 @@ for (let i = 0; i < N; ++i) {
   gc();
 }
 
-console.log('Done. Now it is spinning: check the memory consumption! To stop it, press Ctrl+C.');
+console.log(
+  'Done. Now it is spinning: check the memory consumption! To stop it, press Ctrl+C.'
+);
 
-for(;;);
+for (;;);

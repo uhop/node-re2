@@ -1,12 +1,11 @@
 declare module 're2' {
-
   interface RE2BufferExecArray {
     index: number;
     input: Buffer;
     0: Buffer;
     groups?: {
-      [key: string]: Buffer
-    }
+      [key: string]: Buffer;
+    };
   }
 
   interface RE2BufferMatchArray {
@@ -14,8 +13,8 @@ declare module 're2' {
     input?: Buffer;
     0: Buffer;
     groups?: {
-      [key: string]: Buffer
-    }
+      [key: string]: Buffer;
+    };
   }
 
   interface RE2 extends RegExp {
@@ -27,8 +26,14 @@ declare module 're2' {
 
     test(str: string | Buffer): boolean;
 
-    replace<K extends String | Buffer>(str: K, replaceValue: string | Buffer): K;
-    replace<K extends String | Buffer>(str: K, replacer: (substring: string, ...args: any[]) => string | Buffer): K;
+    replace<K extends String | Buffer>(
+      str: K,
+      replaceValue: string | Buffer
+    ): K;
+    replace<K extends String | Buffer>(
+      str: K,
+      replacer: (substring: string, ...args: any[]) => string | Buffer
+    ): K;
 
     search(str: string | Buffer): number;
 
@@ -52,14 +57,22 @@ declare module 're2' {
   }
 
   interface RE2SetConstructor {
-    new(patterns: Iterable<Buffer | RegExp | RE2 | string>, flagsOrOptions?: string | Buffer | RE2SetOptions, options?: RE2SetOptions): RE2Set;
-    (patterns: Iterable<Buffer | RegExp | RE2 | string>, flagsOrOptions?: string | Buffer | RE2SetOptions, options?: RE2SetOptions): RE2Set;
+    new (
+      patterns: Iterable<Buffer | RegExp | RE2 | string>,
+      flagsOrOptions?: string | Buffer | RE2SetOptions,
+      options?: RE2SetOptions
+    ): RE2Set;
+    (
+      patterns: Iterable<Buffer | RegExp | RE2 | string>,
+      flagsOrOptions?: string | Buffer | RE2SetOptions,
+      options?: RE2SetOptions
+    ): RE2Set;
     readonly prototype: RE2Set;
   }
 
   interface RE2Constructor extends RegExpConstructor {
-    new(pattern: Buffer | RegExp | RE2 | string): RE2;
-    new(pattern: Buffer | string, flags?: string | Buffer): RE2;
+    new (pattern: Buffer | RegExp | RE2 | string): RE2;
+    new (pattern: Buffer | string, flags?: string | Buffer): RE2;
     (pattern: Buffer | RegExp | RE2 | string): RE2;
     (pattern: Buffer | string, flags?: string | Buffer): RE2;
     readonly prototype: RE2;
