@@ -62,18 +62,46 @@ test('test split symbol', t => {
 
   let re = new RE2(/\s+/);
   let result = 'Oh brave new world that has such people in it.'.split(re);
-  t.deepEqual(result, ['Oh', 'brave', 'new', 'world', 'that', 'has', 'such', 'people', 'in', 'it.']);
+  t.deepEqual(result, [
+    'Oh',
+    'brave',
+    'new',
+    'world',
+    'that',
+    'has',
+    'such',
+    'people',
+    'in',
+    'it.'
+  ]);
 
   re = new RE2(',');
   result = 'Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec'.split(re);
-  t.deepEqual(result, ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']);
+  t.deepEqual(result, [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec'
+  ]);
 
   re = new RE2(/\s*;\s*/);
   result =
-    'Harry Trump ;Fred Barney; Helen Rigby ; Bill Abel ;Chris Hand '.split(
-      re
-    );
-  t.deepEqual(result, ['Harry Trump', 'Fred Barney', 'Helen Rigby', 'Bill Abel', 'Chris Hand ']);
+    'Harry Trump ;Fred Barney; Helen Rigby ; Bill Abel ;Chris Hand '.split(re);
+  t.deepEqual(result, [
+    'Harry Trump',
+    'Fred Barney',
+    'Helen Rigby',
+    'Bill Abel',
+    'Chris Hand '
+  ]);
 
   re = new RE2(/\s+/);
   result = 'Hello World. How are you doing?'.split(re, 3);
@@ -83,5 +111,11 @@ test('test split symbol', t => {
   result = 'Hello 1 word. Sentence number 2.'.split(re);
   t.deepEqual(result, ['Hello ', '1', ' word. Sentence number ', '2', '.']);
 
-  t.equal('asdfghjkl'.split(RE2(/[x-z]*/)).reverse().join(''), 'lkjhgfdsa');
+  t.equal(
+    'asdfghjkl'
+      .split(RE2(/[x-z]*/))
+      .reverse()
+      .join(''),
+    'lkjhgfdsa'
+  );
 });

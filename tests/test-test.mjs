@@ -156,7 +156,9 @@ test('test test buffer', t => {
   t.ok(re.test(Buffer.from('кАЖДЫЙ оХОТНИК жЕЛАЕТ зНАТЬ гДЕ сИДИТ фАЗАН')));
   t.ok(re.test(Buffer.from('каждый охотник желает знать где сидит фазан')));
   t.ok(re.test(Buffer.from('КАЖДЫЙ ОХОТНИК ЖЕЛАЕТ ЗНАТЬ ГДЕ СИДИТ ФАЗАН')));
-  t.notOk(re.test(Buffer.from('Кажный Стрелок Хочет Найти Иде Прячется Птица')));
+  t.notOk(
+    re.test(Buffer.from('Кажный Стрелок Хочет Найти Иде Прячется Птица'))
+  );
 
   re = new RE2('аб*', 'g');
 
