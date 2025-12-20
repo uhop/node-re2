@@ -22,8 +22,8 @@
   "devDependencies": {
     "@types/node": "^25.0.3",
     "nano-benchmark": "^1.0.4",
-    "tape-six": "^1.1.1",
-    "tape-six-proc": "^1.0.1",
+    "tape-six": "^1.1.2",
+    "tape-six-proc": "^1.0.2",
     "typescript": "^5.9.3"
   },
   "scripts": {
