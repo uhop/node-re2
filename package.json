@@ -1,6 +1,6 @@
 {
   "name": "re2",
-  "version": "1.22.3",
+  "version": "1.23.0",
   "description": "Bindings for RE2: fast, safe alternative to backtracking regular expression engines.",
   "homepage": "https://github.com/uhop/node-re2",
   "bugs": "https://github.com/uhop/node-re2/issues",
@@ -40,8 +40,8 @@
     "clean": "node-gyp clean && node-gyp configure",
     "clean-build": "node-gyp clean",
     "ts-check": "tsc --noEmit",
-    "lint": "prettier --check *.js *.ts tests/",
-    "lint:fix": "prettier --write *.js *.ts tests/"
+    "lint": "prettier --check *.js *.ts tests/ bench/",
+    "lint:fix": "prettier --write *.js *.ts tests/ bench/"
   },
   "github": "https://github.com/uhop/node-re2",
   "repository": {
