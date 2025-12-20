@@ -3,11 +3,12 @@
 [npm-img]: https://img.shields.io/npm/v/re2.svg
 [npm-url]: https://npmjs.org/package/re2
 
-This project provides bindings for [RE2](https://github.com/google/re2):
-fast, safe alternative to backtracking regular expression engines written by [Russ Cox](http://swtch.com/~rsc/).
+This project provides Node.js bindings for [RE2](https://github.com/google/re2):
+a fast, safe alternative to backtracking regular expression engines written by [Russ Cox](http://swtch.com/~rsc/) in C++.
 To learn more about RE2, start with an overview
 [Regular Expression Matching in the Wild](http://swtch.com/~rsc/regexp/regexp3.html). More resources can be found
 at his [Implementing Regular Expressions](http://swtch.com/~rsc/regexp/) page.
+
 
 `RE2`'s regular expression language is almost a superset of what is provided by `RegExp`
 (see [Syntax](https://github.com/google/re2/wiki/Syntax)),
@@ -24,7 +25,9 @@ See `RE2.unicodeWarningLevel` below for more details.
 It can work with [node.js buffers](http://nodejs.org/api/buffer.html) directly reducing overhead
 on recoding and copying characters, and making processing/parsing long files fast.
 
-All documentation can be found in this README and in the [wiki](https://github.com/uhop/node-re2/wiki).
+This project is implemented in C++ using [nan](https://github.com/nodejs/nan) for Node.js and cannot be used
+with non-compliant runtimes like web browsers. All documentation can be found in this README and in
+the [wiki](https://github.com/uhop/node-re2/wiki).
 
 ## Why use node-re2?
 
@@ -41,6 +44,12 @@ However, neither project is perfect.
 
 node-re2 can protect your Node.js application from ReDoS.
 node-re2 makes vulnerable regular expression patterns safe by evaluating them in `RE2` instead of the built-in Node.js regex engine.
+
+To run the bundled benchmark, use the following command (make sure that node-re2 is properly built before):
+
+```bash
+npx nano-bench bench/bad-pattern.mjs
+```
 
 ## Standard features
 
@@ -167,17 +176,26 @@ a buffer too, otherwise a string will be returned.
 
 ### `RE2.Set`
 
-When the same string must be tested against many patterns, [`RE2::Set`](https://github.com/google/re2/wiki/SetSyntax) builds a single automaton for all of them. It frequently beats running a large list of individual regular expressions one by one.
+Starting with 1.23.0, use `RE2.Set` when the same string must be tested against many patterns. It builds a single automaton
+for all of them and frequently beats running a large list of individual regular expressions one by one.
+
+Sets support `test()` and `match()` methods. While `test()` can be simulated by combining patterns with `|` and using a regular expression object,
+`match()` is not because it returns a list of patterns that matched, which is not possible with a regular expression object.
+Parsing data against multiple choices is a frequent operation in the wild and `RE2.Set` is a fast way to do it.
 
 * `new RE2.Set(patterns[, flagsOrOptions][, options])`
   * `patterns` is any iterable of strings, `Buffer`s, `RegExp`, or `RE2` instances; flags (if provided) apply to the whole set.
-  * `flagsOrOptions` can be a string/`Buffer` with flags (`i`, `m`, `s`, `u`, `g`, `y`, `d`) or an options object.
+  * `flagsOrOptions` can be a string/`Buffer` with standard flags (`i`, `m`, `s`, `u`, `g`, `y`, `d`).
   * `options.anchor` can be `'unanchored'` (default), `'start'`, or `'both'`.
+* `set.test(str)` returns `true` if any pattern matches and `false` otherwise.
 * `set.match(str)` returns an array of indexes of matching patterns.
-* `set.test(str)` returns `true` if any pattern matches.
+  * This is an array of integer indices of patterns that matched sorted in ascending order.
+  * If no patterns matched, an empty array is returned.
 * Read-only properties:
-  * `set.size`, `set.flags`, `set.anchor`
-  * `set.source` (all patterns joined with `|`), `set.sources` (individual pattern sources)
+  * `set.size` (number of patterns), `set.flags` (`RegExp` flags as a string), `set.anchor` (anchor mode as a string)
+  * `set.source` (all patterns joined with `|` as a string), `set.sources` (individual pattern sources as an array of strings)
+
+It is based on [RE2::Set](https://github.com/google/re2/blob/main/re2/set.h).
 
 Example:
 
@@ -187,10 +205,16 @@ const routes = new RE2.Set([
   '^/posts/\\d+$'
 ], 'i', {anchor: 'start'});
 
-routes.test('/posts/42');      // true
-routes.match('/users/7');      // [0]
-routes.sources;                // ['^/users/\\d+$', '^/posts/\\d+$']
-routes.toString();             // '/^/users/\\d+$|^/posts/\\d+$/iu'
+routes.test('/users/7');     // true
+routes.match('/posts/42');   // [1]
+routes.sources;              // ['^/users/\\d+$', '^/posts/\\d+$']
+routes.toString();           // '/^/users/\\d+$|^/posts/\\d+$/iu'
+```
+
+To run the bundled benchmark, use the following command (make sure that node-re2 is properly built before):
+
+```bash
+npx nano-bench bench/set-match.mjs
 ```
 
 ### Calculate length
@@ -235,11 +259,13 @@ In the latter case `RE2` can do following actions depending on `RE2.unicodeWarni
 
 Warnings and exceptions help to audit an application for stray non-Unicode regular expressions.
 
+`RE2.unicodeWarningLevel` is a global property. Be careful manipulating it in a multi-threaded environment as it is shared between threads.
+
 ## How to install
 
 Installation:
 
-```
+```bash
 npm install --save re2
 ```
 
@@ -390,6 +416,7 @@ The same applies to `\P{...}`.
 
 ## Release history
 
+- 1.23.0 *Updated all dependencies, upgraded tooling. New feature: `RE2.Set` (thx, [Wes](https://github.com/wrmedford)).*
 - 1.22.3 *Technical release: upgraded QEMU emulations to native ARM runners to speed up the build process.*
 - 1.22.2 *Updated all dependencies and the list of pre-compiled targets: Node 20, 22, 24, 25 (thx, [Jiayu Liu](https://github.com/jimexist)).*
 - 1.22.1 *Added support for translation of scripts as Unicode classes.*
