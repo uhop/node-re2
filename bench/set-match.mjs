@@ -7,10 +7,10 @@ for (let i = 0; i < PATTERN_COUNT; ++i) {
   patterns.push('token' + i + '(?:[a-z]+)?');
 }
 
-const ITERATIONS = 4_000;
+const INPUT_COUNT = 500;
 
 const inputs = [];
-for (let j = 0; j < ITERATIONS; ++j) {
+for (let j = 0; j < INPUT_COUNT; ++j) {
   inputs.push(
     'xx' +
       (j % PATTERN_COUNT) +
@@ -22,7 +22,7 @@ for (let j = 0; j < ITERATIONS; ++j) {
   );
 }
 
-const set = new RE2.Set(patterns);
+const re2Set = new RE2.Set(patterns);
 const re2List = patterns.map(p => new RE2(p));
 const jsList = patterns.map(p => new RegExp(p));
 
@@ -30,11 +30,12 @@ export default {
   RegExp: n => {
     let count = 0;
     for (let i = 0; i < n; ++i) {
-      for (let j = 0; j < jsList.length; ++j) {
-        if (jsList[j].test(inputs[i])) {
-          ++count;
-          break;
+      for (const input of inputs) {
+        const matches = [];
+        for (const pattern of jsList) {
+          if (pattern.test(input)) matches.push(pattern);
         }
+        count += matches.length;
       }
     }
     return count;
@@ -42,11 +43,12 @@ export default {
   RE2: n => {
     let count = 0;
     for (let i = 0; i < n; ++i) {
-      for (let j = 0; j < re2List.length; ++j) {
-        if (re2List[j].test(inputs[i])) {
-          ++count;
-          break;
+      for (const input of inputs) {
+        const matches = [];
+        for (const pattern of re2List) {
+          if (pattern.test(input)) matches.push(pattern);
         }
+        count += matches.length;
       }
     }
     return count;
@@ -54,7 +56,10 @@ export default {
   'RE2.Set': n => {
     let count = 0;
     for (let i = 0; i < n; ++i) {
-      if (set.test(inputs[i])) ++count;
+      for (const input of inputs) {
+        const matches = re2Set.match(input);
+        count += matches.length;
+      }
     }
     return count;
   }
