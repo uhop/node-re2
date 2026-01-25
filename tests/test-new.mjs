@@ -7,8 +7,8 @@ import {default as RE2} from '../re2.js';
 test('test new unicode warnOnce', t => {
   let errorMessage = '';
 
-  const consoleError = console.error;
-  console.error = msg => (errorMessage = msg);
+  const oldConsole = console;
+  console = {error: msg => (errorMessage = msg)};
   RE2.unicodeWarningLevel = 'warnOnce';
 
   let a = new RE2('.*');
@@ -23,14 +23,14 @@ test('test new unicode warnOnce', t => {
   t.ok(errorMessage);
 
   RE2.unicodeWarningLevel = 'nothing';
-  console.error = consoleError;
+  console = oldConsole;
 });
 
 test('test new unicode warn', t => {
   let errorMessage = '';
 
-  const consoleError = console.error;
-  console.error = msg => (errorMessage = msg);
+  const oldConsole = console;
+  console = {error: msg => (errorMessage = msg)};
   RE2.unicodeWarningLevel = 'warn';
 
   let a = new RE2('.*');
@@ -41,7 +41,7 @@ test('test new unicode warn', t => {
   t.ok(errorMessage);
 
   RE2.unicodeWarningLevel = 'nothing';
-  console.error = consoleError;
+  console = oldConsole;
 });
 
 test('test new unicode throw', t => {
