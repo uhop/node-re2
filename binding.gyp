@@ -52,6 +52,7 @@
         "vendor/abseil-cpp/absl/container/internal/hashtablez_sampler.cc",
         "vendor/abseil-cpp/absl/container/internal/hashtablez_sampler_force_weak_definition.cc",
         "vendor/abseil-cpp/absl/container/internal/raw_hash_set.cc",
+        "vendor/abseil-cpp/absl/debugging/internal/borrowed_fixup_buffer.cc",
         "vendor/abseil-cpp/absl/debugging/internal/decode_rust_punycode.cc",
         "vendor/abseil-cpp/absl/debugging/internal/demangle.cc",
         "vendor/abseil-cpp/absl/debugging/internal/demangle_rust.cc",
@@ -163,7 +164,8 @@
         }],
         ["OS==\"win\"", {
           "sources": [
-            "vendor/abseil-cpp/absl/synchronization/internal/win32_waiter.cc"
+            "vendor/abseil-cpp/absl/synchronization/internal/win32_waiter.cc",
+            "vendor/abseil-cpp/absl/time/internal/cctz/src/time_zone_name_win.cc"
           ]
         }]
       ]
