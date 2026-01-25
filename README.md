@@ -416,6 +416,7 @@ The same applies to `\P{...}`.
 
 ## Release history
 
+- 1.23.1 *Updated Abseil and dev dependencies.*
 - 1.23.0 *Updated all dependencies, upgraded tooling. New feature: `RE2.Set` (thx, [Wes](https://github.com/wrmedford)).*
 - 1.22.3 *Technical release: upgraded QEMU emulations to native ARM runners to speed up the build process.*
 - 1.22.2 *Updated all dependencies and the list of pre-compiled targets: Node 20, 22, 24, 25 (thx, [Jiayu Liu](https://github.com/jimexist)).*
