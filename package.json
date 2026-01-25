@@ -21,13 +21,13 @@
   },
   "devDependencies": {
     "@types/node": "^25.0.10",
-    "nano-benchmark": "^1.0.6",
-    "tape-six": "^1.4.4",
-    "tape-six-proc": "^1.1.5",
+    "nano-benchmark": "^1.0.7",
+    "tape-six": "^1.4.5",
+    "tape-six-proc": "^1.1.6",
     "typescript": "^5.9.3"
   },
   "scripts": {
-    "test": "TAPE6_FLAGS=C tape6-proc --flags FO",
+    "test": "tape6-proc --flags FO",
     "save-to-github": "save-to-github-cache --artifact build/Release/re2.node",
     "install": "install-from-cache --artifact build/Release/re2.node --host-var RE2_DOWNLOAD_MIRROR --skip-path-var RE2_DOWNLOAD_SKIP_PATH --skip-ver-var RE2_DOWNLOAD_SKIP_VER || node-gyp -j max rebuild",
     "verify-build": "node scripts/verify-build.js",
