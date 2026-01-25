@@ -98,7 +98,6 @@
         "vendor/abseil-cpp/absl/strings/numbers.cc",
         "vendor/abseil-cpp/absl/strings/str_cat.cc",
         "vendor/abseil-cpp/absl/strings/str_split.cc",
-        "vendor/abseil-cpp/absl/strings/string_view.cc",
         "vendor/abseil-cpp/absl/synchronization/internal/create_thread_identity.cc",
         "vendor/abseil-cpp/absl/synchronization/internal/graphcycles.cc",
         "vendor/abseil-cpp/absl/synchronization/internal/futex_waiter.cc",
