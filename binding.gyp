@@ -163,8 +163,7 @@
         }],
         ["OS==\"win\"", {
           "sources": [
-            "vendor/abseil-cpp/absl/synchronization/internal/win32_waiter.cc",
-            "vendor/abseil-cpp/absl/time/internal/cctz/src/time_zone_name_win.cc"
+            "vendor/abseil-cpp/absl/synchronization/internal/win32_waiter.cc"
           ]
         }]
       ]
