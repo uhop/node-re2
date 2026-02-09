@@ -416,6 +416,7 @@ The same applies to `\P{...}`.
 
 ## Release history
 
+- 1.23.3 *Updated Abseil and dev dependencies.*
 - 1.23.2 *Updated dev dependencies.*
 - 1.23.1 *Updated Abseil and dev dependencies.*
 - 1.23.0 *Updated all dependencies, upgraded tooling. New feature: `RE2.Set` (thx, [Wes](https://github.com/wrmedford)).*
