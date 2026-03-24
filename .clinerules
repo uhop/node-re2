@@ -1,0 +1,66 @@
+<!-- Canonical source: AGENTS.md — keep this file in sync -->
+# node-re2 — AI Agent Rules
+
+## Project identity
+
+node-re2 provides Node.js bindings for RE2: a fast, safe alternative to backtracking regular expression engines. The npm package name is `re2`. It is a C++ native addon built with `node-gyp` and `nan`.
+
+## Critical rules
+
+- **CommonJS.** The project is `"type": "commonjs"`. Use `require()` in source, `import` in tests (`.mjs`).
+- **No transpilation.** JavaScript code runs directly.
+- **Do not modify vendored code.** Never edit files under `vendor/`. They are git submodules.
+- **Do not modify or delete test expectations** without understanding why they changed.
+- **Do not add comments or remove comments** unless explicitly asked.
+- **Keep `re2.js` and `re2.d.ts` in sync.** All public API exposed from `re2.js` must be typed in `re2.d.ts`.
+- **The addon must build on all supported platforms:** Linux (x64, arm64, Alpine), macOS (x64, arm64), Windows (x64, arm64).
+- **RE2 is always Unicode-mode.** The `u` flag is always added implicitly.
+- **Buffer support is a first-class feature.** All methods that accept strings must also accept Buffers, returning Buffers when given Buffer input.
+
+## Code style
+
+- C++ code: tabs, 4-wide indentation. JavaScript: 2-space indentation.
+- Prettier: 80 char width, single quotes, no bracket spacing, no trailing commas, arrow parens "avoid" (see `.prettierrc`).
+- nan (Native Abstractions for Node.js) for the C++ addon API.
+- Semicolons are enforced by Prettier (default `semi: true`).
+
+## Architecture quick reference
+
+- `re2.js` is the main entry point. Loads `build/Release/re2.node`, sets up Symbol aliases (`Symbol.match`, `Symbol.search`, `Symbol.replace`, `Symbol.split`, `Symbol.matchAll`).
+- C++ addon (`lib/*.cc`) wraps Google's RE2 via nan. Each RegExp method has its own `.cc` file.
+- `lib/new.cc` handles construction: parse pattern/flags, translate RegExp → RE2 syntax (via `lib/pattern.cc`).
+- `lib/pattern.cc` translates Unicode class names (`\p{Letter}` → `\p{L}`, `\p{Script=Latin}` → `\p{Latin}`).
+- `lib/set.cc` implements `RE2.Set` for multi-pattern matching.
+- `lib/util.cc` provides UTF-8 ↔ UTF-16 conversion and buffer helpers.
+- Prebuilt artifacts downloaded at install time via `install-artifact-from-github`.
+
+## Verification commands
+
+- `npm test` — run the full test suite (parallel workers)
+- `node tests/test-<name>.mjs` — run a single test file directly
+- `npm run test:seq` — run sequentially
+- `npm run ts-check` — TypeScript type checking
+- `npm run lint` — Prettier check
+- `npm run lint:fix` — Prettier write
+- `npm run verify-build` — quick smoke test
+- `npm run rebuild` — rebuild the native addon (release)
+- `npm run rebuild:dev` — rebuild the native addon (debug)
+
+## File layout
+
+- Entry point: `re2.js` + `re2.d.ts`
+- C++ addon: `lib/*.cc`, `lib/*.h`
+- Build config: `binding.gyp`
+- Tests: `tests/test-*.mjs`
+- TypeScript tests: `ts-tests/test-*.ts`
+- Benchmarks: `bench/`
+- Vendored deps: `vendor/re2/`, `vendor/abseil-cpp/` (git submodules)
+- CI: `.github/workflows/`, `.github/actions/`
+
+## When reading the codebase
+
+- Start with `ARCHITECTURE.md` for the module map and dependency graph.
+- `re2.d.ts` is the best API reference for the public API.
+- `re2.js` is tiny — read it first for the JS-side setup.
+- `lib/addon.cc` shows how all C++ methods are registered.
+- `lib/wrapped_re2.h` defines the core C++ class.

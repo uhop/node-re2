@@ -1,0 +1,462 @@
+# node-re2
+
+> Node.js bindings for RE2: a fast, safe alternative to backtracking regular expression engines. Drop-in RegExp replacement that prevents ReDoS (Regular Expression Denial of Service). Works with strings and Buffers. C++ native addon built with node-gyp and nan.
+
+- Drop-in replacement for RegExp with linear-time matching guarantee
+- Prevents ReDoS by disallowing backreferences and lookahead assertions
+- Full Unicode mode (always on)
+- Buffer support for high-performance binary/UTF-8 processing
+- Named capture groups
+- Symbol-based methods (Symbol.match, Symbol.search, Symbol.replace, Symbol.split, Symbol.matchAll)
+- RE2.Set for multi-pattern matching
+- Prebuilt binaries for Linux, macOS, Windows (x64 + arm64)
+- TypeScript declarations included
+
+## Install
+
+```bash
+npm install re2
+```
+
+Prebuilt native binaries are downloaded automatically. Falls back to building from source via node-gyp if no prebuilt is available.
+
+## Quick start
+
+```js
+const RE2 = require('re2');
+
+// Create and use like RegExp
+const re = new RE2('a(b*)', 'i');
+const result = re.exec('aBbC');
+console.log(result[0]); // "aBb"
+console.log(result[1]); // "Bb"
+
+// Works with ES6 string methods
+'hello world'.match(new RE2('\\w+', 'g')); // ['hello', 'world']
+'hello world'.replace(new RE2('world'), 'RE2'); // 'hello RE2'
+```
+
+## Importing
+
+```js
+// CommonJS
+const RE2 = require('re2');
+
+// ESM
+import RE2 from 're2';
+// or
+import {default as RE2} from 're2';
+```
+
+## Construction
+
+`new RE2(pattern[, flags])` or `RE2(pattern[, flags])` (factory mode).
+
+Pattern can be:
+- **String**: `new RE2('\\d+')`
+- **String with flags**: `new RE2('\\d+', 'gi')`
+- **RegExp**: `new RE2(/ab*/ig)` — copies pattern and flags.
+- **RE2**: `new RE2(existingRE2)` — copies pattern and flags.
+- **Buffer**: `new RE2(Buffer.from('pattern'))` — pattern from UTF-8 buffer.
+
+Supported flags:
+- `g` — global (find all matches)
+- `i` — ignoreCase
+- `m` — multiline (`^`/`$` match line boundaries)
+- `s` — dotAll (`.` matches `\n`)
+- `u` — unicode (always on, added implicitly)
+- `y` — sticky (match at lastIndex only)
+- `d` — hasIndices (include index info for capture groups)
+
+Invalid patterns throw `SyntaxError`. Patterns with backreferences or lookahead throw `SyntaxError`.
+
+## Properties
+
+### Instance properties
+
+- `re.source` (string) — the pattern string, escaped for use in `new RE2(re.source)` or `new RegExp(re.source)`.
+- `re.flags` (string) — the flags string (e.g., `'giu'`).
+- `re.lastIndex` (number) — the index at which to start the next match (used with `g` or `y` flags).
+- `re.global` (boolean) — whether the `g` flag is set.
+- `re.ignoreCase` (boolean) — whether the `i` flag is set.
+- `re.multiline` (boolean) — whether the `m` flag is set.
+- `re.dotAll` (boolean) — whether the `s` flag is set.
+- `re.unicode` (boolean) — always `true` (RE2 always operates in Unicode mode).
+- `re.sticky` (boolean) — whether the `y` flag is set.
+- `re.hasIndices` (boolean) — whether the `d` flag is set.
+- `re.internalSource` (string) — the RE2-translated pattern (for debugging; may differ from `source`).
+
+### Static properties
+
+- `RE2.unicodeWarningLevel` (string) — controls behavior when a non-Unicode regexp is created:
+  - `'nothing'` (default) — silently add `u` flag.
+  - `'warnOnce'` — warn once, then silently add `u`. Assigning resets the one-time flag.
+  - `'warn'` — warn every time.
+  - `'throw'` — throw `SyntaxError` every time.
+
+## RegExp methods
+
+### re.exec(str)
+
+Executes a search for a match. Returns a result array or `null`.
+
+```js
+const re = new RE2('a(b+)', 'g');
+const result = re.exec('abbc abbc');
+// result[0] === 'abb'
+// result[1] === 'bb'
+// result.index === 0
+// result.input === 'abbc abbc'
+// re.lastIndex === 3
+```
+
+With `d` flag (hasIndices), result has `.indices` property with `[start, end]` pairs for each group.
+
+With `g` or `y` flag, advances `lastIndex`. Call repeatedly to iterate matches.
+
+### re.test(str)
+
+Returns `true` if the pattern matches, `false` otherwise.
+
+```js
+new RE2('\\d+').test('abc123'); // true
+new RE2('\\d+').test('abcdef'); // false
+```
+
+With `g` or `y` flag, advances `lastIndex`.
+
+### re.toString()
+
+Returns `'/pattern/flags'` string representation.
+
+```js
+new RE2('abc', 'gi').toString(); // '/abc/giu'
+```
+
+## String methods (via Symbol)
+
+RE2 instances implement well-known symbols, so they work directly with ES6 string methods:
+
+### str.match(re) / re[Symbol.match](str)
+
+```js
+'test 123 test 456'.match(new RE2('\\d+', 'g')); // ['123', '456']
+'test 123'.match(new RE2('(\\d+)')); // ['123', '123', index: 5, input: 'test 123']
+```
+
+### str.matchAll(re) / re[Symbol.matchAll](str)
+
+Returns an iterator of all matches (requires `g` flag).
+
+```js
+const re = new RE2('\\d+', 'g');
+for (const m of '1a2b3c'.matchAll(re)) {
+  console.log(m[0]); // '1', '2', '3'
+}
+```
+
+### str.search(re) / re[Symbol.search](str)
+
+Returns the index of the first match, or `-1`.
+
+```js
+'hello world'.search(new RE2('world')); // 6
+```
+
+### str.replace(re, replacement) / re[Symbol.replace](str, replacement)
+
+Returns a new string with matches replaced.
+
+```js
+'aabba'.replace(new RE2('b', 'g'), 'c'); // 'aacca'
+```
+
+Replacement string supports:
+- `$1`, `$2`, ... — numbered capture groups.
+- `$<name>` — named capture groups.
+- `$&` — the matched substring.
+- `` $` `` — portion before the match.
+- `$'` — portion after the match.
+- `$$` — literal `$`.
+
+Replacement function receives `(match, ...groups, offset, input)`:
+
+```js
+'abc'.replace(new RE2('(b)'), (match, g1, offset) => `[${g1}@${offset}]`);
+// 'a[b@1]c'
+```
+
+### str.split(re[, limit]) / re[Symbol.split](str[, limit])
+
+Splits string by pattern.
+
+```js
+'a1b2c3'.split(new RE2('\\d')); // ['a', 'b', 'c', '']
+'a1b2c3'.split(new RE2('\\d'), 2); // ['a', 'b']
+```
+
+## String methods (direct)
+
+These are convenience methods on the RE2 instance with swapped argument order:
+
+- `re.match(str)` — equivalent to `str.match(re)`.
+- `re.search(str)` — equivalent to `str.search(re)`.
+- `re.replace(str, replacement)` — equivalent to `str.replace(re, replacement)`.
+- `re.split(str[, limit])` — equivalent to `str.split(re, limit)`.
+
+```js
+const re = new RE2('\\d+', 'g');
+re.match('test 123 test 456'); // ['123', '456']
+re.search('test 123');          // 5
+re.replace('test 123', 'NUM');  // 'test NUM test NUM' (if global)
+re.split('a1b2c');              // ['a', 'b', 'c']
+```
+
+## Buffer support
+
+All methods accept Node.js Buffers (UTF-8) instead of strings. When given Buffer input, they return Buffer output.
+
+```js
+const re = new RE2('матч', 'g');
+const buf = Buffer.from('тест матч тест');
+const result = re.exec(buf);
+// result[0] is a Buffer containing 'матч' in UTF-8
+// result.index is in bytes (not characters)
+```
+
+Differences from string mode:
+- All offsets and lengths are in **bytes**, not characters.
+- Results contain Buffers instead of strings.
+- Use `buf.toString()` to convert results back to strings.
+
+### useBuffers on replacer functions
+
+When using `re.replace(buf, replacerFn)`, the replacer receives string arguments and character offsets by default. Set `replacerFn.useBuffers = true` to receive byte offsets instead:
+
+```js
+function replacer(match, offset, input) {
+  return '<' + offset + ' bytes>';
+}
+replacer.useBuffers = true;
+new RE2('б').replace(Buffer.from('абв'), replacer);
+```
+
+## RE2.Set
+
+Multi-pattern matching — compile many patterns into a single automaton and test/match against all of them at once. Faster than testing individual patterns when the number of patterns is large.
+
+### Constructor
+
+```js
+new RE2.Set(patterns[, flagsOrOptions][, options])
+```
+
+- `patterns` — any iterable of strings, Buffers, RegExp, or RE2 instances.
+- `flagsOrOptions` — optional string/Buffer with flags (apply to all patterns), or options object.
+- `options.anchor` — `'unanchored'` (default), `'start'`, or `'both'`.
+
+```js
+const set = new RE2.Set([
+  '^/users/\\d+$',
+  '^/posts/\\d+$',
+  '^/api/.*$'
+], 'i', {anchor: 'start'});
+```
+
+### set.test(str)
+
+Returns `true` if any pattern matches, `false` otherwise.
+
+```js
+set.test('/users/42');  // true
+set.test('/unknown');   // false
+```
+
+### set.match(str)
+
+Returns an array of indices of matching patterns, sorted ascending. Empty array if none match.
+
+```js
+set.match('/users/42');  // [0]
+set.match('/api/users'); // [2]
+set.match('/unknown');   // []
+```
+
+### Properties
+
+- `set.size` (number) — number of patterns.
+- `set.source` (string) — all patterns joined with `|`.
+- `set.sources` (string[]) — individual pattern sources.
+- `set.flags` (string) — flags string.
+- `set.anchor` (string) — anchor mode.
+
+### set.toString()
+
+Returns `'/pattern1|pattern2|.../flags'`.
+
+```js
+set.toString(); // '/^/users/\\d+$|^/posts/\\d+$|^/api/.*$/iu'
+```
+
+## Static helpers
+
+### RE2.getUtf8Length(str)
+
+Calculate the byte size needed to encode a UTF-16 string as UTF-8.
+
+```js
+RE2.getUtf8Length('hello'); // 5
+RE2.getUtf8Length('привет'); // 12
+```
+
+### RE2.getUtf16Length(buf)
+
+Calculate the character count needed to encode a UTF-8 buffer as a UTF-16 string.
+
+```js
+RE2.getUtf16Length(Buffer.from('hello')); // 5
+RE2.getUtf16Length(Buffer.from('привет')); // 6
+```
+
+## Named groups
+
+Named capture groups are supported:
+
+```js
+const re = new RE2('(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})');
+const result = re.exec('2024-01-15');
+result.groups.year;  // '2024'
+result.groups.month; // '01'
+result.groups.day;   // '15'
+```
+
+Named backreferences in replacement strings:
+
+```js
+'2024-01-15'.replace(
+  new RE2('(?<y>\\d{4})-(?<m>\\d{2})-(?<d>\\d{2})'),
+  '$<d>/$<m>/$<y>'
+); // '15/01/2024'
+```
+
+## Unicode classes
+
+RE2 supports Unicode property escapes. Long names are translated to RE2 short names:
+
+```js
+new RE2('\\p{Letter}+');        // same as \p{L}+
+new RE2('\\p{Number}+');        // same as \p{N}+
+new RE2('\\p{Script=Latin}+');  // same as \p{Latin}+
+new RE2('\\p{sc=Cyrillic}+');   // same as \p{Cyrillic}+
+new RE2('\\P{Letter}+');        // negated: non-letters
+```
+
+Only `\p{name}` form is supported (not `\p{name=value}` in general). Exception: `Script` and `sc` names.
+
+## Limitations
+
+RE2 does **not** support:
+
+- **Backreferences** (`\1`, `\2`, etc.) — throw `SyntaxError`.
+- **Lookahead assertions** (`(?=...)`, `(?!...)`) — throw `SyntaxError`.
+- **Lookbehind assertions** (`(?<=...)`, `(?<!...)`) — throw `SyntaxError`.
+
+Fallback pattern:
+
+```js
+let re = /pattern-with-lookahead(?=foo)/;
+try {
+  re = new RE2(re);
+} catch (e) {
+  // use original RegExp as fallback
+}
+const result = re.exec(input);
+```
+
+## Common patterns
+
+### Drop-in RegExp replacement
+
+```js
+const RE2 = require('re2');
+
+// Before (vulnerable to ReDoS):
+const re = new RegExp(userInput);
+
+// After (safe):
+const re = new RE2(userInput);
+```
+
+### Process Buffer data efficiently
+
+```js
+const RE2 = require('re2');
+const fs = require('fs');
+
+const data = fs.readFileSync('large-file.txt');
+const re = new RE2('pattern', 'g');
+let match;
+while ((match = re.exec(data)) !== null) {
+  console.log('Found at byte offset:', match.index);
+}
+```
+
+### Route matching with RE2.Set
+
+```js
+const RE2 = require('re2');
+
+const routes = new RE2.Set([
+  '^/users/\\d+$',
+  '^/posts/\\d+$',
+  '^/api/v\\d+/.*$'
+], 'i');
+
+function findRoute(path) {
+  const matches = routes.match(path);
+  return matches.length > 0 ? matches[0] : -1;
+}
+
+findRoute('/users/42');   // 0
+findRoute('/posts/7');    // 1
+findRoute('/api/v2/foo'); // 2
+findRoute('/unknown');    // -1
+```
+
+### Validate user-supplied patterns safely
+
+```js
+const RE2 = require('re2');
+
+function safeMatch(input, pattern, flags) {
+  try {
+    const re = new RE2(pattern, flags);
+    return re.test(input);
+  } catch (e) {
+    return false; // invalid pattern
+  }
+}
+```
+
+## TypeScript
+
+```ts
+import RE2 from 're2';
+
+const re: RE2 = new RE2('\\d+', 'g');
+const result: RegExpExecArray | null = re.exec('test 123');
+
+// Buffer overloads
+const bufResult: RE2BufferExecArray | null = re.exec(Buffer.from('test 123'));
+
+// RE2.Set
+const set: RE2Set = new RE2.Set(['a', 'b'], 'i');
+const matches: number[] = set.match('abc');
+```
+
+## Links
+
+- Docs: https://github.com/uhop/node-re2/wiki
+- npm: https://www.npmjs.com/package/re2
+- Repository: https://github.com/uhop/node-re2
+- RE2 syntax: https://github.com/google/re2/wiki/Syntax

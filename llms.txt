@@ -1,0 +1,124 @@
+# node-re2
+
+> Node.js bindings for RE2: a fast, safe alternative to backtracking regular expression engines. Drop-in RegExp replacement that prevents ReDoS. Works with strings and Buffers.
+
+## Install
+
+npm install re2
+
+## Quick start
+
+```js
+const RE2 = require('re2');
+
+const re = new RE2('a(b*)', 'i');
+const result = re.exec('aBbC');
+console.log(result[0]); // "aBb"
+console.log(result[1]); // "Bb"
+```
+
+## Why use node-re2?
+
+The built-in Node.js RegExp engine can run in exponential time with vulnerable patterns (ReDoS). RE2 guarantees linear-time matching by disallowing backreferences and lookahead assertions.
+
+## API
+
+### Construction
+
+```js
+const RE2 = require('re2');
+
+const re1 = new RE2('\\d+');           // from string
+const re2 = new RE2('\\d+', 'gi');     // with flags
+const re3 = new RE2(/ab*/ig);          // from RegExp
+const re4 = new RE2(re3);              // from another RE2
+const re5 = RE2('\\d+');               // factory (no new)
+```
+
+Supported flags: `g` (global), `i` (ignoreCase), `m` (multiline), `s` (dotAll), `u` (unicode, always on), `y` (sticky), `d` (hasIndices).
+
+### RegExp methods
+
+- `re.exec(str)` — find match with capture groups.
+- `re.test(str)` — boolean match check.
+- `re.toString()` — `/pattern/flags` representation.
+
+### String methods (via Symbol)
+
+RE2 instances work with ES6 string methods:
+
+```js
+'abc'.match(re);
+'abc'.search(re);
+'abc'.replace(re, 'x');
+'abc'.split(re);
+Array.from('abc'.matchAll(re));
+```
+
+### String methods (direct)
+
+- `re.match(str)` — equivalent to `str.match(re)`.
+- `re.search(str)` — equivalent to `str.search(re)`.
+- `re.replace(str, replacement)` — equivalent to `str.replace(re, replacement)`.
+- `re.split(str[, limit])` — equivalent to `str.split(re, limit)`.
+
+### Properties
+
+- `re.source` — pattern string.
+- `re.flags` — flags string.
+- `re.lastIndex` — index for next match (with `g` or `y` flag).
+- `re.global`, `re.ignoreCase`, `re.multiline`, `re.dotAll`, `re.unicode`, `re.sticky`, `re.hasIndices` — boolean flag accessors.
+- `re.internalSource` — RE2-translated pattern (for debugging).
+
+### Buffer support
+
+All methods accept Buffers (UTF-8) instead of strings. Buffer input produces Buffer output. Offsets are in bytes.
+
+```js
+const re = new RE2('матч', 'g');
+const buf = Buffer.from('тест матч тест');
+const result = re.exec(buf);
+// result[0] is a Buffer
+```
+
+### RE2.Set
+
+Multi-pattern matching — test a string against many patterns at once.
+
+```js
+const set = new RE2.Set(['^/users/\\d+$', '^/posts/\\d+$'], 'i');
+set.test('/users/7');     // true
+set.match('/posts/42');   // [1]
+set.sources;              // ['^/users/\\d+$', '^/posts/\\d+$']
+```
+
+- `new RE2.Set(patterns[, flags][, options])` — compile patterns.
+  - `options.anchor`: `'unanchored'` (default), `'start'`, or `'both'`.
+- `set.test(str)` — returns `true` if any pattern matches.
+- `set.match(str)` — returns array of matching pattern indices.
+- Properties: `size`, `source`, `sources`, `flags`, `anchor`.
+
+### Static helpers
+
+- `RE2.getUtf8Length(str)` — byte size of string as UTF-8.
+- `RE2.getUtf16Length(buf)` — character count of UTF-8 buffer as UTF-16 string.
+- `RE2.unicodeWarningLevel` — `'nothing'` (default), `'warnOnce'`, `'warn'`, or `'throw'`.
+
+## Limitations
+
+RE2 does not support:
+- **Backreferences** (`\1`, `\2`, etc.)
+- **Lookahead assertions** (`(?=...)`, `(?!...)`)
+
+These throw `SyntaxError`. Use try-catch to fall back to RegExp when needed:
+
+```js
+let re = /pattern-with-lookahead/;
+try { re = new RE2(re); } catch (e) { /* use original RegExp */ }
+```
+
+## Links
+
+- Docs: https://github.com/uhop/node-re2/wiki
+- npm: https://www.npmjs.com/package/re2
+- Full LLM reference: https://github.com/uhop/node-re2/blob/master/llms-full.txt
