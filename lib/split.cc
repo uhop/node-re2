@@ -77,7 +77,14 @@ NAN_METHOD(WrappedRE2::Split)
 		for (size_t i = 0, n = std::min(pieces.size(), limit); i < n; ++i)
 		{
 			const auto &item = pieces[i];
-			Nan::Set(result, i, Nan::CopyBuffer(item.data(), item.size()).ToLocalChecked());
+			if (item.data())
+			{
+				Nan::Set(result, i, Nan::CopyBuffer(item.data(), item.size()).ToLocalChecked());
+			}
+			else
+			{
+				Nan::Set(result, i, Nan::Undefined());
+			}
 		}
 	}
 	else
@@ -85,7 +92,14 @@ NAN_METHOD(WrappedRE2::Split)
 		for (size_t i = 0, n = std::min(pieces.size(), limit); i < n; ++i)
 		{
 			const auto &item = pieces[i];
-			Nan::Set(result, i, Nan::New(item.data(), item.size()).ToLocalChecked());
+			if (item.data())
+			{
+				Nan::Set(result, i, Nan::New(item.data(), item.size()).ToLocalChecked());
+			}
+			else
+			{
+				Nan::Set(result, i, Nan::Undefined());
+			}
 		}
 	}
 

@@ -20,6 +20,10 @@ NAN_METHOD(WrappedRE2::ToString)
 	buffer += re2->source;
 	buffer += "/";
 
+	if (re2->hasIndices)
+	{
+		buffer += "d";
+	}
 	if (re2->global)
 	{
 		buffer += "g";

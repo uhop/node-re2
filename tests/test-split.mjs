@@ -223,6 +223,24 @@ test('test split buffer', t => {
   );
 });
 
+test('test split alternation groups', t => {
+  const re = new RE2(/(a)|(b)/);
+  const result = re.split('xaxbx');
+  t.deepEqual(result, ['x', 'a', undefined, 'x', undefined, 'b', 'x']);
+
+  const re2 = new RE2(/(a)|(b)/);
+  const bufResult = re2.split(Buffer.from('xaxbx'));
+  t.equal(bufResult.length, 7);
+  t.ok(bufResult[0] instanceof Buffer);
+  t.equal(bufResult[0].toString(), 'x');
+  t.ok(bufResult[1] instanceof Buffer);
+  t.equal(bufResult[1].toString(), 'a');
+  t.equal(bufResult[2], undefined);
+  t.equal(bufResult[4], undefined);
+  t.ok(bufResult[5] instanceof Buffer);
+  t.equal(bufResult[5].toString(), 'b');
+});
+
 // Sticky tests
 
 test('test split sticky', t => {

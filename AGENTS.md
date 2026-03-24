@@ -38,7 +38,7 @@ node-re2/
 ├── binding.gyp           # node-gyp build configuration for the C++ addon
 ├── re2.js                # Main entry point: loads native addon, sets up Symbol aliases
 ├── re2.d.ts              # TypeScript declarations for the public API
-├── tsconfig.json         # TypeScript config (noEmit, strict)
+├── tsconfig.json         # TypeScript config (noEmit, strict, types: ["node"])
 ├── lib/                  # C++ source code (native addon)
 │   ├── addon.cc          # Node.js addon initialization, method registration
 │   ├── wrapped_re2.h     # WrappedRE2 class definition (core C++ wrapper)

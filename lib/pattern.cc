@@ -14,7 +14,7 @@ inline bool isUpperCaseAlpha(char ch)
 
 inline bool isHexadecimal(char ch)
 {
-	return ('0' <= ch && ch <= '9') || ('A' <= ch && ch <= 'Z') || ('a' <= ch && ch <= 'z');
+	return ('0' <= ch && ch <= '9') || ('A' <= ch && ch <= 'F') || ('a' <= ch && ch <= 'f');
 }
 
 static std::map<std::string, std::string> unicodeClasses = {

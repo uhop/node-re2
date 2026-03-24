@@ -20,4 +20,9 @@ test('test toString', t => {
 
   t.equal(RE2('c', 'ug').toString(), '/c/gu');
   t.equal(RE2('d', 'um').toString(), '/d/mu');
+
+  t.equal(RE2('a', 'd').toString(), '/a/du');
+  t.equal(RE2('a', 'dg').toString(), '/a/dgu');
+  t.equal(RE2('a', 'dgi').toString(), '/a/dgiu');
+  t.equal(RE2('a', 'dgimsy').toString(), '/a/dgimsuy');
 });

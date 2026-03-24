@@ -120,8 +120,6 @@ private:
 	void dropCache();
 	const StrVal &prepareArgument(const v8::Local<v8::Value> &arg, bool ignoreLastIndex = false);
 	void doneWithLastString();
-
-	friend struct PrepareLastString;
 };
 
 struct PrepareLastString

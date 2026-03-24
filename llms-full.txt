@@ -208,7 +208,7 @@ These are convenience methods on the RE2 instance with swapped argument order:
 const re = new RE2('\\d+', 'g');
 re.match('test 123 test 456'); // ['123', '456']
 re.search('test 123');          // 5
-re.replace('test 123', 'NUM');  // 'test NUM test NUM' (if global)
+re.replace('test 1 and 2', 'N');  // 'test N and N' (global replaces all)
 re.split('a1b2c');              // ['a', 'b', 'c']
 ```
 

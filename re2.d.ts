@@ -1,3 +1,5 @@
+/// <reference types="node" />
+
 declare module 're2' {
   interface RE2BufferExecArray {
     index: number;
@@ -6,6 +8,7 @@ declare module 're2' {
     groups?: {
       [key: string]: Buffer;
     };
+    indices?: RegExpIndicesArray;
   }
 
   interface RE2BufferMatchArray {
@@ -18,6 +21,7 @@ declare module 're2' {
   }
 
   interface RE2 extends RegExp {
+    readonly internalSource: string;
     exec(str: string): RegExpExecArray | null;
     exec(str: Buffer): RE2BufferExecArray | null;
 

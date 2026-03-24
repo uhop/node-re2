@@ -60,7 +60,7 @@ node-re2 provides Node.js bindings for RE2: a fast, safe alternative to backtrac
 ## When reading the codebase
 
 - Start with `ARCHITECTURE.md` for the module map and dependency graph.
-- `re2.d.ts` is the best API reference for the public API.
+- `re2.d.ts` is the best API reference for the public API. It includes `internalSource` and Buffer overloads.
 - `re2.js` is tiny — read it first for the JS-side setup.
 - `lib/addon.cc` shows how all C++ methods are registered.
 - `lib/wrapped_re2.h` defines the core C++ class.
