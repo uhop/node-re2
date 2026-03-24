@@ -203,7 +203,7 @@ test('general utf8', t => {
   t.equal(s.length, 7);
   t.equal(RE2.getUtf8Length(s), 13);
 
-  const b = new Buffer.from(s);
+  const b = Buffer.from(s);
   t.equal(b.length, 13);
   t.equal(RE2.getUtf16Length(b), 7);
 
@@ -212,7 +212,7 @@ test('general utf8', t => {
   t.equal(s2.length, 2);
   t.equal(RE2.getUtf8Length(s2), 4);
 
-  const b2 = new Buffer.from(s2);
+  const b2 = Buffer.from(s2);
 
   t.equal(b2.length, 4);
   t.equal(RE2.getUtf16Length(b2), 2);
@@ -228,7 +228,7 @@ test('general utf8', t => {
   t.equal(RE2.getUtf8Length(s4), 4);
   t.equal(RE2.getUtf16Length(Buffer.from(s4, 'utf8')), s4.length);
 
-  const b3 = new Buffer.from([0xf0]);
+  const b3 = Buffer.from([0xf0]);
 
   t.equal(b3.length, 1);
   t.equal(RE2.getUtf16Length(b3), 2);

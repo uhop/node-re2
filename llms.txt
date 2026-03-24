@@ -117,6 +117,10 @@ let re = /pattern-with-lookahead/;
 try { re = new RE2(re); } catch (e) { /* use original RegExp */ }
 ```
 
+## Project notes
+
+- C++ addon source is in `lib/`. Vendored deps (`vendor/re2/`, `vendor/abseil-cpp/`) are git submodules — **never modify files under `vendor/`**.
+
 ## Links
 
 - Docs: https://github.com/uhop/node-re2/wiki

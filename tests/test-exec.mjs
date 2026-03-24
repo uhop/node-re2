@@ -96,7 +96,7 @@ test('exec invalid', t => {
 test('exec anchor 1', t => {
   const re = new RE2('b|^a', 'g');
 
-  var result = re.exec('aabc');
+  let result = re.exec('aabc');
   t.ok(result);
   t.equal(result.index, 0);
   t.equal(re.lastIndex, 1);

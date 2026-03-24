@@ -4,7 +4,7 @@ import {default as RE2} from '../re2.js';
 // tests
 
 // These tests are copied from MDN:
-// https://developer-US/docs/Web/JavaScript/Reference/Global_Objects/String/match
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match
 
 test('test match', t => {
   const str = 'For more information, see Chapter 3.4.5.1';

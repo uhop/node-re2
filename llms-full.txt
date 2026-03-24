@@ -454,6 +454,13 @@ const set: RE2Set = new RE2.Set(['a', 'b'], 'i');
 const matches: number[] = set.match('abc');
 ```
 
+## Project structure notes
+
+- Entry point: `re2.js` (loads native addon), types: `re2.d.ts`.
+- C++ addon source: `lib/*.cc`, `lib/*.h`.
+- Tests: `tests/test-*.mjs` (runtime), `ts-tests/test-*.ts` (type-checking).
+- Vendored dependencies: `vendor/re2/`, `vendor/abseil-cpp/` (git submodules) — **never modify files under `vendor/`**.
+
 ## Links
 
 - Docs: https://github.com/uhop/node-re2/wiki

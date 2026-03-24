@@ -34,7 +34,7 @@ tests/                    # Test files (test-*.mjs using tape-six)
 ts-tests/                 # TypeScript type-checking tests
 └── test-types.ts         # Verifies type declarations compile correctly
 bench/                    # Benchmarks
-vendor/                   # Vendored C++ dependencies (git submodules)
+vendor/                   # Vendored C++ dependencies (git submodules) — DO NOT MODIFY
 ├── re2/                  # Google RE2 library source
 └── abseil-cpp/           # Abseil C++ library (RE2 dependency)
 .github/                  # CI workflows, Dependabot config, actions

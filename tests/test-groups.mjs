@@ -46,7 +46,7 @@ test('groups match', t => {
   t.deepEqual(result.groups, {a: '9'});
 });
 
-test('groups match', t => {
+test('groups replace', t => {
   t.equal(RE2('(?<w>\\w)(?<d>\\d)', 'g').replace('a1b2c', '$2$1'), '1a2bc');
   t.equal(RE2('(?<w>\\w)(?<d>\\d)', 'g').replace('a1b2c', '$<d>$<w>'), '1a2bc');
 

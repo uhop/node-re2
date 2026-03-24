@@ -5,29 +5,22 @@
 
 This project provides Node.js bindings for [RE2](https://github.com/google/re2):
 a fast, safe alternative to backtracking regular expression engines written by [Russ Cox](http://swtch.com/~rsc/) in C++.
-To learn more about RE2, start with an overview
-[Regular Expression Matching in the Wild](http://swtch.com/~rsc/regexp/regexp3.html). More resources can be found
-at his [Implementing Regular Expressions](http://swtch.com/~rsc/regexp/) page.
+To learn more about RE2, start with [Regular Expression Matching in the Wild](http://swtch.com/~rsc/regexp/regexp3.html). More resources are on his [Implementing Regular Expressions](http://swtch.com/~rsc/regexp/) page.
 
-
-`RE2`'s regular expression language is almost a superset of what is provided by `RegExp`
+`RE2`'s regular expression language is almost a superset of what `RegExp` provides
 (see [Syntax](https://github.com/google/re2/wiki/Syntax)),
-but it lacks two features: backreferences and lookahead assertions. See below for more details.
+but it lacks backreferences and lookahead assertions. See below for details.
 
-`RE2` always works in the [Unicode mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/unicode), which means that all matches that use character codes are interpret as Unicode code points, not as binary values of UTF-16.
-See `RE2.unicodeWarningLevel` below for more details.
+`RE2` always works in [Unicode mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/unicode) &mdash; character codes are interpreted as Unicode code points, not as binary values of UTF-16.
+See `RE2.unicodeWarningLevel` below for details.
 
+`RE2` emulates standard `RegExp`, making it a practical drop-in replacement in most cases.
+It also provides `String`-based regular expression methods. The constructor accepts `RegExp` directly, honoring all properties.
 
-`RE2` object emulates standard `RegExp` making it a practical drop-in replacement in most cases.
-`RE2` is extended to provide `String`-based regular expression methods as well. To help to convert
-`RegExp` objects to `RE2` its constructor can take `RegExp` directly honoring all properties.
+It can work with [Node.js Buffers](https://nodejs.org/api/buffer.html) directly, reducing overhead and making processing of long files fast.
 
-It can work with [node.js buffers](http://nodejs.org/api/buffer.html) directly reducing overhead
-on recoding and copying characters, and making processing/parsing long files fast.
-
-This project is implemented in C++ using [nan](https://github.com/nodejs/nan) for Node.js and cannot be used
-with non-compliant runtimes like web browsers. All documentation can be found in this README and in
-the [wiki](https://github.com/uhop/node-re2/wiki).
+The project is a C++ addon built with [nan](https://github.com/nodejs/nan). It cannot be used in web browsers.
+All documentation is in this README and in the [wiki](https://github.com/uhop/node-re2/wiki).
 
 ## Why use node-re2?
 
@@ -36,16 +29,15 @@ The built-in Node.js regular expression engine can run in exponential time with 
  - "Evil input"
 
 This can lead to what is known as a [Regular Expression Denial of Service (ReDoS)](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS).
-To tell if your regular expressions are vulnerable, you might try the one of these projects:
+To check if your regular expressions are vulnerable, try one of these projects:
  - [rxxr2](http://www.cs.bham.ac.uk/~hxt/research/rxxr2/)
  - [safe-regex](https://github.com/substack/safe-regex)
 
-However, neither project is perfect.
+Neither project is perfect.
 
-node-re2 can protect your Node.js application from ReDoS.
-node-re2 makes vulnerable regular expression patterns safe by evaluating them in `RE2` instead of the built-in Node.js regex engine.
+node-re2 protects against ReDoS by evaluating patterns in `RE2` instead of the built-in regex engine.
 
-To run the bundled benchmark, use the following command (make sure that node-re2 is properly built before):
+To run the bundled benchmark (make sure node-re2 is built first):
 
 ```bash
 npx nano-bench bench/bad-pattern.mjs
@@ -53,9 +45,11 @@ npx nano-bench bench/bad-pattern.mjs
 
 ## Standard features
 
-`RE2` object can be created just like `RegExp`:
+`RE2` objects are created just like `RegExp`:
 
 * [`new RE2(pattern[, flags])`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp)
+
+Supported flags: `g` (global), `i` (ignoreCase), `m` (multiline), `s` (dotAll), `u` (unicode, always on), `y` (sticky), `d` (hasIndices).
 
 Supported properties:
 
@@ -63,11 +57,10 @@ Supported properties:
 * [`re2.global`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global)
 * [`re2.ignoreCase`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/ignoreCase)
 * [`re2.multiline`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/multiline)
-* [`re2.dotAll`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/dotAll) &mdash; *since 1.17.6.*
-* [`re2.unicode`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/unicode)
-  * `RE2` engine always works in the Unicode mode. See details below.
-* [`re2.sticky`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/sticky) &mdash; *since 1.7.0.*
-* [`re2.hasIndices`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/hasIndices) &mdash; *since 1.19.0.*
+* [`re2.dotAll`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/dotAll)
+* [`re2.unicode`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/unicode) &mdash; always `true`; see details below.
+* [`re2.sticky`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/sticky)
+* [`re2.hasIndices`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/hasIndices)
 * [`re2.source`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/source)
 * [`re2.flags`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/flags)
 
@@ -77,44 +70,43 @@ Supported methods:
 * [`re2.test(str)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test)
 * [`re2.toString()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/toString)
 
-Starting with 1.6.0 following well-known symbol-based methods are supported (see [Symbols](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol)):
+Well-known symbol-based methods are supported (see [Symbols](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol)):
 
 * [`re2[Symbol.match](str)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/match)
-* [`re2[Symbol.matchAll](str)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/matchAll) &mdash; *since 1.17.5.*
+* [`re2[Symbol.matchAll](str)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/matchAll)
 * [`re2[Symbol.search](str)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/search)
 * [`re2[Symbol.replace](str, newSubStr|function)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/replace)
 * [`re2[Symbol.split](str[, limit])`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/split)
 
-It allows to use `RE2` instances on strings directly, just like `RegExp` instances:
+This lets you use `RE2` instances on strings directly, just like `RegExp`:
 
 ```js
-var re = new RE2("1");
-"213".match(re);        // [ '1', index: 1, input: '213' ]
-"213".search(re);       // 1
-"213".replace(re, "+"); // 2+3
-"213".split(re);        // [ '2', '3' ]
+const re = new RE2('1');
+'213'.match(re);        // [ '1', index: 1, input: '213' ]
+'213'.search(re);       // 1
+'213'.replace(re, '+'); // 2+3
+'213'.split(re);        // [ '2', '3' ]
 
-Array.from("2131".matchAll(re)); // returns a generator!
+Array.from('2131'.matchAll(new RE2('1', 'g'))); // matchAll requires the g flag
 // [['1', index: 1, input: '2131'], ['1', index: 3, input: '2131']]
 ```
 
-Starting with 1.8.0 [named groups](https://tc39.github.io/proposal-regexp-named-groups/) are supported.
+[Named groups](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Named_capturing_group) are supported.
 
 ## Extensions
 
 ### Shortcut construction
 
-`RE2` object can be created from a regular expression:
+`RE2` can be created from a regular expression:
 
 ```js
-var re1 = new RE2(/ab*/ig); // from a RegExp object
-var re2 = new RE2(re1);     // from another RE2 object
+const re1 = new RE2(/ab*/ig); // from a RegExp object
+const re2 = new RE2(re1);     // from another RE2 object
 ```
 
 ### `String` methods
 
-Standard `String` defines four more methods that can use regular expressions. `RE2` provides them as methods
-exchanging positions of a string, and a regular expression:
+`RE2` provides the standard `String` regex methods with swapped receiver and argument:
 
 * `re2.match(str)`
   * See [`str.match(regexp)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match)
@@ -125,12 +117,11 @@ exchanging positions of a string, and a regular expression:
 * `re2.split(str[, limit])`
   * See [`str.split(regexp[, limit])`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split)
 
-Starting with 1.6.0, these methods added as well-known symbol-based methods to be used transparently with ES6 string/regex machinery.
+These methods are also available as well-known symbol-based methods for transparent use with ES6 string/regex machinery.
 
 ### `Buffer` support
 
-In order to support `Buffer` directly, most methods can accept buffers instead of strings. It speeds up all operations.
-Following signatures are supported:
+Most methods accept Buffers instead of strings for direct UTF-8 processing:
 
 * `re2.exec(buf)`
 * `re2.test(buf)`
@@ -139,18 +130,16 @@ Following signatures are supported:
 * `re2.split(buf[, limit])`
 * `re2.replace(buf, replacer)`
 
-Differences with their string-based versions:
+Differences from string-based versions:
 
-* All buffers are assumed to be encoded as [UTF-8](http://en.wikipedia.org/wiki/UTF-8)
+* All buffers are assumed to be encoded as [UTF-8](https://en.wikipedia.org/wiki/UTF-8)
   (ASCII is a proper subset of UTF-8).
-* Instead of strings they return `Buffer` objects, even in composite objects. A buffer can be converted to a string with
-  [`buf.toString()`](http://nodejs.org/api/buffer.html#buffer_buf_tostring_encoding_start_end).
-* All offsets and lengths are in bytes, rather than characters (each UTF-8 character can occupy from 1 to 4 bytes).
-  This way users can properly slice buffers without costly recalculations from characters to bytes.
+* Results are `Buffer` objects, even in composite objects. Convert with
+  [`buf.toString()`](https://nodejs.org/api/buffer.html#buffer_buf_tostring_encoding_start_end).
+* All offsets and lengths are in bytes, not characters (each UTF-8 character occupies 1–4 bytes).
+  This lets you slice buffers directly without costly character-to-byte recalculations.
 
-When `re2.replace()` is used with a replacer function, the replacer can return a buffer, or a string. But all arguments
-(except for an input object) will be strings, and an offset will be in characters. If you prefer to deal
-with buffers and byte offsets in a replacer function, set a property `useBuffers` to `true` on the function:
+When `re2.replace()` is used with a replacer function, the replacer receives string arguments and character offsets by default. Set `useBuffers` to `true` on the function to receive byte offsets instead:
 
 ```js
 function strReplacer(match, offset, input) {
@@ -171,17 +160,13 @@ RE2("б").replace("абв", bufReplacer);
 // "а<= 2 bytes|в"
 ```
 
-This feature works for string and buffer inputs. If a buffer was used as an input, its output will be returned as
-a buffer too, otherwise a string will be returned.
+This works for both string and buffer inputs. Buffer input produces buffer output; string input produces string output.
 
 ### `RE2.Set`
 
-Starting with 1.23.0, use `RE2.Set` when the same string must be tested against many patterns. It builds a single automaton
-for all of them and frequently beats running a large list of individual regular expressions one by one.
+Use `RE2.Set` when the same string must be tested against many patterns. It builds a single automaton and frequently beats running individual regular expressions one by one.
 
-Sets support `test()` and `match()` methods. While `test()` can be simulated by combining patterns with `|` and using a regular expression object,
-`match()` is not because it returns a list of patterns that matched, which is not possible with a regular expression object.
-Parsing data against multiple choices is a frequent operation in the wild and `RE2.Set` is a fast way to do it.
+While `test()` can be simulated by combining patterns with `|`, `match()` returns which patterns matched &mdash; something a single regular expression cannot do.
 
 * `new RE2.Set(patterns[, flagsOrOptions][, options])`
   * `patterns` is any iterable of strings, `Buffer`s, `RegExp`, or `RE2` instances; flags (if provided) apply to the whole set.
@@ -211,7 +196,7 @@ routes.sources;              // ['^/users/\\d+$', '^/posts/\\d+$']
 routes.toString();           // '/^/users/\\d+$|^/posts/\\d+$/iu'
 ```
 
-To run the bundled benchmark, use the following command (make sure that node-re2 is properly built before):
+To run the bundled benchmark (make sure node-re2 is built first):
 
 ```bash
 npx nano-bench bench/set-match.mjs
@@ -219,27 +204,20 @@ npx nano-bench bench/set-match.mjs
 
 ### Calculate length
 
-Two functions to calculate string sizes between
-[UTF-8](http://en.wikipedia.org/wiki/UTF-8) and
-[UTF-16](http://en.wikipedia.org/wiki/UTF-16) are exposed on `RE2`:
+Two helpers convert between UTF-8 and UTF-16 sizes:
 
-* `RE2.getUtf8Length(str)` &mdash; calculates a buffer size in bytes to encode a UTF-16 string as
-  a UTF-8 buffer.
-* `RE2.getUtf16Length(buf)` &mdash; calculates a string size in characters to encode a UTF-8 buffer as
-  a UTF-16 string.
-
-JavaScript supports UCS-2 strings with 16-bit characters, while node.js 0.11 supports full UTF-16 as
-a default string.
+* `RE2.getUtf8Length(str)` &mdash; byte size needed to encode a string as a UTF-8 buffer.
+* `RE2.getUtf16Length(buf)` &mdash; character count needed to decode a UTF-8 buffer as a string.
 
 ### Property: `internalSource`
 
-Starting 1.8.0 property `source` emulates the same property of `RegExp`, meaning that it can be used to create an identical `RE2` or `RegExp` instance. Sometimes, for troubleshooting purposes, a user wants to inspect a `RE2` translated source. It is available as a read-only property called `internalSource`.
+`source` emulates the standard `RegExp` property and can recreate an identical `RE2` or `RegExp` instance. To inspect the RE2-translated pattern (useful for debugging), use the read-only `internalSource` property.
 
 ### Unicode warning level
 
-`RE2` engine always works in the Unicode mode. In most cases either there is no difference or the Unicode mode is actually preferred. But sometimes a user wants a tight control over their regular expressions. For those cases, there is a static string property `RE2.unicodeWarningLevel`.
+`RE2` always works in Unicode mode. In most cases this is either invisible or preferred. For applications that need tight control, the static property `RE2.unicodeWarningLevel` governs what happens when a non-Unicode regular expression is created.
 
-Regular expressions in the Unicode mode work as usual. But if a regular expression lacks the Unicode flag, it is always added silently.
+If a regular expression lacks the `u` flag, it is added silently by default:
 
 ```js
 const x = /./;
@@ -248,119 +226,111 @@ const y = new RE2(x);
 y.flags; // 'u'
 ```
 
-In the latter case `RE2` can do following actions depending on `RE2.unicodeWarningLevel`:
+Values of `RE2.unicodeWarningLevel`:
 
-* `'nothing'` (the default): no warnings or notifications of any kind, a regular expression will be created with `'u'` flag.
-* `'warnOnce'`: warns exactly once the very first time, a regular expression will be created with `'u'` flag.
-  * Assigning this value resets an internal flag, so `RE2` will warn once again.
-* `'warn'`: warns every time, a regular expression will be created with `'u'` flag.
-* `'throw'`: throws a `SyntaxError` every time.
-* All other warning level values are silently ignored on asignment leaving the previous value unchanged.
+* `'nothing'` (default) &mdash; silently add `u`.
+* `'warnOnce'` &mdash; warn once, then silently add `u`. Assigning this value resets the one-time flag.
+* `'warn'` &mdash; warn every time, still add `u`.
+* `'throw'` &mdash; throw `SyntaxError`.
+* Any other value is silently ignored, leaving the previous value unchanged.
 
-Warnings and exceptions help to audit an application for stray non-Unicode regular expressions.
+Warnings and exceptions help audit an application for stray non-Unicode regular expressions.
 
-`RE2.unicodeWarningLevel` is a global property. Be careful manipulating it in a multi-threaded environment as it is shared between threads.
+`RE2.unicodeWarningLevel` is global. Be careful in multi-threaded environments &mdash; it is shared across threads.
 
 ## How to install
 
-Installation:
-
 ```bash
-npm install --save re2
+npm install re2
 ```
 
-While the project is known to work with other package managers, it is not guaranteed nor tested.
-For example, [yarn](https://yarnpkg.com/) is known to fail in some scenarios
-(see this [Wiki article](https://github.com/uhop/node-re2/wiki/Problem:-unusual-errors-with-yarn)).
+The project works with other package managers but is not tested with them.
+See the wiki for notes on [yarn](https://github.com/uhop/node-re2/wiki/Using-with-yarn) and [pnpm](https://github.com/uhop/node-re2/wiki/Using-with-pnpm).
 
 ### Precompiled artifacts
 
-When installing re2 the [install script](https://github.com/uhop/install-artifact-from-github/blob/master/bin/install-from-cache.js) attempts to download a prebuilt artifact for your system from the Github releases. The download location can be overridden by setting the `RE2_DOWNLOAD_MIRROR` environment variable as seen in the install script.
+The [install script](https://github.com/uhop/install-artifact-from-github/blob/master/bin/install-from-cache.js) attempts to download a prebuilt artifact from GitHub Releases. Override the download location with the `RE2_DOWNLOAD_MIRROR` environment variable.
 
-If all attempts to download the prebuilt artifact for your system fails the script attempts to built re2 locally on your machine using [node-gyp](https://github.com/nodejs/node-gyp).
+If the download fails, the script builds RE2 locally using [node-gyp](https://github.com/nodejs/node-gyp).
 
 ## How to use
 
-It is used just like a `RegExp` object.
+It is used just like `RegExp`.
 
 ```js
-var RE2 = require("re2");
+const RE2 = require('re2');
 
 // with default flags
-var re = new RE2("a(b*)");
-var result = re.exec("abbc");
-console.log(result[0]); // "abb"
-console.log(result[1]); // "bb"
+let re = new RE2('a(b*)');
+let result = re.exec('abbc');
+console.log(result[0]); // 'abb'
+console.log(result[1]); // 'bb'
 
-result = re.exec("aBbC");
-console.log(result[0]); // "a"
-console.log(result[1]); // ""
+result = re.exec('aBbC');
+console.log(result[0]); // 'a'
+console.log(result[1]); // ''
 
 // with explicit flags
-re = new RE2("a(b*)", "i");
-result = re.exec("aBbC");
-console.log(result[0]); // "aBb"
-console.log(result[1]); // "Bb"
+re = new RE2('a(b*)', 'i');
+result = re.exec('aBbC');
+console.log(result[0]); // 'aBb'
+console.log(result[1]); // 'Bb'
 
 // from regular expression object
-var regexp = new RegExp("a(b*)", "i");
+const regexp = new RegExp('a(b*)', 'i');
 re = new RE2(regexp);
-result = re.exec("aBbC");
-console.log(result[0]); // "aBb"
-console.log(result[1]); // "Bb"
+result = re.exec('aBbC');
+console.log(result[0]); // 'aBb'
+console.log(result[1]); // 'Bb'
 
 // from regular expression literal
 re = new RE2(/a(b*)/i);
-result = re.exec("aBbC");
-console.log(result[0]); // "aBb"
-console.log(result[1]); // "Bb"
+result = re.exec('aBbC');
+console.log(result[0]); // 'aBb'
+console.log(result[1]); // 'Bb'
 
 // from another RE2 object
-var rex = new RE2(re);
-result = rex.exec("aBbC");
-console.log(result[0]); // "aBb"
-console.log(result[1]); // "Bb"
+const rex = new RE2(re);
+result = rex.exec('aBbC');
+console.log(result[0]); // 'aBb'
+console.log(result[1]); // 'Bb'
 
 // shortcut
-result = new RE2("ab*").exec("abba");
+result = new RE2('ab*').exec('abba');
 
 // factory
-result = RE2("ab*").exec("abba");
+result = RE2('ab*').exec('abba');
 ```
 
 ## Limitations (things RE2 does not support)
 
-`RE2` consciously avoids any regular expression features that require worst-case exponential time to evaluate.
-These features are essentially those that describe a Context-Free Language (CFL) rather than a Regular Expression,
-and are extensions to the traditional regular expression language because some people don't know when enough is enough.
-
-The most noteworthy missing features are backreferences and lookahead assertions.
-If your application uses these features, you should continue to use `RegExp`.
-But since these features are fundamentally vulnerable to
+`RE2` avoids any regular expression features that require worst-case exponential time to evaluate.
+The most notable missing features are backreferences and lookahead assertions.
+If your application uses them, you should continue to use `RegExp` &mdash;
+but since they are fundamentally vulnerable to
 [ReDoS](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS),
-you should strongly consider replacing them.
+consider replacing them.
 
-`RE2` will throw a `SyntaxError` if you try to declare a regular expression using these features.
-If you are evaluating an externally-provided regular expression, wrap your `RE2` declarations in a try-catch block. It allows to use `RegExp`, when `RE2` misses a feature:
+`RE2` throws `SyntaxError` for unsupported features.
+Wrap `RE2` declarations in a try-catch to fall back to `RegExp`:
 
 ```js
-var re = /(a)+(b)*/;
+let re = /(a)+(b)*/;
 try {
   re = new RE2(re);
   // use RE2 as a drop-in replacement
 } catch (e) {
-  // suppress an error, and use
-  // the original RegExp
+  // use the original RegExp
 }
-var result = re.exec(sample);
+const result = re.exec(sample);
 ```
 
-In addition to these missing features, `RE2` also behaves somewhat differently from the built-in regular expression engine in corner cases.
+`RE2` may also behave differently from the built-in engine in corner cases.
 
 ### Backreferences
 
-`RE2` doesn't support backreferences, which are numbered references to previously
-matched groups, like so: `\1`, `\2`, and so on. Example of backrefrences:
+`RE2` does not support backreferences &mdash; numbered references to previously
+matched groups (`\1`, `\2`, etc.). Example:
 
 ```js
 /(cat|dog)\1/.test("catcat"); // true
@@ -371,7 +341,7 @@ matched groups, like so: `\1`, `\2`, and so on. Example of backrefrences:
 
 ### Lookahead assertions
 
-`RE2` doesn't support lookahead assertions, which are ways to allow a matching dependent on subsequent contents.
+`RE2` does not support lookahead assertions, which make a match depend on subsequent contents.
 
 ```js
 /abc(?=def)/; // match abc only if it is followed by def
@@ -380,22 +350,22 @@ matched groups, like so: `\1`, `\2`, and so on. Example of backrefrences:
 
 ### Mismatched behavior
 
-`RE2` and the built-in regex engines disagree a bit. Before you switch to `RE2`, verify that your regular expressions continue to work as expected. They should do so in the vast majority of cases.
+`RE2` and the built-in engine may disagree in edge cases. Verify your regular expressions before switching. They should work in the vast majority of cases.
 
-Here is an example of a case where they may not:
+Example:
 
 ```js
-var RE2  = require("../re2");
+const RE2 = require('re2');
 
-var pattern = '(?:(a)|(b)|(c))+';
+const pattern = '(?:(a)|(b)|(c))+';
 
-var built_in = new RegExp(pattern);
-var re2 = new RE2(pattern);
+const built_in = new RegExp(pattern);
+const re2 = new RE2(pattern);
 
-var input = 'abc';
+const input = 'abc';
 
-var bi_res = built_in.exec(input);
-var re2_res = re2.exec(input);
+const bi_res = built_in.exec(input);
+const re2_res = re2.exec(input);
 
 console.log('bi_res: ' + bi_res);    // prints: bi_res: abc,,,c
 console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
@@ -403,15 +373,14 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 ### Unicode
 
-`RE2` always works in the Unicode mode. See `RE2.unicodeWarningLevel` above for more details on how to control warnings about this feature.
+`RE2` always works in Unicode mode. See `RE2.unicodeWarningLevel` above for details.
 
 #### Unicode classes `\p{...}` and `\P{...}`
 
-`RE2` supports a subset of Unicode classes as defined in [RE2 Syntax](https://github.com/google/re2/wiki/Syntax). Native Google RE2 supports only short names, e.g., `L` for `Letter`, `N` for `Number`, etc. Like `RegExp`, `RE2` supports both short and long names, e.g., `Letter` for `L`, by translating them to short names.
+`RE2` supports a subset of Unicode classes as defined in [RE2 Syntax](https://github.com/google/re2/wiki/Syntax). Google RE2 natively supports only short names (e.g., `L` for `Letter`). Like `RegExp`, node-re2 also accepts long names by translating them to short names.
 
-Generally, the extended form `\p{name=value}` is not supported. Only form `\p{name}` is supported.
-The exception is `Script` and `sc` names, e.g., `\p{Script=Latin}` and `\p{sc=Cyrillic}`.
-
+Only the `\p{name}` form is supported, not `\p{name=value}` in general.
+The exception is `Script` and `sc`, e.g., `\p{Script=Latin}` and `\p{sc=Cyrillic}`.
 The same applies to `\P{...}`.
 
 ## Release history
