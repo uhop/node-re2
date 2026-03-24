@@ -9,6 +9,8 @@ on:
 jobs:
   tests:
     name: Node.js ${{matrix.node-version}} on ${{matrix.os}}
+    permissions:
+      contents: read
     runs-on: ${{matrix.os}}
 
     strategy:

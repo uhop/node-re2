@@ -16,15 +16,16 @@
   ],
   "dependencies": {
     "install-artifact-from-github": "^1.4.0",
-    "nan": "^2.25.0",
+    "nan": "^2.26.2",
     "node-gyp": "^12.2.0"
   },
   "devDependencies": {
-    "@types/node": "^25.2.2",
-    "nano-benchmark": "^1.0.9",
-    "tape-six": "^1.7.0",
-    "tape-six-proc": "^1.2.2",
-    "typescript": "^5.9.3"
+    "@types/node": "^25.5.0",
+    "nano-benchmark": "^1.0.13",
+    "prettier": "^3.8.1",
+    "tape-six": "^1.7.12",
+    "tape-six-proc": "^1.2.7",
+    "typescript": "^6.0.2"
   },
   "scripts": {
     "test": "tape6-proc --flags FO",
