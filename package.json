@@ -24,7 +24,7 @@
     "nano-benchmark": "^1.0.9",
     "tape-six": "^1.7.0",
     "tape-six-proc": "^1.2.2",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.2"
   },
   "scripts": {
     "test": "tape6-proc --flags FO",
