@@ -4,3 +4,6 @@
 [submodule "vendor/abseil-cpp"]
 	path = vendor/abseil-cpp
 	url = https://github.com/abseil/abseil-cpp
+[submodule "wiki"]
+	path = wiki
+	url = git@github.com:uhop/node-re2.wiki.git
