@@ -4,6 +4,8 @@
 #include <re2/re2.h>
 #include <re2/set.h>
 
+#include "./isolate_data.h"
+
 #include <string>
 #include <vector>
 
@@ -14,7 +16,9 @@ public:
 	static inline bool HasInstance(v8::Local<v8::Object> object)
 	{
 		auto isolate = v8::Isolate::GetCurrent();
-		return !constructor.IsEmpty() && constructor.Get(isolate)->HasInstance(object);
+		auto data = getAddonData(isolate);
+		if (!data || data->re2SetTpl.IsEmpty()) return false;
+		return data->re2SetTpl.Get(isolate)->HasInstance(object);
 	}
 
 private:
@@ -30,8 +34,6 @@ private:
 	static NAN_GETTER(GetSource);
 	static NAN_GETTER(GetSize);
 	static NAN_GETTER(GetAnchor);
-
-	static Nan::Persistent<v8::FunctionTemplate> constructor;
 
 	re2::RE2::Set set;
 	std::vector<std::string> sources;

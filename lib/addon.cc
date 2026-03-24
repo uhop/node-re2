@@ -1,5 +1,36 @@
 #include "./wrapped_re2.h"
 #include "./wrapped_re2_set.h"
+#include "./isolate_data.h"
+
+#include <mutex>
+#include <unordered_map>
+
+static std::mutex addonDataMutex;
+static std::unordered_map<v8::Isolate *, AddonData *> addonDataMap;
+
+AddonData *getAddonData(v8::Isolate *isolate)
+{
+	std::lock_guard<std::mutex> lock(addonDataMutex);
+	auto it = addonDataMap.find(isolate);
+	return it != addonDataMap.end() ? it->second : nullptr;
+}
+
+void setAddonData(v8::Isolate *isolate, AddonData *data)
+{
+	std::lock_guard<std::mutex> lock(addonDataMutex);
+	addonDataMap[isolate] = data;
+}
+
+void deleteAddonData(v8::Isolate *isolate)
+{
+	std::lock_guard<std::mutex> lock(addonDataMutex);
+	auto it = addonDataMap.find(isolate);
+	if (it != addonDataMap.end())
+	{
+		delete it->second;
+		addonDataMap.erase(it);
+	}
+}
 
 static NAN_METHOD(GetUtf8Length)
 {
@@ -26,8 +57,7 @@ static NAN_METHOD(GetUtf16Length)
 static void cleanup(void *p)
 {
 	v8::Isolate *isolate = static_cast<v8::Isolate *>(p);
-	auto p_tpl = Nan::GetIsolateData<Nan::Persistent<v8::FunctionTemplate>>(isolate);
-	delete p_tpl;
+	deleteAddonData(isolate);
 }
 
 // NAN_MODULE_INIT(WrappedRE2::Init)
@@ -42,10 +72,11 @@ v8::Local<v8::Function> WrappedRE2::Init()
 	auto instanceTemplate = tpl->InstanceTemplate();
 	instanceTemplate->SetInternalFieldCount(1);
 
-	// save the template
+	// save the template in per-isolate storage
 	auto isolate = v8::Isolate::GetCurrent();
-	auto p_tpl = new Nan::Persistent<v8::FunctionTemplate>(tpl);
-	Nan::SetIsolateData(isolate, p_tpl);
+	auto data = new AddonData();
+	data->re2Tpl.Reset(tpl);
+	setAddonData(isolate, data);
 	node::AddEnvironmentCleanupHook(isolate, cleanup, isolate);
 
 	// prototype

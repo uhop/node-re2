@@ -8,8 +8,6 @@
 #include <string>
 #include <vector>
 
-Nan::Persistent<v8::FunctionTemplate> WrappedRE2Set::constructor;
-
 struct SetFlags
 {
 	bool global = false;
@@ -342,7 +340,10 @@ NAN_METHOD(WrappedRE2Set::New)
 		{
 			parameters[i] = info[i];
 		}
-		auto maybeNew = Nan::NewInstance(Nan::GetFunction(Nan::New(constructor)).ToLocalChecked(), parameters.size(), &parameters[0]);
+		auto isolate = context->GetIsolate();
+		auto addonData = getAddonData(isolate);
+		if (!addonData) return;
+		auto maybeNew = Nan::NewInstance(Nan::GetFunction(addonData->re2SetTpl.Get(isolate)).ToLocalChecked(), parameters.size(), &parameters[0]);
 		if (!maybeNew.IsEmpty())
 		{
 			info.GetReturnValue().Set(maybeNew.ToLocalChecked());
@@ -772,6 +773,11 @@ v8::Local<v8::Function> WrappedRE2Set::Init()
 	Nan::SetAccessor(instanceTemplate, Nan::New("size").ToLocalChecked(), GetSize);
 	Nan::SetAccessor(instanceTemplate, Nan::New("anchor").ToLocalChecked(), GetAnchor);
 
-	constructor.Reset(tpl);
+	auto isolate = v8::Isolate::GetCurrent();
+	auto data = getAddonData(isolate);
+	if (data)
+	{
+		data->re2SetTpl.Reset(tpl);
+	}
 	return scope.Escape(Nan::GetFunction(tpl).ToLocalChecked());
 }

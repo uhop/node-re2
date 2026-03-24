@@ -178,7 +178,7 @@ NAN_SETTER(WrappedRE2::SetLastIndex)
 	}
 }
 
-WrappedRE2::UnicodeWarningLevels WrappedRE2::unicodeWarningLevel;
+std::atomic<WrappedRE2::UnicodeWarningLevels> WrappedRE2::unicodeWarningLevel{WrappedRE2::NOTHING};
 
 NAN_GETTER(WrappedRE2::GetUnicodeWarningLevel)
 {

@@ -8,7 +8,7 @@
 #include <unordered_set>
 #include <vector>
 
-bool WrappedRE2::alreadyWarnedAboutUnicode = false;
+std::atomic<bool> WrappedRE2::alreadyWarnedAboutUnicode{false};
 
 static const char *deprecationMessage = "BMP patterns aren't supported by node-re2. An implicit \"u\" flag is assumed by the RE2 constructor. In a future major version, calling the RE2 constructor without the \"u\" flag may become forbidden, or cause a different behavior. Please see https://github.com/uhop/node-re2/issues/21 for more information.";
 
@@ -40,8 +40,9 @@ NAN_METHOD(WrappedRE2::New)
 			parameters[i] = info[i];
 		}
 		auto isolate = v8::Isolate::GetCurrent();
-		auto p_tpl = Nan::GetIsolateData<Nan::Persistent<v8::FunctionTemplate>>(isolate);
-		auto newObject = Nan::NewInstance(Nan::GetFunction(p_tpl->Get(isolate)).ToLocalChecked(), parameters.size(), &parameters[0]);
+		auto data = getAddonData(isolate);
+		if (!data) return;
+		auto newObject = Nan::NewInstance(Nan::GetFunction(data->re2Tpl.Get(isolate)).ToLocalChecked(), parameters.size(), &parameters[0]);
 		if (!newObject.IsEmpty())
 		{
 			info.GetReturnValue().Set(newObject.ToLocalChecked());

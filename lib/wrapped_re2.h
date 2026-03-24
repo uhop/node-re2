@@ -1,8 +1,11 @@
 #pragma once
 
+#include <atomic>
 #include <string>
 #include <nan.h>
 #include <re2/re2.h>
+
+#include "./isolate_data.h"
 
 struct StrVal
 {
@@ -86,8 +89,9 @@ public:
 	static inline bool HasInstance(v8::Local<v8::Object> object)
 	{
 		auto isolate = v8::Isolate::GetCurrent();
-		auto p_tpl = Nan::GetIsolateData<Nan::Persistent<v8::FunctionTemplate>>(isolate);
-		return p_tpl->Get(isolate)->HasInstance(object);
+		auto data = getAddonData(isolate);
+		if (!data || data->re2Tpl.IsEmpty()) return false;
+		return data->re2Tpl.Get(isolate)->HasInstance(object);
 	}
 
 	enum UnicodeWarningLevels
@@ -97,8 +101,8 @@ public:
 		WARN,
 		THROW
 	};
-	static UnicodeWarningLevels unicodeWarningLevel;
-	static bool alreadyWarnedAboutUnicode;
+	static std::atomic<UnicodeWarningLevels> unicodeWarningLevel;
+	static std::atomic<bool> alreadyWarnedAboutUnicode;
 
 	re2::RE2 regexp;
 	std::string source;
