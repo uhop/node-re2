@@ -1,5 +1,5 @@
 import test from 'tape-six';
-import {default as RE2} from '../../re2.js';
+import {RE2} from '../../re2.js';
 
 // tests
 // these tests modify the global state of RE2 and cannot be run in parallel with other tests in the same process

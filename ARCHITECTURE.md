@@ -129,9 +129,10 @@ re2.js ──→ build/Release/re2.node (compiled C++ addon)
 
 ## Testing
 
-- **Framework**: tape-six (`tape6-proc`)
-- **Run all**: `npm test` (parallel workers via `tape6-proc --flags FO`)
+- **Framework**: tape-six (`tape6`)
+- **Run all**: `npm test` (worker threads via `tape6 --flags FO`)
 - **Run sequential**: `npm run test:seq`
+- **Run multi-process**: `npm run test:proc`
 - **Run single file**: `node tests/test-<name>.mjs`
 - **TypeScript check**: `npm run ts-check`
 - **Lint**: `npm run lint` (Prettier check)
@@ -145,5 +146,5 @@ re2.js ──→ build/Release/re2.node (compiled C++ addon)
 const RE2 = require('re2');
 
 // ESM (tests)
-import {default as RE2} from '../re2.js';
+import {RE2} from '../re2.js';
 ```

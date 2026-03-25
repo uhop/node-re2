@@ -122,6 +122,11 @@ function test_staticMembers() {
     RE2.unicodeWarningLevel
   );
   RE2.unicodeWarningLevel = 'nothing';
+
+  const {RE2: NamedRE2} = RE2;
+  assertType<typeof RE2>(NamedRE2);
+  const re = new NamedRE2('abc');
+  assertType<RE2>(re);
 }
 
 function test_setTypes() {

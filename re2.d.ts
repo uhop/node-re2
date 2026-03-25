@@ -86,6 +86,7 @@ declare module 're2' {
     getUtf16Length(value: Buffer): number;
 
     Set: RE2SetConstructor;
+    RE2: RE2Constructor;
   }
 
   var RE2: RE2Constructor;

@@ -70,6 +70,14 @@ test('CJS RE2.Set', t => {
   t.deepEqual(set.match('abcghi'), [0, 2]);
 });
 
+test('CJS named import pattern', t => {
+  const {RE2: NamedRE2} = require('../re2.js');
+  t.equal(NamedRE2, RE2, 'RE2.RE2 === RE2');
+  const re = new NamedRE2('abc', 'u');
+  t.ok(re instanceof RE2, 'instance created via named import');
+  t.ok(re.test('abc'), 'works correctly');
+});
+
 test('CJS static helpers', t => {
   t.equal(RE2.getUtf8Length('hello'), 5);
   t.equal(RE2.getUtf16Length(Buffer.from('hello')), 5);

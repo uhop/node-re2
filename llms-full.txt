@@ -43,9 +43,7 @@ console.log(result[1]); // "Bb"
 const RE2 = require('re2');
 
 // ESM
-import RE2 from 're2';
-// or
-import {default as RE2} from 're2';
+import { RE2 } from 're2';
 ```
 
 ## Construction

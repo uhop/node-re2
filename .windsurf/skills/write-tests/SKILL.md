@@ -14,7 +14,7 @@ Write or update tests using the tape-six testing library.
 3. Check existing tests in `tests/` for node-re2 conventions and patterns.
 4. Create or update the test file in `tests/`:
    - For runtime tests use `.mjs`.
-   - Import RE2 with: `import {default as RE2} from '../re2.js';`
+   - Import RE2 with: `import {RE2} from '../re2.js';`
    - Import tape-six with: `import test from 'tape-six';`
    - Test with both **string** and **Buffer** inputs — Buffer support is a first-class feature.
    - Test edge cases: empty strings, no match, global flag behavior, lastIndex, Unicode input.

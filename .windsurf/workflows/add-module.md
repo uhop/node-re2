@@ -23,7 +23,7 @@ Follow these steps when adding a new method, feature, or C++ implementation.
 7. Update `re2.d.ts` with TypeScript declarations for the new method.
    - Keep `re2.js` and `re2.d.ts` in sync.
 8. Create `tests/test-foo.mjs` with automated tests (tape-six, ESM):
-   - `import {default as RE2} from '../re2.js';`
+   - `import {RE2} from '../re2.js';`
    - Test with strings and Buffers.
    - Test edge cases (empty input, no match, global flag, etc.).
    // turbo

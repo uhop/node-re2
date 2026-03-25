@@ -22,8 +22,9 @@ If the native addon fails to download a prebuilt artifact, it builds locally via
 - **Install:** `npm install` (downloads prebuilt artifact or builds from source)
 - **Build (release):** `npm run rebuild` (or `node-gyp -j max rebuild`)
 - **Build (debug):** `npm run rebuild:dev` (or `node-gyp -j max rebuild --debug`)
-- **Test:** `npm test` (runs `tape6-proc --flags FO`)
+- **Test:** `npm test` (runs `tape6 --flags FO`, worker threads)
 - **Test (sequential):** `npm run test:seq`
+- **Test (multi-process):** `npm run test:proc`
 - **Test (single file):** `node tests/test-<name>.mjs`
 - **TypeScript check:** `npm run ts-check`
 - **Lint:** `npm run lint` (Prettier check)
@@ -103,7 +104,7 @@ node-re2/
 
 ```js
 import test from 'tape-six';
-import {default as RE2} from '../re2.js';
+import {RE2} from '../re2.js';
 
 test('example', t => {
   const re = new RE2('a(b*)', 'i');

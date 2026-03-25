@@ -1,4 +1,4 @@
-import {default as RE2} from '../re2.js';
+import {RE2} from '../re2.js';
 
 const PATTERN_COUNT = 200;
 

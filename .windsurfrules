@@ -36,9 +36,10 @@ node-re2 provides Node.js bindings for RE2: a fast, safe alternative to backtrac
 
 ## Verification commands
 
-- `npm test` — run the full test suite (parallel workers)
+- `npm test` — run the full test suite (worker threads)
 - `node tests/test-<name>.mjs` — run a single test file directly
 - `npm run test:seq` — run sequentially
+- `npm run test:proc` — run multi-process
 - `npm run ts-check` — TypeScript type checking
 - `npm run lint` — Prettier check
 - `npm run lint:fix` — Prettier write

@@ -37,3 +37,4 @@ RE2.prototype[Symbol.matchAll] = function* (str) {
 };
 
 module.exports = RE2;
+module.exports.RE2 = RE2;
