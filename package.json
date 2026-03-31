@@ -21,10 +21,10 @@
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
-    "nano-benchmark": "^1.0.13",
+    "nano-benchmark": "^1.0.15",
     "prettier": "^3.8.1",
-    "tape-six": "^1.7.12",
-    "tape-six-proc": "^1.2.7",
+    "tape-six": "^1.7.13",
+    "tape-six-proc": "^1.2.8",
     "typescript": "^6.0.2"
   },
   "scripts": {
