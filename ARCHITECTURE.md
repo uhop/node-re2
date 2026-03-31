@@ -14,6 +14,7 @@ lib/                      # C++ source code (native addon)
 ├── addon.cc              # Node.js addon initialization, method registration
 ├── wrapped_re2.h         # WrappedRE2 class definition (core C++ wrapper)
 ├── wrapped_re2_set.h     # WrappedRE2Set class definition (RE2.Set wrapper)
+├── isolate_data.h        # Per-isolate data struct for thread-safe addon state
 ├── new.cc                # Constructor: parse pattern/flags, create RE2 instance
 ├── exec.cc               # RE2.prototype.exec() implementation
 ├── test.cc               # RE2.prototype.test() implementation
@@ -56,6 +57,7 @@ Each RegExp method has its own `.cc` file for maintainability:
 | File            | Purpose                                                          |
 | --------------- | ---------------------------------------------------------------- |
 | `addon.cc`      | Node.js module initialization, registers all methods/accessors   |
+| `isolate_data.h` | Per-isolate data struct (`AddonData`) for thread-safe addon state |
 | `wrapped_re2.h` | `WrappedRE2` class: holds `re2::RE2*`, flags, lastIndex, source |
 | `new.cc`        | Constructor: parses pattern + flags, translates syntax, creates RE2 instance |
 | `exec.cc`       | `exec()` — find match with capture groups                       |

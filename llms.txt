@@ -9,7 +9,11 @@ npm install re2
 ## Quick start
 
 ```js
+// CommonJS
 const RE2 = require('re2');
+
+// ESM
+import {RE2} from 're2';
 
 const re = new RE2('a(b*)', 'i');
 const result = re.exec('aBbC');

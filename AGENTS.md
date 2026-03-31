@@ -44,6 +44,7 @@ node-re2/
 │   ├── addon.cc          # Node.js addon initialization, method registration
 │   ├── wrapped_re2.h     # WrappedRE2 class definition (core C++ wrapper)
 │   ├── wrapped_re2_set.h # WrappedRE2Set class definition (RE2.Set wrapper)
+│   ├── isolate_data.h    # Per-isolate data struct for thread-safe addon state
 │   ├── new.cc            # Constructor: parse pattern/flags, create RE2 instance
 │   ├── exec.cc           # RE2.prototype.exec() implementation
 │   ├── test.cc           # RE2.prototype.test() implementation

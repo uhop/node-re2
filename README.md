@@ -385,6 +385,7 @@ The same applies to `\P{...}`.
 
 ## Release history
 
+- 1.24.0 *Fixed multi-threaded crash in worker threads (#235). Added named import: `import {RE2} from 're2'`. Added CJS test. Updated docs and dependencies.*
 - 1.23.3 *Updated Abseil and dev dependencies.*
 - 1.23.2 *Updated dev dependencies.*
 - 1.23.1 *Updated Abseil and dev dependencies.*
