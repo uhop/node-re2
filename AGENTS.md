@@ -10,7 +10,7 @@ For detailed usage docs see the [README](./README.md) and the [wiki](https://git
 This project uses git submodules for vendored dependencies (RE2 and Abseil):
 
 ```bash
-git clone --recursive git@github.com:uhop/node-re2.git
+git clone --recursive https://github.com/uhop/node-re2.git
 cd node-re2
 npm install
 ```

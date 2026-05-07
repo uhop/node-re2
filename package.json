@@ -49,7 +49,10 @@
   "github": "https://github.com/uhop/node-re2",
   "repository": {
     "type": "git",
-    "url": "git://github.com/uhop/node-re2.git"
+    "url": "git+https://github.com/uhop/node-re2.git"
+  },
+  "engines": {
+    "node": ">=22"
   },
   "keywords": [
     "RegExp",

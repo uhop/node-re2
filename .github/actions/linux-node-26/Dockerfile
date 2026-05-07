@@ -1,4 +1,4 @@
-FROM node:25-trixie
+FROM node:26-trixie
 
 RUN apt install python3 make gcc g++
 

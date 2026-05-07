@@ -1,0 +1,12 @@
+name: 'Create a binary artifact for Node 26 on Alpine Linux'
+description: 'Create a binary artifact for Node 26 on Alpine Linux using musl'
+inputs:
+  node-version:
+    description: 'Node.js version'
+    required: false
+    default: '26'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{inputs.node-version}}

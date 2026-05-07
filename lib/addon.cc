@@ -40,7 +40,7 @@ static NAN_METHOD(GetUtf8Length)
 		return;
 	}
 	auto s = t.ToLocalChecked();
-	info.GetReturnValue().Set(static_cast<int>(s->Utf8Length(v8::Isolate::GetCurrent())));
+	info.GetReturnValue().Set(static_cast<int>(s->Utf8LengthV2(v8::Isolate::GetCurrent())));
 }
 
 static NAN_METHOD(GetUtf16Length)
@@ -197,7 +197,7 @@ const StrVal &WrappedRE2::prepareArgument(const v8::Local<v8::Value> &arg, bool 
 	auto isolate = v8::Isolate::GetCurrent();
 
 	auto s = t.ToLocalChecked();
-	auto argLength = s->Utf8Length(isolate);
+	auto argLength = s->Utf8LengthV2(isolate);
 
 	auto buffer = node::Buffer::New(isolate, s).ToLocalChecked();
 	lastCache.Reset(buffer);

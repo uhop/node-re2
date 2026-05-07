@@ -34,7 +34,7 @@ static bool parseFlags(const v8::Local<v8::Value> &arg, SetFlags &flags)
 			return false;
 		}
 		auto s = t.ToLocalChecked();
-		size = s->Utf8Length(isolate);
+		size = s->Utf8LengthV2(isolate);
 		buffer.resize(size + 1);
 		s->WriteUtf8(isolate, &buffer[0], buffer.size());
 		buffer[buffer.size() - 1] = '\0';
@@ -287,7 +287,7 @@ static bool fillInput(const v8::Local<v8::Value> &arg, StrVal &str, v8::Local<v8
 		return false;
 	}
 	auto s = t.ToLocalChecked();
-	auto utf8Length = s->Utf8Length(isolate);
+	auto utf8Length = s->Utf8LengthV2(isolate);
 	auto buffer = node::Buffer::New(isolate, s).ToLocalChecked();
 	keepAlive = buffer;
 	str.reset(buffer, node::Buffer::Length(buffer), utf8Length, 0);
@@ -513,7 +513,7 @@ NAN_METHOD(WrappedRE2Set::New)
 				return;
 			}
 			auto s = t.ToLocalChecked();
-			size = s->Utf8Length(isolate);
+			size = s->Utf8LengthV2(isolate);
 			buffer.resize(size + 1);
 			s->WriteUtf8(isolate, &buffer[0], buffer.size());
 			buffer[size] = '\0';
@@ -528,7 +528,7 @@ NAN_METHOD(WrappedRE2Set::New)
 				return;
 			}
 			auto s = t.ToLocalChecked();
-			size = s->Utf8Length(isolate);
+			size = s->Utf8LengthV2(isolate);
 			buffer.resize(size + 1);
 			s->WriteUtf8(isolate, &buffer[0], buffer.size());
 			buffer[size] = '\0';

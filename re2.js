@@ -1,3 +1,4 @@
+// @ts-self-types="./re2.d.ts"
 'use strict';
 
 const RE2 = require('./build/Release/re2.node');
