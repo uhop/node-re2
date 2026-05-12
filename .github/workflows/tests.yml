@@ -6,11 +6,12 @@ on:
   pull_request:
     branches: [master]
 
+permissions:
+  contents: read
+
 jobs:
   tests:
     name: Node.js ${{matrix.node-version}} on ${{matrix.os}}
-    permissions:
-      contents: read
     runs-on: ${{matrix.os}}
 
     strategy:
