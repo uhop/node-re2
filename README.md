@@ -385,6 +385,7 @@ The same applies to `\P{...}`.
 
 ## Release history
 
+- 1.24.1 *Updated `nan` to 2.27.0 and migrated the remaining V8 14.6 APIs (`String::Utf8Length` / `WriteUtf8` → `*V2`, `Context::GetIsolate()` → `Isolate::GetCurrent()`) to add Node 26 to the supported runtime matrix.*
 - 1.24.0 *Fixed multi-threaded crash in worker threads (#235). Added named import: `import {RE2} from 're2'`. Added CJS test. Updated docs and dependencies.*
 - 1.23.3 *Updated Abseil and dev dependencies.*
 - 1.23.2 *Updated dev dependencies.*

@@ -1,6 +1,6 @@
 {
   "name": "re2",
-  "version": "1.24.0",
+  "version": "1.24.1",
   "description": "Bindings for RE2: fast, safe alternative to backtracking regular expression engines.",
   "homepage": "https://github.com/uhop/node-re2",
   "bugs": "https://github.com/uhop/node-re2/issues",
@@ -8,24 +8,28 @@
   "main": "re2.js",
   "types": "re2.d.ts",
   "files": [
+    "AGENTS.md",
+    "ARCHITECTURE.md",
     "binding.gyp",
     "lib",
+    "llms-full.txt",
+    "llms.txt",
     "re2.d.ts",
     "scripts/*.js",
     "vendor"
   ],
   "dependencies": {
-    "install-artifact-from-github": "^1.4.0",
+    "install-artifact-from-github": "^1.6.0",
     "nan": "^2.27.0",
-    "node-gyp": "^12.2.0"
+    "node-gyp": "^12.3.0"
   },
   "devDependencies": {
-    "@types/node": "^25.5.0",
+    "@types/node": "^25.7.0",
     "nano-benchmark": "^1.0.15",
-    "prettier": "^3.8.1",
-    "tape-six": "^1.7.13",
-    "tape-six-proc": "^1.2.8",
-    "typescript": "^6.0.2"
+    "prettier": "^3.8.3",
+    "tape-six": "^1.9.0",
+    "tape-six-proc": "^1.2.9",
+    "typescript": "^6.0.3"
   },
   "scripts": {
     "test": "tape6 --flags FO",
