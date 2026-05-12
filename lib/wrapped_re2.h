@@ -225,6 +225,35 @@ inline size_t getUtf8CharSize(char ch)
 	return ((0xE5000000 >> ((ch >> 3) & 0x1E)) & 3) + 1;
 }
 
+// V8 13.4 introduced Utf8LengthV2 / WriteUtf8V2; V8 14.6 removed the bare
+// Utf8Length / WriteUtf8. On older V8 (Node 22) only the bare forms exist.
+#if defined(V8_MAJOR_VERSION) && (V8_MAJOR_VERSION > 13 || \
+    (V8_MAJOR_VERSION == 13 && defined(V8_MINOR_VERSION) && V8_MINOR_VERSION >= 4))
+
+inline size_t utf8Length(v8::Local<v8::String> s, v8::Isolate *isolate)
+{
+	return s->Utf8LengthV2(isolate);
+}
+
+inline void writeUtf8(v8::Local<v8::String> s, v8::Isolate *isolate, char *buffer, size_t capacity)
+{
+	s->WriteUtf8V2(isolate, buffer, capacity);
+}
+
+#else
+
+inline size_t utf8Length(v8::Local<v8::String> s, v8::Isolate *isolate)
+{
+	return static_cast<size_t>(s->Utf8Length(isolate));
+}
+
+inline void writeUtf8(v8::Local<v8::String> s, v8::Isolate *isolate, char *buffer, size_t capacity)
+{
+	s->WriteUtf8(isolate, buffer, static_cast<int>(capacity));
+}
+
+#endif
+
 inline size_t getUtf16PositionByCounter(const char *data, size_t from, size_t n)
 {
 	for (; n > 0; --n)

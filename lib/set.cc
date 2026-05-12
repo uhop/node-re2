@@ -34,9 +34,9 @@ static bool parseFlags(const v8::Local<v8::Value> &arg, SetFlags &flags)
 			return false;
 		}
 		auto s = t.ToLocalChecked();
-		size = s->Utf8LengthV2(isolate);
+		size = utf8Length(s, isolate);
 		buffer.resize(size + 1);
-		s->WriteUtf8(isolate, &buffer[0], buffer.size());
+		writeUtf8(s, isolate, &buffer[0], buffer.size());
 		buffer[buffer.size() - 1] = '\0';
 		data = &buffer[0];
 	}
@@ -287,10 +287,10 @@ static bool fillInput(const v8::Local<v8::Value> &arg, StrVal &str, v8::Local<v8
 		return false;
 	}
 	auto s = t.ToLocalChecked();
-	auto utf8Length = s->Utf8LengthV2(isolate);
+	auto len = utf8Length(s, isolate);
 	auto buffer = node::Buffer::New(isolate, s).ToLocalChecked();
 	keepAlive = buffer;
-	str.reset(buffer, node::Buffer::Length(buffer), utf8Length, 0);
+	str.reset(buffer, node::Buffer::Length(buffer), len, 0);
 	return true;
 }
 
@@ -331,7 +331,7 @@ static const char setDeprecationMessage[] = "BMP patterns aren't supported by no
 NAN_METHOD(WrappedRE2Set::New)
 {
 	auto context = Nan::GetCurrentContext();
-	auto isolate = context->GetIsolate();
+	auto isolate = v8::Isolate::GetCurrent();
 
 	if (!info.IsConstructCall())
 	{
@@ -340,7 +340,7 @@ NAN_METHOD(WrappedRE2Set::New)
 		{
 			parameters[i] = info[i];
 		}
-		auto isolate = context->GetIsolate();
+		auto isolate = v8::Isolate::GetCurrent();
 		auto addonData = getAddonData(isolate);
 		if (!addonData) return;
 		auto maybeNew = Nan::NewInstance(Nan::GetFunction(addonData->re2SetTpl.Get(isolate)).ToLocalChecked(), parameters.size(), &parameters[0]);
@@ -513,9 +513,9 @@ NAN_METHOD(WrappedRE2Set::New)
 				return;
 			}
 			auto s = t.ToLocalChecked();
-			size = s->Utf8LengthV2(isolate);
+			size = utf8Length(s, isolate);
 			buffer.resize(size + 1);
-			s->WriteUtf8(isolate, &buffer[0], buffer.size());
+			writeUtf8(s, isolate, &buffer[0], buffer.size());
 			buffer[size] = '\0';
 			data = &buffer[0];
 			source = escapeRegExp(data, size);
@@ -528,9 +528,9 @@ NAN_METHOD(WrappedRE2Set::New)
 				return;
 			}
 			auto s = t.ToLocalChecked();
-			size = s->Utf8LengthV2(isolate);
+			size = utf8Length(s, isolate);
 			buffer.resize(size + 1);
-			s->WriteUtf8(isolate, &buffer[0], buffer.size());
+			writeUtf8(s, isolate, &buffer[0], buffer.size());
 			buffer[size] = '\0';
 			data = &buffer[0];
 			source = escapeRegExp(data, size);

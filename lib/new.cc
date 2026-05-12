@@ -76,10 +76,10 @@ NAN_METHOD(WrappedRE2::New)
 			auto isolate = v8::Isolate::GetCurrent();
 			auto t = info[1]->ToString(Nan::GetCurrentContext());
 			auto s = t.ToLocalChecked();
-			size = s->Utf8LengthV2(isolate);
+			size = utf8Length(s, isolate);
 			buffer.resize(size + 1);
 			data = &buffer[0];
-			s->WriteUtf8(isolate, data, buffer.size());
+			writeUtf8(s, isolate, data, buffer.size());
 			buffer[size] = '\0';
 		}
 		else if (node::Buffer::HasInstance(info[1]))
@@ -134,10 +134,10 @@ NAN_METHOD(WrappedRE2::New)
 		auto isolate = v8::Isolate::GetCurrent();
 		auto t = re->GetSource()->ToString(Nan::GetCurrentContext());
 		auto s = t.ToLocalChecked();
-		size = s->Utf8LengthV2(isolate);
+		size = utf8Length(s, isolate);
 		buffer.resize(size + 1);
 		data = &buffer[0];
-		s->WriteUtf8(isolate, data, buffer.size());
+		writeUtf8(s, isolate, data, buffer.size());
 		buffer[size] = '\0';
 
 		source = escapeRegExp(data, size);
@@ -192,10 +192,10 @@ NAN_METHOD(WrappedRE2::New)
 		auto isolate = v8::Isolate::GetCurrent();
 		auto t = info[0]->ToString(Nan::GetCurrentContext());
 		auto s = t.ToLocalChecked();
-		size = s->Utf8LengthV2(isolate);
+		size = utf8Length(s, isolate);
 		buffer.resize(size + 1);
 		data = &buffer[0];
-		s->WriteUtf8(isolate, data, buffer.size());
+		writeUtf8(s, isolate, data, buffer.size());
 		buffer[size] = '\0';
 
 		source = escapeRegExp(data, size);
