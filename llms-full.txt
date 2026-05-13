@@ -252,6 +252,7 @@ new RE2.Set(patterns[, flagsOrOptions][, options])
 - `patterns` — any iterable of strings, Buffers, RegExp, or RE2 instances.
 - `flagsOrOptions` — optional string/Buffer with flags (apply to all patterns), or options object.
 - `options.anchor` — `'unanchored'` (default), `'start'`, or `'both'`.
+- `options.maxMem` — DFA memory budget in bytes (positive integer). Default 8 MiB; raise it when `new RE2.Set(...)` throws `"RE2.Set could not be compiled."` because the union DFA blew the budget.
 
 ```js
 const set = new RE2.Set([
@@ -287,6 +288,7 @@ set.match('/unknown');   // []
 - `set.sources` (string[]) — individual pattern sources.
 - `set.flags` (string) — flags string.
 - `set.anchor` (string) — anchor mode.
+- `set.maxMem` (number) — effective DFA memory budget in bytes.
 
 ### set.toString()
 

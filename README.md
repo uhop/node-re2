@@ -172,6 +172,7 @@ While `test()` can be simulated by combining patterns with `|`, `match()` return
   * `patterns` is any iterable of strings, `Buffer`s, `RegExp`, or `RE2` instances; flags (if provided) apply to the whole set.
   * `flagsOrOptions` can be a string/`Buffer` with standard flags (`i`, `m`, `s`, `u`, `g`, `y`, `d`).
   * `options.anchor` can be `'unanchored'` (default), `'start'`, or `'both'`.
+  * `options.maxMem` is the DFA memory budget in bytes (positive integer). Default is 8 MiB &mdash; raise it to compile sets that would otherwise fail with `"RE2.Set could not be compiled."`.
 * `set.test(str)` returns `true` if any pattern matches and `false` otherwise.
 * `set.match(str)` returns an array of indexes of matching patterns.
   * This is an array of integer indices of patterns that matched sorted in ascending order.
@@ -179,6 +180,7 @@ While `test()` can be simulated by combining patterns with `|`, `match()` return
 * Read-only properties:
   * `set.size` (number of patterns), `set.flags` (`RegExp` flags as a string), `set.anchor` (anchor mode as a string)
   * `set.source` (all patterns joined with `|` as a string), `set.sources` (individual pattern sources as an array of strings)
+  * `set.maxMem` (number) &mdash; effective DFA memory budget in bytes
 
 It is based on [RE2::Set](https://github.com/google/re2/blob/main/re2/set.h).
 

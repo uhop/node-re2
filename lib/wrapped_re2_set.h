@@ -22,7 +22,7 @@ public:
 	}
 
 private:
-	WrappedRE2Set(const re2::RE2::Options &options, re2::RE2::Anchor anchor, const std::string &flags) : set(options, anchor), flags(flags), anchor(anchor) {}
+	WrappedRE2Set(const re2::RE2::Options &options, re2::RE2::Anchor anchor, const std::string &flags) : set(options, anchor), flags(flags), anchor(anchor), maxMem(options.max_mem()) {}
 
 	static NAN_METHOD(New);
 	static NAN_METHOD(Test);
@@ -34,11 +34,13 @@ private:
 	static NAN_GETTER(GetSource);
 	static NAN_GETTER(GetSize);
 	static NAN_GETTER(GetAnchor);
+	static NAN_GETTER(GetMaxMem);
 
 	re2::RE2::Set set;
 	std::vector<std::string> sources;
 	std::string combinedSource;
 	std::string flags;
 	re2::RE2::Anchor anchor;
+	int64_t maxMem;
 };
 

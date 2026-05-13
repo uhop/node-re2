@@ -4,6 +4,7 @@
 #include "./wrapped_re2.h"
 
 #include <algorithm>
+#include <cmath>
 #include <memory>
 #include <string>
 #include <vector>
@@ -270,6 +271,58 @@ static bool parseAnchor(const v8::Local<v8::Value> &arg, re2::RE2::Anchor &ancho
 	return false;
 }
 
+static bool parseMaxMem(const v8::Local<v8::Value> &arg, int64_t &maxMem, bool &assigned)
+{
+	assigned = false;
+
+	if (arg.IsEmpty() || arg->IsUndefined() || arg->IsNull())
+	{
+		return true;
+	}
+	if (!arg->IsObject() || arg->IsString())
+	{
+		return true; // string-only form: anchor; no maxMem possible
+	}
+
+	auto context = Nan::GetCurrentContext();
+	auto object = arg->ToObject(context).ToLocalChecked();
+	auto maybe = Nan::Get(object, Nan::New("maxMem").ToLocalChecked());
+	if (maybe.IsEmpty())
+	{
+		return false;
+	}
+	auto value = maybe.ToLocalChecked();
+	if (value->IsUndefined() || value->IsNull())
+	{
+		return true;
+	}
+	if (!value->IsNumber())
+	{
+		return false;
+	}
+
+	auto maybeNum = value->NumberValue(context);
+	if (maybeNum.IsNothing())
+	{
+		return false;
+	}
+	double num = maybeNum.FromJust();
+	if (!std::isfinite(num) || num < 1.0 || std::floor(num) != num)
+	{
+		return false;
+	}
+	// Keep within safe integer range; RE2's max_mem is int64_t but JS Number
+	// can only represent integers exactly up to 2^53 - 1.
+	if (num > 9007199254740991.0)
+	{
+		return false;
+	}
+
+	maxMem = static_cast<int64_t>(num);
+	assigned = true;
+	return true;
+}
+
 static bool fillInput(const v8::Local<v8::Value> &arg, StrVal &str, v8::Local<v8::Object> &keepAlive)
 {
 	if (node::Buffer::HasInstance(arg))
@@ -389,11 +442,17 @@ NAN_METHOD(WrappedRE2Set::New)
 	}
 
 	re2::RE2::Anchor anchor = re2::RE2::UNANCHORED;
+	int64_t maxMem = 0;
+	bool maxMemAssigned = false;
 	if (!optionsArg.IsEmpty())
 	{
 		if (!parseAnchor(optionsArg, anchor))
 		{
 			return Nan::ThrowTypeError("Invalid anchor option for RE2.Set.");
+		}
+		if (!parseMaxMem(optionsArg, maxMem, maxMemAssigned))
+		{
+			return Nan::ThrowTypeError("Invalid maxMem option for RE2.Set: must be a positive integer.");
 		}
 	}
 
@@ -488,6 +547,10 @@ NAN_METHOD(WrappedRE2Set::New)
 	options.set_one_line(!flags.multiline);
 	options.set_dot_nl(flags.dotAll);
 	options.set_log_errors(false);
+	if (maxMemAssigned)
+	{
+		options.set_max_mem(maxMem);
+	}
 
 	std::unique_ptr<WrappedRE2Set> set(new WrappedRE2Set(options, anchor, flagsToString(flags)));
 	std::vector<char> buffer;
@@ -754,6 +817,17 @@ NAN_GETTER(WrappedRE2Set::GetAnchor)
 	info.GetReturnValue().Set(Nan::New(anchorToString(re2set->anchor)).ToLocalChecked());
 }
 
+NAN_GETTER(WrappedRE2Set::GetMaxMem)
+{
+	auto re2set = Nan::ObjectWrap::Unwrap<WrappedRE2Set>(info.This());
+	if (!re2set)
+	{
+		info.GetReturnValue().Set(0);
+		return;
+	}
+	info.GetReturnValue().Set(Nan::New<v8::Number>(static_cast<double>(re2set->maxMem)));
+}
+
 v8::Local<v8::Function> WrappedRE2Set::Init()
 {
 	Nan::EscapableHandleScope scope;
@@ -772,6 +846,7 @@ v8::Local<v8::Function> WrappedRE2Set::Init()
 	Nan::SetAccessor(instanceTemplate, Nan::New("source").ToLocalChecked(), GetSource);
 	Nan::SetAccessor(instanceTemplate, Nan::New("size").ToLocalChecked(), GetSize);
 	Nan::SetAccessor(instanceTemplate, Nan::New("anchor").ToLocalChecked(), GetAnchor);
+	Nan::SetAccessor(instanceTemplate, Nan::New("maxMem").ToLocalChecked(), GetMaxMem);
 
 	auto isolate = v8::Isolate::GetCurrent();
 	auto data = getAddonData(isolate);

@@ -94,9 +94,11 @@ All methods accept both strings and Node.js Buffers:
 Multi-pattern matching using `re2::RE2::Set`:
 
 - `new RE2.Set(patterns, flags?, options?)` — compile multiple patterns into a single automaton.
+- `options.anchor` — `'unanchored'` (default), `'start'`, `'both'`.
+- `options.maxMem` — DFA memory budget in bytes (positive integer; default 8 MiB).
 - `set.test(str)` — returns `true` if any pattern matches.
 - `set.match(str)` — returns array of indices of matching patterns.
-- Properties: `size`, `source`, `sources`, `flags`, `anchor`.
+- Properties: `size`, `source`, `sources`, `flags`, `anchor`, `maxMem`.
 
 ### Build system
 

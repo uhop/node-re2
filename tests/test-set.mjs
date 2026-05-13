@@ -124,3 +124,67 @@ test('test set invalid', t => {
     t.ok(e instanceof TypeError);
   }
 });
+
+test('test set maxMem default', t => {
+  const set = new RE2.Set(['foo', 'bar']);
+  t.equal(set.maxMem, 8 << 20); // RE2's kDefaultMaxMem is 8 MiB
+});
+
+test('test set maxMem accepted and exposed', t => {
+  const set = new RE2.Set(['foo', 'bar'], {maxMem: 64 * 1024 * 1024});
+  t.equal(set.maxMem, 64 * 1024 * 1024);
+  t.ok(set.test('foo bar'));
+});
+
+test('test set maxMem with flags arg', t => {
+  const set = new RE2.Set(['foo'], 'i', {maxMem: 16 * 1024 * 1024, anchor: 'start'});
+  t.equal(set.maxMem, 16 * 1024 * 1024);
+  t.equal(set.anchor, 'start');
+});
+
+test('test set maxMem rejects invalid values', t => {
+  const bad = [0, -1, 1.5, 'huge', NaN, Infinity, 2 ** 53];
+  for (const v of bad) {
+    try {
+      new RE2.Set(['foo'], {maxMem: v});
+      t.fail(`accepted ${v}`);
+    } catch (e) {
+      t.ok(e instanceof TypeError, `rejected ${v}`);
+    }
+  }
+});
+
+test('test set maxMem raises compile ceiling', t => {
+  // Random-prefix 8-char tokens — no shared prefix structure for the DFA
+  // to factor. At N=14000 the default 8 MiB budget rejects compilation;
+  // bumping maxMem to 64 MiB lets it through.
+  const alpha = 'abcdefghijklmnopqrstuvwxyz';
+  let seed = 0xc0ffee;
+  const rand = () => {
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = seed;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const N = 14000;
+  const patterns = [];
+  for (let i = 0; i < N; ++i) {
+    let s = '';
+    for (let k = 0; k < 8; ++k) s += alpha[(rand() * 26) | 0];
+    patterns.push(s);
+  }
+
+  let defaultFailed = false;
+  try {
+    new RE2.Set(patterns);
+  } catch (e) {
+    defaultFailed = true;
+  }
+  t.ok(defaultFailed, 'default 8 MiB budget rejects N=14000 random-prefix patterns');
+
+  const bigger = new RE2.Set(patterns, {maxMem: 64 * 1024 * 1024});
+  t.equal(bigger.size, N);
+  t.equal(bigger.maxMem, 64 * 1024 * 1024);
+  t.ok(bigger.test(patterns[0]));
+});

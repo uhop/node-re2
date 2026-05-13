@@ -98,9 +98,10 @@ set.sources;              // ['^/users/\\d+$', '^/posts/\\d+$']
 
 - `new RE2.Set(patterns[, flags][, options])` — compile patterns.
   - `options.anchor`: `'unanchored'` (default), `'start'`, or `'both'`.
+  - `options.maxMem`: DFA memory budget in bytes (positive integer). Default 8 MiB; raise to compile larger sets that otherwise throw `"RE2.Set could not be compiled."`.
 - `set.test(str)` — returns `true` if any pattern matches.
 - `set.match(str)` — returns array of matching pattern indices.
-- Properties: `size`, `source`, `sources`, `flags`, `anchor`.
+- Properties: `size`, `source`, `sources`, `flags`, `anchor`, `maxMem`.
 
 ### Static helpers
 

@@ -46,6 +46,7 @@ declare module 're2' {
 
   interface RE2SetOptions {
     anchor?: 'unanchored' | 'start' | 'both';
+    maxMem?: number;
   }
 
   interface RE2Set {
@@ -54,6 +55,7 @@ declare module 're2' {
     readonly sources: string[];
     readonly flags: string;
     readonly anchor: 'unanchored' | 'start' | 'both';
+    readonly maxMem: number;
 
     match(str: string | Buffer): number[];
     test(str: string | Buffer): boolean;
