@@ -8,3 +8,6 @@ coverage/
 /.xdevelopment
 
 /scripts/save-local.sh
+
+/.claude/scheduled_tasks.lock
+/.claude/settings.local.json
