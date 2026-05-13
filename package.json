@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.7.0",
+    "@unicode/unicode-17.0.0": "^1.6.16",
     "nano-benchmark": "^1.0.15",
     "prettier": "^3.8.3",
     "tape-six": "^1.9.0",

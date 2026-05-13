@@ -341,17 +341,43 @@ Named backreferences in replacement strings:
 
 ## Unicode classes
 
-RE2 supports Unicode property escapes. Long names are translated to RE2 short names:
+node-re2 accepts the same `\p{...}` escapes as JavaScript `RegExp` with the `u` flag. The MDN reference at https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Unicode_character_class_escape is the canonical spec for what's accepted.
 
 ```js
-new RE2('\\p{Letter}+');        // same as \p{L}+
-new RE2('\\p{Number}+');        // same as \p{N}+
-new RE2('\\p{Script=Latin}+');  // same as \p{Latin}+
-new RE2('\\p{sc=Cyrillic}+');   // same as \p{Cyrillic}+
-new RE2('\\P{Letter}+');        // negated: non-letters
+// General_Category — long and short names
+new RE2('\\p{Letter}+');                     // \p{L}+
+new RE2('\\p{Number}+');                     // \p{N}+
+new RE2('\\p{gc=Letter}+');                  // gc= and General_Category= prefixes
+new RE2('\\p{General_Category=Letter}+');
+
+// Script and Script_Extensions
+new RE2('\\p{Script=Latin}+');               // RE2 native
+new RE2('\\p{sc=Cyrillic}+');
+new RE2('\\p{Script_Extensions=Hani}+');     // expanded inline
+new RE2('\\p{scx=Latn}+');                   // ISO 15924 short code
+
+// Binary properties — full ECMAScript set
+new RE2('\\p{Alphabetic}+').test('héllo');           // true
+new RE2('\\p{ASCII}+').test('Hi!');                   // true
+new RE2('\\p{ID_Start}\\p{ID_Continue}*').test('x1'); // true
+new RE2('\\p{White_Space}+').test(' \\t\\n');         // true
+new RE2('\\p{Emoji}').test('😀');                     // true
+new RE2('\\p{Math}').test('∑');                       // true
+
+// Short aliases from PropertyAliases.txt
+new RE2('\\p{Alpha}+');   // == Alphabetic
+new RE2('\\p{Hex}+');     // == Hex_Digit
+new RE2('\\p{Lower}+');   // == Lowercase
+
+// Negation and use inside character classes
+new RE2('\\P{ASCII}+');                       // non-ASCII
+new RE2('[\\p{L}\\p{Emoji}]+');               // letters or emoji
+new RE2('[^\\p{ASCII}]+');                    // negated inside class
 ```
 
-Only `\p{name}` form is supported (not `\p{name=value}` in general). Exception: `Script` and `sc` names.
+**Not supported:** *Properties of Strings* (`\p{Basic_Emoji}`, `\p{RGI_Emoji}`, etc.). These match multi-codepoint sequences and require the `v` flag, which RE2 does not model. Trying to use one throws a syntax error at compile time.
+
+Tables are baked in from Unicode 17.0 (devDependency `@unicode/unicode-17.0.0`). Bump the package and run `node scripts/gen-unicode-properties.mjs` to target a newer Unicode version.
 
 ## Limitations
 

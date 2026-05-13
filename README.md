@@ -379,11 +379,27 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 #### Unicode classes `\p{...}` and `\P{...}`
 
-`RE2` supports a subset of Unicode classes as defined in [RE2 Syntax](https://github.com/google/re2/wiki/Syntax). Google RE2 natively supports only short names (e.g., `L` for `Letter`). Like `RegExp`, node-re2 also accepts long names by translating them to short names.
+node-re2 follows [MDN's Unicode character class escape reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Unicode_character_class_escape) &mdash; the same set of property escapes that JavaScript's native `RegExp` accepts with the `u` flag.
 
-Only the `\p{name}` form is supported, not `\p{name=value}` in general.
-The exception is `Script` and `sc`, e.g., `\p{Script=Latin}` and `\p{sc=Cyrillic}`.
-The same applies to `\P{...}`.
+Supported categories:
+
+- **General_Category** &mdash; both short names (e.g., `\p{L}`, `\p{Lu}`) and long names (e.g., `\p{Letter}`, `\p{Uppercase_Letter}`). The `gc=` and `General_Category=` prefixes also work: `\p{gc=Letter}`, `\p{General_Category=Letter}`.
+- **Script** &mdash; e.g., `\p{Script=Latin}`, `\p{sc=Cyrillic}`. ISO 15924 four-letter codes are accepted as well: `\p{sc=Latn}`.
+- **Script_Extensions** &mdash; e.g., `\p{Script_Extensions=Hani}`, `\p{scx=Latn}`. Matches characters whose Script_Extensions list includes the named script (a superset of `Script=`).
+- **Binary properties** &mdash; the full ECMAScript set of binary properties, including:
+  - `Alphabetic`, `ASCII`, `ASCII_Hex_Digit`, `Hex_Digit`, `White_Space`, `Math`, `Dash`, `Diacritic`, `Quotation_Mark`, `Bidi_Mirrored`, `Bidi_Control`, `Default_Ignorable_Code_Point`
+  - `Lowercase`, `Uppercase`, `Cased`, `Case_Ignorable`, `Changes_When_Lowercased`, `Changes_When_Uppercased`, `Changes_When_Casefolded`, `Changes_When_Casemapped`, `Changes_When_Titlecased`, `Changes_When_NFKC_Casefolded`
+  - `ID_Start`, `ID_Continue`, `XID_Start`, `XID_Continue`, `Pattern_Syntax`, `Pattern_White_Space`
+  - `Emoji`, `Emoji_Presentation`, `Emoji_Modifier`, `Emoji_Modifier_Base`, `Emoji_Component`, `Extended_Pictographic`, `Regional_Indicator`
+  - `Grapheme_Base`, `Grapheme_Extend`, `Extender`, `Variation_Selector`, `Join_Control`, `Logical_Order_Exception`, `Sentence_Terminal`, `Terminal_Punctuation`, `Soft_Dotted`, `Radical`, `Unified_Ideograph`, `Ideographic`, `IDS_Binary_Operator`, `IDS_Trinary_Operator`, `Noncharacter_Code_Point`, `Deprecated`, `Any`, `Assigned`
+
+  Short aliases listed in [PropertyAliases.txt](https://www.unicode.org/Public/UCD/latest/ucd/PropertyAliases.txt) are accepted alongside the canonical names: `\p{Alpha}` ≡ `\p{Alphabetic}`, `\p{Hex}` ≡ `\p{Hex_Digit}`, `\p{Lower}` ≡ `\p{Lowercase}`, etc.
+
+The negated form `\P{...}` and use inside character classes (`[\p{L}\p{Emoji}]`, `[^\p{ASCII}]`) work for every category.
+
+**Not supported:** *Properties of Strings* (`\p{Basic_Emoji}`, `\p{RGI_Emoji}`, etc.). These match multi-codepoint sequences and require the `v` flag, which RE2 does not model.
+
+Tables are baked in at build time from Unicode 17.0. To target a newer Unicode version, bump `@unicode/unicode-XX.X.X` in `devDependencies` and run `node scripts/gen-unicode-properties.mjs`.
 
 ## Release history
 

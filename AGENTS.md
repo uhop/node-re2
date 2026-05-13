@@ -96,7 +96,7 @@ node-re2/
 - `re2.js` is the main entry point. It loads the native C++ addon from `build/Release/re2.node` and sets up `Symbol.match`, `Symbol.search`, `Symbol.replace`, `Symbol.split`, and `Symbol.matchAll` on the prototype.
 - The C++ addon (`lib/*.cc`) wraps Google's RE2 library via nan. Each RegExp method has its own `.cc` file.
 - `lib/new.cc` handles construction: parsing patterns, translating RegExp syntax to RE2 syntax (via `lib/pattern.cc`), and creating the underlying `re2::RE2` instance.
-- `lib/pattern.cc` translates JavaScript RegExp features to RE2 equivalents, including Unicode class names (`\p{Letter}` → `\p{L}`, `\p{Script=Latin}` → `\p{Latin}`).
+- `lib/pattern.cc` translates JavaScript RegExp features to RE2 equivalents. General_Category and Script are mapped to RE2-native names (`\p{Letter}` → `\p{L}`, `\p{Script=Latin}` → `\p{Latin}`); binary properties (Emoji, Alphabetic, ASCII, ID_Start, …) and Script_Extensions are expanded inline to codepoint-range character classes using tables in `lib/unicode_properties.h`. The full accepted set matches [MDN's Unicode character class escape reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Unicode_character_class_escape) (excluding `v`-flag Properties of Strings). Tables are auto-generated from `@unicode/unicode-17.0.0` via `node scripts/gen-unicode-properties.mjs`.
 - `lib/set.cc` implements `RE2.Set` for multi-pattern matching using `re2::RE2::Set`.
 - `lib/util.cc` provides UTF-8 ↔ UTF-16 conversion helpers and buffer utilities.
 - Prebuilt native artifacts are hosted on GitHub Releases and downloaded at install time via `install-artifact-from-github`.

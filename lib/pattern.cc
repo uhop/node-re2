@@ -1,6 +1,9 @@
 #include "./pattern.h"
+#include "./unicode_properties.h"
 #include "./wrapped_re2.h"
 
+#include <cstdint>
+#include <cstdio>
 #include <cstring>
 #include <map>
 #include <string>
@@ -58,10 +61,107 @@ static std::map<std::string, std::string> unicodeClasses = {
 	{"Other", "C"},
 };
 
+static const UnicodePropertyTable *lookupTable(const UnicodePropertyTable *table, size_t count, const std::string &name)
+{
+	for (size_t i = 0; i < count; ++i)
+	{
+		if (name == table[i].name)
+		{
+			return &table[i];
+		}
+	}
+	return nullptr;
+}
+
+static const UnicodePropertyTable *findBinaryProperty(const std::string &name)
+{
+	return lookupTable(kBinaryProperties, kBinaryPropertiesCount, name);
+}
+
+static const UnicodePropertyTable *findScriptExtension(const std::string &name)
+{
+	return lookupTable(kScriptExtensions, kScriptExtensionsCount, name);
+}
+
+static void appendHexRange(std::string &out, uint32_t lo, uint32_t hi)
+{
+	char buf[32];
+	if (lo == hi)
+	{
+		std::snprintf(buf, sizeof(buf), "\\x{%X}", lo);
+	}
+	else
+	{
+		std::snprintf(buf, sizeof(buf), "\\x{%X}-\\x{%X}", lo, hi);
+	}
+	out += buf;
+}
+
+static void appendPropertyRanges(std::string &out, const UnicodePropertyTable *table)
+{
+	for (size_t i = 0; i < table->count; ++i)
+	{
+		appendHexRange(out, table->ranges[i].lo, table->ranges[i].hi);
+	}
+}
+
+static void appendPropertyComplementRanges(std::string &out, const UnicodePropertyTable *table)
+{
+	const uint32_t kMaxCp = 0x10FFFFu;
+	uint32_t cursor = 0;
+	for (size_t i = 0; i < table->count; ++i)
+	{
+		uint32_t lo = table->ranges[i].lo;
+		uint32_t hi = table->ranges[i].hi;
+		if (cursor < lo)
+		{
+			appendHexRange(out, cursor, lo - 1);
+		}
+		cursor = hi + 1;
+	}
+	if (cursor <= kMaxCp)
+	{
+		appendHexRange(out, cursor, kMaxCp);
+	}
+}
+
+static void emitProperty(std::string &out, const UnicodePropertyTable *table, bool negate, bool inCharClass)
+{
+	if (inCharClass)
+	{
+		if (negate)
+		{
+			appendPropertyComplementRanges(out, table);
+		}
+		else
+		{
+			appendPropertyRanges(out, table);
+		}
+	}
+	else
+	{
+		out += negate ? "[^" : "[";
+		appendPropertyRanges(out, table);
+		out += "]";
+	}
+}
+
+static bool stripPrefix(const std::string &name, const char *prefix, std::string &out)
+{
+	size_t n = std::strlen(prefix);
+	if (name.size() > n && !std::strncmp(name.c_str(), prefix, n))
+	{
+		out = name.substr(n);
+		return true;
+	}
+	return false;
+}
+
 bool translateRegExp(const char *data, size_t size, bool multiline, std::vector<char> &buffer)
 {
 	std::string result;
 	bool changed = false;
+	bool inCharClass = false;
 
 	if (!size)
 	{
@@ -145,9 +245,48 @@ bool translateRegExp(const char *data, size_t size, bool multiline, std::vector<
 							size_t j = i + 3;
 							while (j < size && data[j] != '}') ++j;
 							if (j < size) {
+								std::string name(data + i + 3, j - i - 3);
+								bool negate = data[i + 1] == 'P';
+								std::string stripped;
+
+								// Script_Extensions=Hani / scx=Hani — RE2 has no native scx;
+								// expand to a codepoint-range character class.
+								const UnicodePropertyTable *scx = nullptr;
+								if (stripPrefix(name, "Script_Extensions=", stripped) || stripPrefix(name, "scx=", stripped))
+								{
+									scx = findScriptExtension(stripped);
+								}
+								if (scx)
+								{
+									emitProperty(result, scx, negate, inCharClass);
+									i = j + 1;
+									changed = true;
+									continue;
+								}
+
+								// General_Category=Letter / gc=Letter — strip prefix so the
+								// existing long-name → short-name map can resolve it.
+								if (stripPrefix(name, "General_Category=", stripped) || stripPrefix(name, "gc=", stripped))
+								{
+									name = stripped;
+								}
+
+								// Binary property — expand into a codepoint-range character
+								// class. Covers Emoji, Alphabetic, ASCII, ID_Start, etc.
+								const UnicodePropertyTable *binary = findBinaryProperty(name);
+								if (binary)
+								{
+									emitProperty(result, binary, negate, inCharClass);
+									i = j + 1;
+									changed = true;
+									continue;
+								}
+
+								// Otherwise, fall through to RE2 (handles General_Category
+								// short names and Script names natively). Long GC names get
+								// translated to the short form via the existing map.
 								result += "\\";
 								result += data[i + 1];
-								std::string name(data + i + 3, j - i - 3);
 								if (unicodeClasses.find(name) != unicodeClasses.end()) {
 									name = unicodeClasses[name];
 								} else if (name.size() > 7 && !strncmp(name.c_str(), "Script=", 7)) {
@@ -197,6 +336,14 @@ bool translateRegExp(const char *data, size_t size, bool multiline, std::vector<
 				changed = true;
 				continue;
 			}
+		}
+		else if (ch == '[' && !inCharClass)
+		{
+			inCharClass = true;
+		}
+		else if (ch == ']' && inCharClass)
+		{
+			inCharClass = false;
 		}
 		size_t sym_size = getUtf8CharSize(ch);
 		result.append(data + i, sym_size);
