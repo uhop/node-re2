@@ -36,6 +36,13 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for the module map and dependency graph
 - RE2 always operates in Unicode mode — the `u` flag is added implicitly.
 - Buffer support is a first-class feature — all methods must handle both strings and Buffers.
 
+## License
+
+This project is distributed under the [BSD-3-Clause license](./LICENSE).
+External contributions are accepted only under licenses compatible with
+BSD-3-Clause; submissions under fundamentally incompatible licenses cannot
+be merged.
+
 ## AI agents
 
 If you are an AI coding agent, see [AGENTS.md](./AGENTS.md) for detailed project conventions, commands, and architecture.
