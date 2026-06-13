@@ -249,6 +249,34 @@ npm install re2
 The project works with other package managers but is not tested with them.
 See the wiki for notes on [yarn](https://github.com/uhop/node-re2/wiki/Using-with-yarn) and [pnpm](https://github.com/uhop/node-re2/wiki/Using-with-pnpm).
 
+### Install scripts (npm 12+)
+
+`re2` downloads or builds its native binary in an `install` script. Starting with npm 12
+(July 2026), npm does not run dependency install scripts unless the package is listed in the
+`allowScripts` field of your project's `package.json` &mdash; without it, `npm install re2`
+fails with `ESTRICTALLOWSCRIPTS`. npm 11.16+ still runs the scripts but prints a warning.
+
+Allow `re2` before installing:
+
+```bash
+npm pkg set allowScripts.re2=true --json
+npm install re2
+```
+
+Or use npm's approval tooling &mdash; note that `npm approve-scripts` only matches installed
+packages, so under npm 12 the package has to be installed with scripts skipped first:
+
+```bash
+npm install re2 --ignore-scripts
+npm approve-scripts re2
+npm rebuild re2
+```
+
+`npm approve-scripts` pins the approval to the installed version, so version updates ask again;
+pass `--no-allow-scripts-pin` (or use the `allowScripts.re2=true` form above) to allow all
+versions. No other package in `re2`'s dependency tree runs install scripts. For the full story see
+[NPM 12 and install scripts](https://github.com/uhop/install-artifact-from-github/wiki/NPM-12-and-install-scripts).
+
 ### Precompiled artifacts
 
 The [install script](https://github.com/uhop/install-artifact-from-github/blob/master/bin/install-from-cache.js) attempts to download a prebuilt artifact from GitHub Releases. Override the download location with the `RE2_DOWNLOAD_MIRROR` environment variable.

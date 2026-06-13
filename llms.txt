@@ -6,6 +6,8 @@
 
 npm install re2
 
+Under npm 12+ defaults, re2's install script (binary download / build) needs approval in the consuming project: run `npm pkg set allowScripts.re2=true --json` before `npm install re2`.
+
 ## Quick start
 
 ```js

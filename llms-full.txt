@@ -20,6 +20,8 @@ npm install re2
 
 Prebuilt native binaries are downloaded automatically. Falls back to building from source via node-gyp if no prebuilt is available.
 
+Both paths run in re2's install script. Under npm 12+ defaults (July 2026), install scripts require approval in the consuming project's `package.json`: run `npm pkg set allowScripts.re2=true --json` before `npm install re2`, otherwise the install fails with `ESTRICTALLOWSCRIPTS`. npm 11.16+ runs the script but prints a warning until approved.
+
 ## Quick start
 
 ```js
