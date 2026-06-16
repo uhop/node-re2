@@ -8,8 +8,6 @@
   "main": "re2.js",
   "types": "re2.d.ts",
   "files": [
-    "AGENTS.md",
-    "ARCHITECTURE.md",
     "binding.gyp",
     "lib",
     "llms-full.txt",
@@ -67,6 +65,8 @@
   ],
   "author": "Eugene Lazutkin <eugene.lazutkin@gmail.com> (https://lazutkin.com/)",
   "funding": "https://github.com/sponsors/uhop",
+  "llms": "https://raw.githubusercontent.com/uhop/node-re2/master/llms.txt",
+  "llmsFull": "https://raw.githubusercontent.com/uhop/node-re2/master/llms-full.txt",
   "license": "BSD-3-Clause",
   "tape6": {
     "tests": [
