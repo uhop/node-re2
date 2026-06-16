@@ -122,8 +122,8 @@ NAN_METHOD(WrappedRE2::Match)
 				if (!re2->global && re2->hasIndices)
 				{
 					auto pair = Nan::New<v8::Array>();
-					auto offset = getUtf16Length(str.data + byteIndex, data);
-					auto length = getUtf16Length(data, data + item.size());
+					auto offset = toUtf16Index(str.isAscii, str.data + byteIndex, data);
+					auto length = toUtf16Index(str.isAscii, data, data + item.size());
 					Nan::Set(pair, 0, Nan::New<v8::Integer>(static_cast<int>(offset)));
 					Nan::Set(pair, 1, Nan::New<v8::Integer>(static_cast<int>(offset + length)));
 					Nan::Set(indices, i, pair);
@@ -140,7 +140,7 @@ NAN_METHOD(WrappedRE2::Match)
 		}
 		if (!re2->global)
 		{
-			Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<v8::Integer>(static_cast<int>(getUtf16Length(str.data, groups[0].data()))));
+			Nan::Set(result, Nan::New("index").ToLocalChecked(), Nan::New<v8::Integer>(static_cast<int>(toUtf16Index(str.isAscii, str.data, groups[0].data()))));
 			Nan::Set(result, Nan::New("input").ToLocalChecked(), info[0]);
 		}
 	}
@@ -152,7 +152,7 @@ NAN_METHOD(WrappedRE2::Match)
 	else if (re2->sticky)
 	{
 		re2->lastIndex +=
-			str.isBuffer ? groups[0].data() - str.data + groups[0].size() - byteIndex : getUtf16Length(str.data + byteIndex, groups[0].data() + groups[0].size());
+			str.isBuffer ? groups[0].data() - str.data + groups[0].size() - byteIndex : toUtf16Index(str.isAscii, str.data + byteIndex, groups[0].data() + groups[0].size());
 	}
 
 	if (!re2->global)

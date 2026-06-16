@@ -198,12 +198,15 @@ const StrVal &WrappedRE2::prepareArgument(const v8::Local<v8::Value> &arg, bool 
 
 	auto s = t.ToLocalChecked();
 	auto argLength = utf8Length(s, isolate);
+	// Pure ASCII iff the UTF-16 length (s->Length(), O(1)) equals the UTF-8
+	// byte length: any non-ASCII char makes the byte count strictly larger.
+	bool isAscii = static_cast<size_t>(s->Length()) == argLength;
 
 	auto buffer = node::Buffer::New(isolate, s).ToLocalChecked();
 	lastCache.Reset(buffer);
 
 	auto argSize = node::Buffer::Length(buffer);
-	lastStringValue.reset(buffer, argSize, argLength, startFrom);
+	lastStringValue.reset(buffer, argSize, argLength, startFrom, false, isAscii);
 
 	return lastStringValue;
 };
@@ -236,7 +239,7 @@ void StrVal::setIndex(size_t newIndex)
 	if (newIndex == index)
 		return;
 
-	if (isBuffer)
+	if (isBuffer || isAscii)
 	{
 		byteIndex = index = newIndex;
 		return;
@@ -263,10 +266,11 @@ void StrVal::setIndex(size_t newIndex)
 
 static char null_buffer[] = {'\0'};
 
-void StrVal::reset(const v8::Local<v8::Value> &arg, size_t argSize, size_t argLength, size_t newIndex, bool buffer)
+void StrVal::reset(const v8::Local<v8::Value> &arg, size_t argSize, size_t argLength, size_t newIndex, bool buffer, bool ascii)
 {
 	clear();
 	isBuffer = buffer;
+	isAscii = ascii;
 	size = argSize;
 	length = argLength;
 	data = size ? node::Buffer::Data(arg) : null_buffer;

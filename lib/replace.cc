@@ -249,7 +249,7 @@ static Nan::Maybe<std::string> replace(
 		if (!re2->global && re2->sticky)
 		{
 			re2->lastIndex +=
-				replacee.isBuffer ? offset + match.size() - byteIndex : getUtf16Length(data + byteIndex, match.data() + match.size());
+				replacee.isBuffer ? offset + match.size() - byteIndex : toUtf16Index(replacee.isAscii, data + byteIndex, match.data() + match.size());
 		}
 		if (match.data() == data || offset > static_cast<long>(byteIndex))
 		{
@@ -300,6 +300,7 @@ inline Nan::Maybe<std::string> replace(
 	const re2::StringPiece &str,
 	const v8::Local<v8::Value> &input,
 	bool useBuffers,
+	bool isAscii,
 	const std::map<std::string, int> &namedGroups)
 {
 	std::vector<v8::Local<v8::Value>> argv;
@@ -338,7 +339,7 @@ inline Nan::Maybe<std::string> replace(
 				argv.push_back(Nan::Undefined());
 			}
 		}
-		argv.push_back(Nan::New(static_cast<int>(getUtf16Length(str.data(), groups[0].data()))));
+		argv.push_back(Nan::New(static_cast<int>(toUtf16Index(isAscii, str.data(), groups[0].data()))));
 	}
 	argv.push_back(input);
 
@@ -418,13 +419,13 @@ static Nan::Maybe<std::string> replace(
 		auto offset = match.data() - data;
 		if (!re2->global && re2->sticky)
 		{
-			re2->lastIndex += replacee.isBuffer ? offset + match.size() - byteIndex : getUtf16Length(data + byteIndex, match.data() + match.size());
+			re2->lastIndex += replacee.isBuffer ? offset + match.size() - byteIndex : toUtf16Index(replacee.isAscii, data + byteIndex, match.data() + match.size());
 		}
 		if (match.data() == data || offset > static_cast<long>(byteIndex))
 		{
 			result += std::string(data + byteIndex, offset - byteIndex);
 		}
-		const auto part = replace(replacer, groups, str, input, useBuffers, namedGroups);
+		const auto part = replace(replacer, groups, str, input, useBuffers, replacee.isAscii, namedGroups);
 		if (part.IsNothing())
 		{
 			return part;

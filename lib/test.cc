@@ -37,7 +37,7 @@ NAN_METHOD(WrappedRE2::Test)
 	if (re2->regexp.Match(str, str.byteIndex, str.size, re2->sticky ? re2::RE2::ANCHOR_START : re2::RE2::UNANCHORED, &match, 1))
 	{
 		re2->lastIndex +=
-			str.isBuffer ? match.data() - str.data + match.size() - str.byteIndex : getUtf16Length(str.data + str.byteIndex, match.data() + match.size());
+			str.isBuffer ? match.data() - str.data + match.size() - str.byteIndex : toUtf16Index(str.isAscii, str.data + str.byteIndex, match.data() + match.size());
 		info.GetReturnValue().Set(true);
 		return;
 	}

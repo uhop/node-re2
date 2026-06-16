@@ -12,18 +12,18 @@ struct StrVal
 	char *data;
 	size_t size, length;
 	size_t index, byteIndex;
-	bool isBuffer, isValidIndex, isBad;
+	bool isBuffer, isValidIndex, isBad, isAscii;
 
-	StrVal() : data(NULL), size(0), length(0), index(0), byteIndex(0), isBuffer(false), isValidIndex(false), isBad(false) {}
+	StrVal() : data(NULL), size(0), length(0), index(0), byteIndex(0), isBuffer(false), isValidIndex(false), isBad(false), isAscii(false) {}
 
 	operator re2::StringPiece() const { return re2::StringPiece(data, size); }
 
 	void setIndex(size_t newIndex = 0);
-	void reset(const v8::Local<v8::Value> &arg, size_t size, size_t length, size_t newIndex = 0, bool buffer = false);
+	void reset(const v8::Local<v8::Value> &arg, size_t size, size_t length, size_t newIndex = 0, bool buffer = false, bool ascii = false);
 
 	void clear()
 	{
-		isBad = isBuffer = isValidIndex = false;
+		isBad = isBuffer = isValidIndex = isAscii = false;
 		size = length = index = byteIndex = 0;
 		data = nullptr;
 	}
@@ -218,6 +218,13 @@ inline size_t getUtf16Length(const char *from, const char *to)
 		}
 	}
 	return n;
+}
+
+// ASCII (and buffer) offsets are byte-identical to UTF-16 offsets, so the
+// linear UTF-8 scan can be skipped entirely for those inputs.
+inline size_t toUtf16Index(bool isAscii, const char *from, const char *to)
+{
+	return isAscii ? static_cast<size_t>(to - from) : getUtf16Length(from, to);
 }
 
 inline size_t getUtf8CharSize(char ch)
