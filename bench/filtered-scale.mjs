@@ -72,8 +72,10 @@ const dtJs = Number(process.hrtime.bigint() - tJs) / 1e6;
 
 console.error(
   `# Shape 5 setup: ${INPUT_COUNT} inputs\n` +
-  N_LEVELS.map(n => `# compile RE2.Set@${n}: ${compileTimes[n].toFixed(1)}ms`).join('\n') +
-  `\n# compile RegExp@${N_LEVELS[0]} (loop, reference): ${dtJs.toFixed(1)}ms`
+    N_LEVELS.map(
+      n => `# compile RE2.Set@${n}: ${compileTimes[n].toFixed(1)}ms`
+    ).join('\n') +
+    `\n# compile RegExp@${N_LEVELS[0]} (loop, reference): ${dtJs.toFixed(1)}ms`
 );
 
 const runSet = re2Set => n => {

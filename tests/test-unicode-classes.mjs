@@ -188,17 +188,17 @@ test('test_binaryProperties_aliases', t => {
 
   // Each binary property has a short alias accepted alongside the canonical
   // long name (PropertyAliases.txt).
-  t.ok(new RE2(/^\p{Alpha}+$/u).test('hello'));      // Alphabetic
-  t.ok(new RE2(/^\p{AHex}+$/u).test('DEADBEEF'));    // ASCII_Hex_Digit
-  t.ok(new RE2(/^\p{Hex}+$/u).test('cafe'));          // Hex_Digit
-  t.ok(new RE2(/^\p{Lower}+$/u).test('foo'));         // Lowercase
-  t.ok(new RE2(/^\p{Upper}+$/u).test('FOO'));         // Uppercase
-  t.ok(new RE2(/^\p{IDS}$/u).test('A'));              // ID_Start
-  t.ok(new RE2(/^\p{IDC}+$/u).test('foo123'));        // ID_Continue
-  t.ok(new RE2(/^\p{XIDS}$/u).test('A'));             // XID_Start
-  t.ok(new RE2(/^\p{XIDC}+$/u).test('foo123'));       // XID_Continue
-  t.ok(new RE2(/^\p{space}+$/u).test(' \t'));         // White_Space
-  t.ok(new RE2(/\p{RI}/u).test('🇺'));                // Regional_Indicator
+  t.ok(new RE2(/^\p{Alpha}+$/u).test('hello')); // Alphabetic
+  t.ok(new RE2(/^\p{AHex}+$/u).test('DEADBEEF')); // ASCII_Hex_Digit
+  t.ok(new RE2(/^\p{Hex}+$/u).test('cafe')); // Hex_Digit
+  t.ok(new RE2(/^\p{Lower}+$/u).test('foo')); // Lowercase
+  t.ok(new RE2(/^\p{Upper}+$/u).test('FOO')); // Uppercase
+  t.ok(new RE2(/^\p{IDS}$/u).test('A')); // ID_Start
+  t.ok(new RE2(/^\p{IDC}+$/u).test('foo123')); // ID_Continue
+  t.ok(new RE2(/^\p{XIDS}$/u).test('A')); // XID_Start
+  t.ok(new RE2(/^\p{XIDC}+$/u).test('foo123')); // XID_Continue
+  t.ok(new RE2(/^\p{space}+$/u).test(' \t')); // White_Space
+  t.ok(new RE2(/\p{RI}/u).test('🇺')); // Regional_Indicator
 });
 
 test('test_binaryProperties_misc', t => {

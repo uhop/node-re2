@@ -91,7 +91,8 @@ let buf = '';
 while (buf.length < TARGET_SIZE) {
   buf += filler[Math.floor(rng() * filler.length)];
   // Sprinkle ~1 match per ~10 KB on average.
-  if (rng() < 0.0001) buf += sprinkle[Math.floor(rng() * sprinkle.length)] + '\n';
+  if (rng() < 0.0001)
+    buf += sprinkle[Math.floor(rng() * sprinkle.length)] + '\n';
 }
 const haystack = buf.slice(0, TARGET_SIZE);
 

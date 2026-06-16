@@ -19,9 +19,26 @@ const mulberry32 = seed => () => {
 
 // 2000 domain-blocklist-style patterns with varied literal anchors.
 const adjectives = [
-  'fast', 'quick', 'evil', 'sneaky', 'shady', 'mega', 'super',
-  'ultra', 'cyber', 'crypto', 'dark', 'neon', 'rapid', 'silent',
-  'zero', 'phantom', 'rogue', 'hidden', 'stealth', 'shadow'
+  'fast',
+  'quick',
+  'evil',
+  'sneaky',
+  'shady',
+  'mega',
+  'super',
+  'ultra',
+  'cyber',
+  'crypto',
+  'dark',
+  'neon',
+  'rapid',
+  'silent',
+  'zero',
+  'phantom',
+  'rogue',
+  'hidden',
+  'stealth',
+  'shadow'
 ];
 const tlds = ['com', 'net', 'org', 'io', 'co', 'dev', 'xyz', 'site'];
 
@@ -29,7 +46,7 @@ const PATTERN_COUNT = 2000;
 const patterns = [];
 for (let i = 0; i < PATTERN_COUNT; ++i) {
   const adj = adjectives[i % adjectives.length];
-  const tld = tlds[(i / adjectives.length) | 0 % tlds.length];
+  const tld = tlds[(i / adjectives.length) | (0 % tlds.length)];
   patterns.push(`${adj}-site${i}\\.${tld}`);
 }
 
@@ -43,7 +60,7 @@ for (let j = 0; j < INPUT_COUNT; ++j) {
   if (rng() < 0.3) {
     const i = Math.floor(rng() * PATTERN_COUNT);
     const adj = adjectives[i % adjectives.length];
-    const tld = tlds[(i / adjectives.length) | 0 % tlds.length];
+    const tld = tlds[(i / adjectives.length) | (0 % tlds.length)];
     inputs.push(
       `2026-05-12T22:31:04Z client=10.0.0.${j & 255} GET https://${adj}-site${i}.${tld}/path?q=${j} 200 42ms`
     );
@@ -70,7 +87,7 @@ const dCompileSet = Number(process.hrtime.bigint() - tCompileSet) / 1e6;
 
 console.error(
   `# Shape 4 setup: ${PATTERN_COUNT} patterns, ${INPUT_COUNT} inputs\n` +
-  `# compile RegExp: ${dCompileJs.toFixed(1)}ms · RE2: ${dCompileRe2.toFixed(1)}ms · RE2.Set: ${dCompileSet.toFixed(1)}ms`
+    `# compile RegExp: ${dCompileJs.toFixed(1)}ms · RE2: ${dCompileRe2.toFixed(1)}ms · RE2.Set: ${dCompileSet.toFixed(1)}ms`
 );
 
 export default {

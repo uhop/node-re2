@@ -137,7 +137,10 @@ test('test set maxMem accepted and exposed', t => {
 });
 
 test('test set maxMem with flags arg', t => {
-  const set = new RE2.Set(['foo'], 'i', {maxMem: 16 * 1024 * 1024, anchor: 'start'});
+  const set = new RE2.Set(['foo'], 'i', {
+    maxMem: 16 * 1024 * 1024,
+    anchor: 'start'
+  });
   t.equal(set.maxMem, 16 * 1024 * 1024);
   t.equal(set.anchor, 'start');
 });
@@ -181,7 +184,10 @@ test('test set maxMem raises compile ceiling', t => {
   } catch (e) {
     defaultFailed = true;
   }
-  t.ok(defaultFailed, 'default 8 MiB budget rejects N=14000 random-prefix patterns');
+  t.ok(
+    defaultFailed,
+    'default 8 MiB budget rejects N=14000 random-prefix patterns'
+  );
 
   const bigger = new RE2.Set(patterns, {maxMem: 64 * 1024 * 1024});
   t.equal(bigger.size, N);

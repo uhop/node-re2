@@ -442,7 +442,7 @@ Tables are baked in at build time from Unicode 17.0. To target a newer Unicode v
 
 ## Release history
 
-- 1.25.0 *Narrowed supported Node.js to `^22.22.2 || ^24.15.0 || >=26.0.0` &mdash; drops Node 25.x and the older 22/24 patch ranges, mirroring `node-gyp` 13 (which fixes a Node 26 build on Windows). Internally: added an ASCII-input fast path for offset math, updated all dependencies and tooling.*
+- 1.25.0 *Full Unicode 17.0.0 property classes (Fixes #226). New `maxMem` option for `RE2.Set`. Faster matching on pure-ASCII inputs. Narrowed Node support &mdash; drops Node 25.x and older patch releases.*
 - 1.24.1 *Support for Node 22, 24, 26 + precompiled binaries.*
 - 1.24.0 *Fixed multi-threaded crash in worker threads (#235). Added named import: `import {RE2} from 're2'`. Added CJS test. Updated docs and dependencies.*
 - 1.23.3 *Updated Abseil and dev dependencies.*
