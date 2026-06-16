@@ -251,13 +251,7 @@ See the wiki for notes on [yarn](https://github.com/uhop/node-re2/wiki/Using-wit
 
 ### Supported Node.js versions
 
-`re2` supports the Node.js versions declared in its `engines` field:
-
-```
-^22.22.2 || ^24.15.0 || >=26.0.0
-```
-
-As of 1.25.0 this range was narrowed to mirror [`node-gyp`](https://github.com/nodejs/node-gyp) 13, which `re2` builds with (and which fixes a Node 26 build on Windows): **Node 25.x and the older 22.0&ndash;22.22.1 / 24.0&ndash;24.14 patch ranges are no longer supported.** Use a current release of an active line &mdash; Node 22 (&ge; 22.22.2), 24 (&ge; 24.15.0), or 26 and later.
+`re2` supports every non-EOL Node.js release &mdash; current and active LTS lines. As a native (`nan`) addon it runs on Node.js only, not Bun or Deno. The authoritative supported range is the `engines` field in `package.json`; it also pins the minimum patch releases the build toolchain ([`node-gyp`](https://github.com/nodejs/node-gyp) 13) requires. Check `engines` for the exact floor rather than a version repeated here.
 
 ### Install scripts (npm 12+)
 

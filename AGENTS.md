@@ -17,7 +17,7 @@ npm install
 
 If the native addon fails to download a prebuilt artifact, it builds locally via `node-gyp`.
 
-**Supported Node.js versions:** `^22.22.2 || ^24.15.0 || >=26.0.0` (the `engines` field). Narrowed in 1.25.0 to mirror `node-gyp` 13 — Node 25.x and the older 22.0–22.22.1 / 24.0–24.14 patch ranges are no longer supported.
+**Supported Node.js versions:** every non-EOL release (active LTS + current); the `engines` field is the source of truth for the exact floor and also pins the minimum patches `node-gyp` 13 requires. Native (`nan`) addon — Node.js only, no Bun/Deno.
 
 ## Commands
 
@@ -131,3 +131,12 @@ test('example', t => {
 - `RE2.unicodeWarningLevel` controls behavior when non-Unicode regexps are created.
 - The `install` script tries to download a prebuilt `.node` artifact before falling back to `node-gyp rebuild`.
 - All C++ source is in `lib/`, all vendored third-party C++ is in `vendor/`.
+
+## Releasing
+
+This project follows the generic `/release-check` checklist plus one native-addon step it does not cover. After `npm publish` and pushing the version tag (`X.Y.Z`, no `v` prefix), `.github/workflows/build.yml` triggers on the tag: it auto-creates the GitHub release and builds + uploads a prebuilt `re2.node` for every cell of its build matrix (each OS/arch × each supported Node version) as a brotli `.br` asset via `npm run save-to-github`, each with a build-provenance attestation.
+
+- **Verify** the release at <https://github.com/uhop/node-re2/releases> carries one asset per matrix cell. `build.yml`'s matrix is the source of truth for which platforms and Node versions ship — cross-check the asset list against it, not against a fixed count.
+- **Recovery:** for a transient/system failure, re-run the failed jobs; for a real failure, delete the release and its tag, fix, then re-tag to trigger a fresh build.
+
+Windows and macOS binaries are produced only in CI, so this release build is the real cross-platform validation — e.g. after a `vendor/abseil-cpp` bump that required reconciling the `binding.gyp` source list.
