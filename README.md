@@ -249,6 +249,16 @@ npm install re2
 The project works with other package managers but is not tested with them.
 See the wiki for notes on [yarn](https://github.com/uhop/node-re2/wiki/Using-with-yarn) and [pnpm](https://github.com/uhop/node-re2/wiki/Using-with-pnpm).
 
+### Supported Node.js versions
+
+`re2` supports the Node.js versions declared in its `engines` field:
+
+```
+^22.22.2 || ^24.15.0 || >=26.0.0
+```
+
+As of 1.25.0 this range was narrowed to mirror [`node-gyp`](https://github.com/nodejs/node-gyp) 13, which `re2` builds with (and which fixes a Node 26 build on Windows): **Node 25.x and the older 22.0&ndash;22.22.1 / 24.0&ndash;24.14 patch ranges are no longer supported.** Use a current release of an active line &mdash; Node 22 (&ge; 22.22.2), 24 (&ge; 24.15.0), or 26 and later.
+
 ### Install scripts (npm 12+)
 
 `re2` downloads or builds its native binary in an `install` script. Starting with npm 12
@@ -275,7 +285,8 @@ npm rebuild re2
 `npm approve-scripts` pins the approval to the installed version, so version updates ask again;
 pass `--no-allow-scripts-pin` (or use the `allowScripts.re2=true` form above) to allow all
 versions. No other package in `re2`'s dependency tree runs install scripts. For the full story see
-[NPM 12 and install scripts](https://github.com/uhop/install-artifact-from-github/wiki/NPM-12-and-install-scripts).
+[NPM 12 and install scripts](https://github.com/uhop/install-artifact-from-github/wiki/NPM-12-and-install-scripts)
+and GitHub's official [announcement of the npm v12 breaking changes](https://github.blog/changelog/2026-06-09-upcoming-breaking-changes-for-npm-v12/).
 
 ### Precompiled artifacts
 
@@ -431,6 +442,7 @@ Tables are baked in at build time from Unicode 17.0. To target a newer Unicode v
 
 ## Release history
 
+- 1.25.0 *Narrowed supported Node.js to `^22.22.2 || ^24.15.0 || >=26.0.0` &mdash; drops Node 25.x and the older 22/24 patch ranges, mirroring `node-gyp` 13 (which fixes a Node 26 build on Windows). Internally: added an ASCII-input fast path for offset math, updated all dependencies and tooling.*
 - 1.24.1 *Support for Node 22, 24, 26 + precompiled binaries.*
 - 1.24.0 *Fixed multi-threaded crash in worker threads (#235). Added named import: `import {RE2} from 're2'`. Added CJS test. Updated docs and dependencies.*
 - 1.23.3 *Updated Abseil and dev dependencies.*

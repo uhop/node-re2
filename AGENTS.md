@@ -17,6 +17,8 @@ npm install
 
 If the native addon fails to download a prebuilt artifact, it builds locally via `node-gyp`.
 
+**Supported Node.js versions:** `^22.22.2 || ^24.15.0 || >=26.0.0` (the `engines` field). Narrowed in 1.25.0 to mirror `node-gyp` 13 — Node 25.x and the older 22.0–22.22.1 / 24.0–24.14 patch ranges are no longer supported.
+
 ## Commands
 
 - **Install:** `npm install` (downloads prebuilt artifact or builds from source)
