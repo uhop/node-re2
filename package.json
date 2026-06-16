@@ -21,7 +21,7 @@
   "dependencies": {
     "install-artifact-from-github": "^1.6.0",
     "nan": "^2.27.0",
-    "node-gyp": "^12.3.0"
+    "node-gyp": "^13.0.0"
   },
   "devDependencies": {
     "@types/node": "^25.7.0",
@@ -57,7 +57,7 @@
     "url": "git+https://github.com/uhop/node-re2.git"
   },
   "engines": {
-    "node": ">=22"
+    "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
   },
   "keywords": [
     "RegExp",
