@@ -22,7 +22,7 @@
     "node-gyp": "^13.0.0"
   },
   "devDependencies": {
-    "@types/node": "^25.9.3",
+    "@types/node": "^26.0.1",
     "@unicode/unicode-17.0.0": "^1.6.17",
     "nano-benchmark": "^1.0.16",
     "prettier": "^3.8.4",
