@@ -62,10 +62,18 @@ jobs:
           subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
   build-linux-node-22:
-    name: Node.js 22 on Bullseye
+    name: ${{ matrix.name }}
     needs: create-release
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runs-on }}
     continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Node.js 22 on Bullseye
+            runs-on: ubuntu-latest
+          - name: Node.js 22 on Bullseye ARM64
+            runs-on: ubuntu-24.04-arm
 
     steps:
       - uses: actions/checkout@v7
@@ -83,52 +91,18 @@ jobs:
           subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
   build-linux-alpine-node-22:
-    name: Node.js 22 on Alpine
+    name: ${{ matrix.name }}
     needs: create-release
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runs-on }}
     continue-on-error: true
-
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: true
-      - name: Install, test, and create artifact
-        uses: ./.github/actions/linux-alpine-node-22/
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - name: Attest
-        if: env.CREATED_ASSET_NAME != ''
-        uses: actions/attest-build-provenance@v4
-        with:
-          subject-name: '${{ env.CREATED_ASSET_NAME }}'
-          subject-path: '${{ github.workspace }}/build/Release/re2.node'
-
-  build-linux-arm64-node-22:
-    name: Node.js 22 on Bullseye ARM64
-    needs: create-release
-    runs-on: ubuntu-24.04-arm
-    continue-on-error: true
-
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: true
-      - name: Install, test, and create artifact
-        uses: ./.github/actions/linux-node-22/
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - name: Attest
-        if: env.CREATED_ASSET_NAME != ''
-        uses: actions/attest-build-provenance@v4
-        with:
-          subject-name: '${{ env.CREATED_ASSET_NAME }}'
-          subject-path: '${{ github.workspace }}/build/Release/re2.node'
-
-  build-linux-arm64-alpine-node-22:
-    name: Node.js 22 on Alpine ARM64
-    needs: create-release
-    runs-on: ubuntu-24.04-arm
-    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Node.js 22 on Alpine
+            runs-on: ubuntu-latest
+          - name: Node.js 22 on Alpine ARM64
+            runs-on: ubuntu-24.04-arm
 
     steps:
       - uses: actions/checkout@v7
@@ -146,10 +120,18 @@ jobs:
           subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
   build-linux-node-24:
-    name: Node.js 24 on Bullseye
+    name: ${{ matrix.name }}
     needs: create-release
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runs-on }}
     continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Node.js 24 on Bullseye
+            runs-on: ubuntu-latest
+          - name: Node.js 24 on Bullseye ARM64
+            runs-on: ubuntu-24.04-arm
 
     steps:
       - uses: actions/checkout@v7
@@ -167,52 +149,18 @@ jobs:
           subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
   build-linux-alpine-node-24:
-    name: Node.js 24 on Alpine
+    name: ${{ matrix.name }}
     needs: create-release
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runs-on }}
     continue-on-error: true
-
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: true
-      - name: Install, test, and create artifact
-        uses: ./.github/actions/linux-alpine-node-24/
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - name: Attest
-        if: env.CREATED_ASSET_NAME != ''
-        uses: actions/attest-build-provenance@v4
-        with:
-          subject-name: '${{ env.CREATED_ASSET_NAME }}'
-          subject-path: '${{ github.workspace }}/build/Release/re2.node'
-
-  build-linux-arm64-node-24:
-    name: Node.js 24 on Bullseye ARM64
-    needs: create-release
-    runs-on: ubuntu-24.04-arm
-    continue-on-error: true
-
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: true
-      - name: Install, test, and create artifact
-        uses: ./.github/actions/linux-node-24/
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - name: Attest
-        if: env.CREATED_ASSET_NAME != ''
-        uses: actions/attest-build-provenance@v4
-        with:
-          subject-name: '${{ env.CREATED_ASSET_NAME }}'
-          subject-path: '${{ github.workspace }}/build/Release/re2.node'
-
-  build-linux-arm64-alpine-node-24:
-    name: Node.js 24 on Alpine ARM64
-    needs: create-release
-    runs-on: ubuntu-24.04-arm
-    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Node.js 24 on Alpine
+            runs-on: ubuntu-latest
+          - name: Node.js 24 on Alpine ARM64
+            runs-on: ubuntu-24.04-arm
 
     steps:
       - uses: actions/checkout@v7
@@ -230,10 +178,18 @@ jobs:
           subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
   build-linux-node-26:
-    name: Node.js 26 on Trixie
+    name: ${{ matrix.name }}
     needs: create-release
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runs-on }}
     continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Node.js 26 on Trixie
+            runs-on: ubuntu-latest
+          - name: Node.js 26 on Trixie ARM64
+            runs-on: ubuntu-24.04-arm
 
     steps:
       - uses: actions/checkout@v7
@@ -251,52 +207,18 @@ jobs:
           subject-path: '${{ github.workspace }}/build/Release/re2.node'
 
   build-linux-alpine-node-26:
-    name: Node.js 26 on Alpine
+    name: ${{ matrix.name }}
     needs: create-release
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runs-on }}
     continue-on-error: true
-
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: true
-      - name: Install, test, and create artifact
-        uses: ./.github/actions/linux-alpine-node-26/
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - name: Attest
-        if: env.CREATED_ASSET_NAME != ''
-        uses: actions/attest-build-provenance@v4
-        with:
-          subject-name: '${{ env.CREATED_ASSET_NAME }}'
-          subject-path: '${{ github.workspace }}/build/Release/re2.node'
-
-  build-linux-arm64-node-26:
-    name: Node.js 26 on Trixie ARM64
-    needs: create-release
-    runs-on: ubuntu-24.04-arm
-    continue-on-error: true
-
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: true
-      - name: Install, test, and create artifact
-        uses: ./.github/actions/linux-node-26/
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - name: Attest
-        if: env.CREATED_ASSET_NAME != ''
-        uses: actions/attest-build-provenance@v4
-        with:
-          subject-name: '${{ env.CREATED_ASSET_NAME }}'
-          subject-path: '${{ github.workspace }}/build/Release/re2.node'
-
-  build-linux-arm64-alpine-node-26:
-    name: Node.js 26 on Alpine ARM64
-    needs: create-release
-    runs-on: ubuntu-24.04-arm
-    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Node.js 26 on Alpine
+            runs-on: ubuntu-latest
+          - name: Node.js 26 on Alpine ARM64
+            runs-on: ubuntu-24.04-arm
 
     steps:
       - uses: actions/checkout@v7
