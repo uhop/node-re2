@@ -315,7 +315,13 @@ inline Nan::Maybe<std::string> replace(
 			const auto data = item.data();
 			if (data)
 			{
-				argv.push_back(Nan::CopyBuffer(data, item.size()).ToLocalChecked());
+				auto buffer = Nan::CopyBuffer(data, item.size());
+				if (buffer.IsEmpty())
+				{
+					Nan::ThrowRangeError("Invalid string length");
+					return Nan::Nothing<std::string>();
+				}
+				argv.push_back(buffer.ToLocalChecked());
 			}
 			else
 			{
@@ -332,7 +338,13 @@ inline Nan::Maybe<std::string> replace(
 			const auto data = item.data();
 			if (data)
 			{
-				argv.push_back(Nan::New(data, item.size()).ToLocalChecked());
+				auto text = Nan::New(data, item.size());
+				if (text.IsEmpty())
+				{
+					Nan::ThrowRangeError("Invalid string length");
+					return Nan::Nothing<std::string>();
+				}
+				argv.push_back(text.ToLocalChecked());
 			}
 			else
 			{
@@ -551,8 +563,21 @@ NAN_METHOD(WrappedRE2::Replace)
 
 	if (replacee.isBuffer)
 	{
-		info.GetReturnValue().Set(Nan::CopyBuffer(result.data(), result.size()).ToLocalChecked());
+		auto buffer = Nan::CopyBuffer(result.data(), result.size());
+		if (buffer.IsEmpty())
+		{
+			Nan::ThrowRangeError("Invalid string length");
+			return;
+		}
+		info.GetReturnValue().Set(buffer.ToLocalChecked());
 		return;
 	}
-	info.GetReturnValue().Set(Nan::New(result).ToLocalChecked());
+	// over-max-length result -> empty MaybeLocal; ToLocalChecked() would abort()
+	auto text = Nan::New(result);
+	if (text.IsEmpty())
+	{
+		Nan::ThrowRangeError("Invalid string length");
+		return;
+	}
+	info.GetReturnValue().Set(text.ToLocalChecked());
 }
