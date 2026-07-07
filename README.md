@@ -436,7 +436,8 @@ Tables are baked in at build time from Unicode 17.0. To target a newer Unicode v
 
 ## Release history
 
-- 1.25.1 *Security fix (GHSA-8hcv-x26h-mcgp): a global `replace()` using an output-amplifying template (`$'` or `` $` ``) on very large input could exceed V8's maximum string length and abort the whole process. It now throws a catchable `RangeError`, matching the built-in engine.*
+- 1.25.2 *Two DoS security fixes: a global `match()` with an empty-matchable pattern (`a*`, `(?:)`, &hellip;) no longer loops forever exhausting memory (GHSA-6hxr-mr5r-9836), and an out-of-range `lastIndex` on a non-ASCII subject no longer reads past the buffer and crashes (GHSA-ff84-5f28-78qj). Both now match the built-in engine. Thx, [ataberk-xyz](https://github.com/ataberk-xyz).*
+- 1.25.1 *Security fix (GHSA-8hcv-x26h-mcgp): a global `replace()` using an output-amplifying template (`$'` or `` $` ``) on very large input could exceed V8's maximum string length and abort the whole process. It now throws a catchable `RangeError`, matching the built-in engine. Thx, [ataberk-xyz](https://github.com/ataberk-xyz).*
 - 1.25.0 *Full Unicode 17.0.0 property classes (Fixes #226). New `maxMem` option for `RE2.Set`. Faster matching on pure-ASCII inputs. Narrowed Node support &mdash; drops Node 25.x and older patch releases.*
 - 1.24.1 *Support for Node 22, 24, 26 + precompiled binaries.*
 - 1.24.0 *Fixed multi-threaded crash in worker threads (#235). Added named import: `import {RE2} from 're2'`. Added CJS test. Updated docs and dependencies.*
