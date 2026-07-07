@@ -126,6 +126,39 @@ test('test match sticky', t => {
   t.deepEqual(result3, ['A', 'B', 'C', 'D', 'E']);
 });
 
+// empty-match global tests (GHSA-6hxr-mr5r-9836)
+
+test('test match global empty match terminates', t => {
+  // A zero-width match must advance the cursor, otherwise the global loop
+  // spins forever growing native memory. Results must match the built-in engine.
+  for (const [pattern, subject] of [
+    ['a*', 'x'],
+    ['a*', 'xxxx'],
+    ['a*', ''],
+    ['b?', 'bbb'],
+    ['x{0,3}', 'xxxxx'],
+    ['(a)|', 'aaa'],
+    ['(?:)', 'abc'],
+    ['c*d*', 'cccddd']
+  ]) {
+    t.deepEqual(
+      Array.from(subject.match(new RE2(pattern, 'g')) || []),
+      subject.match(new RegExp(pattern, 'g')) || [],
+      `${pattern} on "${subject}"`
+    );
+  }
+
+  // sticky + global, and a non-ASCII subject (must advance whole code points)
+  t.deepEqual(
+    Array.from('xxx'.match(new RE2('a*', 'gy'))),
+    'xxx'.match(/a*/gy)
+  );
+  t.deepEqual(
+    Array.from('héllo'.match(new RE2('x*', 'g'))),
+    'héllo'.match(/x*/g)
+  );
+});
+
 // hasIndices tests
 
 test('test match has indices', t => {

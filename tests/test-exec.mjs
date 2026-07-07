@@ -429,3 +429,24 @@ test('exec found empty string', t => {
   t.equal(match.input, '');
   t.equal(match.groups, undefined);
 });
+
+test('exec out-of-range lastIndex on non-ASCII subject', t => {
+  // lastIndex is validated against the UTF-16 length, not the UTF-8 byte length.
+  // "éé" is 2 UTF-16 units but 4 UTF-8 bytes; a lastIndex between them used to
+  // pass the byte-length guard and read past the buffer (GHSA-ff84-5f28-78qj).
+  for (const flags of ['y', 'g']) {
+    const re = new RE2('a', flags);
+    re.lastIndex = 3; // > 2, the UTF-16 length of "éé"
+    t.equal(
+      re.exec('éé'),
+      null,
+      `flags "${flags}": out-of-range -> null, no crash`
+    );
+    t.equal(re.lastIndex, 0, `flags "${flags}": lastIndex reset`);
+  }
+
+  // in-range non-ASCII lastIndex still resolves to the correct code point
+  const re = new RE2(/./g);
+  re.lastIndex = 2;
+  t.deepEqual(Array.from('Я123'.match(re)), ['Я', '1', '2', '3']);
+});

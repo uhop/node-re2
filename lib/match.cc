@@ -45,7 +45,16 @@ NAN_METHOD(WrappedRE2::Match)
 		while (re2->regexp.Match(str, byteIndex, str.size, anchor, &match, 1))
 		{
 			groups.push_back(match);
-			byteIndex = match.data() - str.data + match.size();
+			size_t offset = match.data() - str.data;
+			if (match.size())
+			{
+				byteIndex = offset + match.size();
+			}
+			else
+			{
+				// zero-width match: advance one code point or the loop never terminates
+				byteIndex = offset + (offset < str.size ? getUtf8CharSize(str.data[offset]) : 1);
+			}
 		}
 
 		if (groups.empty())

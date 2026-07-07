@@ -197,10 +197,13 @@ const StrVal &WrappedRE2::prepareArgument(const v8::Local<v8::Value> &arg, bool 
 	auto isolate = v8::Isolate::GetCurrent();
 
 	auto s = t.ToLocalChecked();
-	auto argLength = utf8Length(s, isolate);
-	// Pure ASCII iff the UTF-16 length (s->Length(), O(1)) equals the UTF-8
-	// byte length: any non-ASCII char makes the byte count strictly larger.
-	bool isAscii = static_cast<size_t>(s->Length()) == argLength;
+	// length validation walks UTF-16 code units, so lastIndex must be bounded by
+	// the UTF-16 length (s->Length(), O(1)) — not the UTF-8 byte length, which is
+	// larger for non-ASCII and would let an out-of-range lastIndex read past the buffer.
+	auto argLength = static_cast<size_t>(s->Length());
+	// Pure ASCII iff the UTF-16 length equals the UTF-8 byte length: any
+	// non-ASCII char makes the byte count strictly larger.
+	bool isAscii = argLength == utf8Length(s, isolate);
 
 	auto buffer = node::Buffer::New(isolate, s).ToLocalChecked();
 	lastCache.Reset(buffer);
@@ -260,7 +263,7 @@ void StrVal::setIndex(size_t newIndex)
 		return;
 	}
 
-	byteIndex = index < newIndex ? getUtf16PositionByCounter(data, byteIndex, newIndex - index) : getUtf16PositionByCounter(data, 0, newIndex);
+	byteIndex = index < newIndex ? getUtf16PositionByCounter(data, size, byteIndex, newIndex - index) : getUtf16PositionByCounter(data, size, 0, newIndex);
 	index = newIndex;
 }
 

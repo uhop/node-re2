@@ -261,9 +261,9 @@ inline void writeUtf8(v8::Local<v8::String> s, v8::Isolate *isolate, char *buffe
 
 #endif
 
-inline size_t getUtf16PositionByCounter(const char *data, size_t from, size_t n)
+inline size_t getUtf16PositionByCounter(const char *data, size_t size, size_t from, size_t n)
 {
-	for (; n > 0; --n)
+	for (; n > 0 && from < size; --n)
 	{
 		size_t s = getUtf8CharSize(data[from]);
 		from += s;
@@ -271,5 +271,5 @@ inline size_t getUtf16PositionByCounter(const char *data, size_t from, size_t n)
 			--n; // this utf8 character will take two utf16 characters
 				 // the decrement above is protected to avoid an overflow of an unsigned integer
 	}
-	return from;
+	return from > size ? size : from;
 }
