@@ -8,14 +8,14 @@ on:
       - v?[0-9]+.[0-9]+
 
 permissions:
-  id-token: write
-  contents: write
-  attestations: write
+  contents: read
 
 jobs:
   create-release:
     name: Create release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v7
@@ -30,6 +30,10 @@ jobs:
     name: Node.js ${{matrix.node-version}} on ${{matrix.os}}
     needs: create-release
     runs-on: ${{matrix.os}}
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
     strategy:
       matrix:
         os: [macos-latest, windows-latest, macos-15-intel, windows-11-arm]
@@ -66,6 +70,10 @@ jobs:
     needs: create-release
     runs-on: ${{ matrix.runs-on }}
     continue-on-error: true
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
     strategy:
       fail-fast: false
       matrix:
@@ -95,6 +103,10 @@ jobs:
     needs: create-release
     runs-on: ${{ matrix.runs-on }}
     continue-on-error: true
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
     strategy:
       fail-fast: false
       matrix:
@@ -124,6 +136,10 @@ jobs:
     needs: create-release
     runs-on: ${{ matrix.runs-on }}
     continue-on-error: true
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
     strategy:
       fail-fast: false
       matrix:
@@ -153,6 +169,10 @@ jobs:
     needs: create-release
     runs-on: ${{ matrix.runs-on }}
     continue-on-error: true
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
     strategy:
       fail-fast: false
       matrix:
@@ -182,6 +202,10 @@ jobs:
     needs: create-release
     runs-on: ${{ matrix.runs-on }}
     continue-on-error: true
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
     strategy:
       fail-fast: false
       matrix:
@@ -211,6 +235,10 @@ jobs:
     needs: create-release
     runs-on: ${{ matrix.runs-on }}
     continue-on-error: true
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
     strategy:
       fail-fast: false
       matrix:

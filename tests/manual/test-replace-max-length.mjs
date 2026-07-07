@@ -8,7 +8,15 @@ import {RE2} from '../../re2.js';
 test('replace over-max-length result throws instead of aborting', t => {
   const re = new RE2('a', 'g');
   const input = 'a'.repeat(50000);
-  t.throws(() => re.replace(input, "$'"), RangeError, "trailing-context $' throws RangeError");
-  t.throws(() => re.replace(input, '$`'), RangeError, 'leading-context $` throws RangeError');
+  t.throws(
+    () => re.replace(input, "$'"),
+    RangeError,
+    "trailing-context $' throws RangeError"
+  );
+  t.throws(
+    () => re.replace(input, '$`'),
+    RangeError,
+    'leading-context $` throws RangeError'
+  );
   t.equal(re.replace('aaa', 'X'), 'XXX', 'sub-threshold replace still works');
 });

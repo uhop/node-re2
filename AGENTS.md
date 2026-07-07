@@ -87,7 +87,7 @@ node-re2/
 
 - **Do not modify vendored code.** Never edit files under `vendor/`. They are git submodules.
 - **Do not modify or delete test expectations** without understanding why they changed.
-- **Do not add comments or remove comments** unless explicitly asked.
+- **No narrating comments.** Comments are short *why*-markers only — a non-trivial decision or constraint, an algorithm reference, or required JSDoc. Never restate *what* the code does.
 - **Keep `re2.js` and `re2.d.ts` in sync.** All public API exposed from `re2.js` must be typed in `re2.d.ts`.
 - **The addon must build on all supported platforms:** Linux (x64, arm64, Alpine), macOS (x64, arm64), Windows (x64, arm64).
 - **RE2 is always Unicode-mode.** The `u` flag is always added implicitly.
