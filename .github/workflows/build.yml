@@ -40,9 +40,11 @@ jobs:
         node-version: [22, 24, 26]
 
     steps:
+      # Fetch only the vendor submodules the build needs — not the wiki, whose
+      # unpushed commits would otherwise fail checkout across the whole matrix.
       - uses: actions/checkout@v7
-        with:
-          submodules: true
+      - name: Check out build submodules
+        run: git submodule update --init vendor/re2 vendor/abseil-cpp
       - name: Setup Node.js ${{matrix.node-version}}
         uses: actions/setup-node@v6
         with:
@@ -84,9 +86,11 @@ jobs:
             runs-on: ubuntu-24.04-arm
 
     steps:
+      # Fetch only the vendor submodules the build needs — not the wiki, whose
+      # unpushed commits would otherwise fail checkout across the whole matrix.
       - uses: actions/checkout@v7
-        with:
-          submodules: true
+      - name: Check out build submodules
+        run: git submodule update --init vendor/re2 vendor/abseil-cpp
       - name: Install, test, and create artifact
         uses: ./.github/actions/linux-node-22/
         env:
@@ -117,9 +121,11 @@ jobs:
             runs-on: ubuntu-24.04-arm
 
     steps:
+      # Fetch only the vendor submodules the build needs — not the wiki, whose
+      # unpushed commits would otherwise fail checkout across the whole matrix.
       - uses: actions/checkout@v7
-        with:
-          submodules: true
+      - name: Check out build submodules
+        run: git submodule update --init vendor/re2 vendor/abseil-cpp
       - name: Install, test, and create artifact
         uses: ./.github/actions/linux-alpine-node-22/
         env:
@@ -150,9 +156,11 @@ jobs:
             runs-on: ubuntu-24.04-arm
 
     steps:
+      # Fetch only the vendor submodules the build needs — not the wiki, whose
+      # unpushed commits would otherwise fail checkout across the whole matrix.
       - uses: actions/checkout@v7
-        with:
-          submodules: true
+      - name: Check out build submodules
+        run: git submodule update --init vendor/re2 vendor/abseil-cpp
       - name: Install, test, and create artifact
         uses: ./.github/actions/linux-node-24/
         env:
@@ -183,9 +191,11 @@ jobs:
             runs-on: ubuntu-24.04-arm
 
     steps:
+      # Fetch only the vendor submodules the build needs — not the wiki, whose
+      # unpushed commits would otherwise fail checkout across the whole matrix.
       - uses: actions/checkout@v7
-        with:
-          submodules: true
+      - name: Check out build submodules
+        run: git submodule update --init vendor/re2 vendor/abseil-cpp
       - name: Install, test, and create artifact
         uses: ./.github/actions/linux-alpine-node-24/
         env:
@@ -216,9 +226,11 @@ jobs:
             runs-on: ubuntu-24.04-arm
 
     steps:
+      # Fetch only the vendor submodules the build needs — not the wiki, whose
+      # unpushed commits would otherwise fail checkout across the whole matrix.
       - uses: actions/checkout@v7
-        with:
-          submodules: true
+      - name: Check out build submodules
+        run: git submodule update --init vendor/re2 vendor/abseil-cpp
       - name: Install, test, and create artifact
         uses: ./.github/actions/linux-node-26/
         env:
@@ -249,9 +261,11 @@ jobs:
             runs-on: ubuntu-24.04-arm
 
     steps:
+      # Fetch only the vendor submodules the build needs — not the wiki, whose
+      # unpushed commits would otherwise fail checkout across the whole matrix.
       - uses: actions/checkout@v7
-        with:
-          submodules: true
+      - name: Check out build submodules
+        run: git submodule update --init vendor/re2 vendor/abseil-cpp
       - name: Install, test, and create artifact
         uses: ./.github/actions/linux-alpine-node-26/
         env:
