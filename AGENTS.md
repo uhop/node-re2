@@ -129,12 +129,12 @@ test('example', t => {
 - `RE2.Set` provides multi-pattern matching: `new RE2.Set(patterns, flags, options)`.
 - Static helpers: `RE2.getUtf8Length(str)`, `RE2.getUtf16Length(buf)`.
 - `RE2.unicodeWarningLevel` controls behavior when non-Unicode regexps are created.
-- The `install` script tries to download a prebuilt `.node` artifact before falling back to `node-gyp rebuild`.
+- The `install` script tries to download a prebuilt `.node` artifact before falling back to `node-gyp rebuild`; GitHub downloads are verified against `package.json#artifactHashes`.
 - All C++ source is in `lib/`, all vendored third-party C++ is in `vendor/`.
 
 ## Releasing
 
-This project follows the generic `/release-check` checklist plus one native-addon step it does not cover. After `npm publish` and pushing the version tag (`X.Y.Z`, no `v` prefix), `.github/workflows/build.yml` triggers on the tag: it auto-creates the GitHub release and builds + uploads a prebuilt `re2.node` for every cell of its build matrix (each OS/arch × each supported Node version) as a brotli `.br` asset via `npm run save-to-github`, each with a build-provenance attestation.
+This project follows the generic `/release-check` checklist plus native-addon steps it does not cover. Push the version tag (`X.Y.Z`, no `v` prefix) first: `.github/workflows/build.yml` triggers on the tag — it auto-creates the GitHub release and builds + uploads a prebuilt `re2.node` for every cell of its build matrix (each OS/arch × each supported Node version) as a brotli `.br` asset via `npm run save-to-github`, each with a build-provenance attestation. Run `npm publish` only after **all** assets are uploaded: the `prepublishOnly` hook (`hash-github-cache --write`) hashes the release's assets and stamps the `artifactHashes` map into `package.json`, which `install-from-cache` verifies downloads against. Commit the stamped `package.json` after the release.
 
 - **Verify** the release at <https://github.com/uhop/node-re2/releases> carries one asset per matrix cell. `build.yml`'s matrix is the source of truth for which platforms and Node versions ship — cross-check the asset list against it, not against a fixed count.
 - **Recovery:** for a transient/system failure, re-run the failed jobs; for a real failure, delete the release and its tag, fix, then re-tag to trigger a fresh build.

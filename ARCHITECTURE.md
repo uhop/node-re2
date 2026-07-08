@@ -107,7 +107,7 @@ Multi-pattern matching using `re2::RE2::Set`:
 
 - `binding.gyp` defines the node-gyp build: compiles all `.cc` files in `lib/` plus vendored RE2 and Abseil sources.
 - Platform-specific compiler flags are set for GCC, Clang, and MSVC.
-- The `install` npm script first tries to download a prebuilt `re2.node` from GitHub Releases via `install-artifact-from-github`, falling back to a local `node-gyp rebuild`.
+- The `install` npm script first tries to download a prebuilt `re2.node` from GitHub Releases via `install-artifact-from-github`, falling back to a local `node-gyp rebuild`. GitHub downloads are verified against SHA-256 hashes in `package.json#artifactHashes`, stamped at publish time by `hash-github-cache` (the `prepublishOnly` hook).
 - Prebuilt artifacts cover: Linux (x64, arm64, Alpine/musl), macOS (x64, arm64), Windows (x64, arm64).
 
 ## Module dependency graph

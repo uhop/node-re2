@@ -17,7 +17,7 @@
     "vendor"
   ],
   "dependencies": {
-    "install-artifact-from-github": "^1.6.0",
+    "install-artifact-from-github": "^1.7.0",
     "nan": "^2.27.0",
     "node-gyp": "^13.0.0"
   },
@@ -35,7 +35,8 @@
     "test:seq": "tape6-seq --flags FO",
     "test:proc": "tape6-proc --flags FO",
     "save-to-github": "save-to-github-cache --artifact build/Release/re2.node",
-    "install": "install-from-cache --artifact build/Release/re2.node --host-var RE2_DOWNLOAD_MIRROR --skip-path-var RE2_DOWNLOAD_SKIP_PATH --skip-ver-var RE2_DOWNLOAD_SKIP_VER || node-gyp -j max rebuild",
+    "prepublishOnly": "hash-github-cache --write",
+    "install": "install-from-cache --artifact build/Release/re2.node --host-var RE2_DOWNLOAD_MIRROR --skip-path-var RE2_DOWNLOAD_SKIP_PATH --skip-ver-var RE2_DOWNLOAD_SKIP_VER --force-build-var RE2_DOWNLOAD_FORCE_BUILD || node-gyp -j max rebuild",
     "verify-build": "node scripts/verify-build.js",
     "build:dev": "node-gyp -j max build --debug",
     "build": "node-gyp -j max build",
@@ -71,5 +72,31 @@
       "/tests/test-*.*js",
       "/tests/test-*.*ts"
     ]
+  },
+  "artifactHashes": {
+    "darwin-arm64-127": "sha256:f19e29c5eaa38d08575fecbc32fc45ccc08b2c5a37a16150130c1a356e854a49",
+    "darwin-arm64-137": "sha256:dee1340b54baea5bf7e385ebeef009acba022bef427a417451926e46a1a66f79",
+    "darwin-arm64-147": "sha256:52f33bc5140b5f0e7f2e7c0d08833aeb2a5062b0802af466fb0e2bb09b469e22",
+    "darwin-x64-127": "sha256:a052a8c478782a1e6956938baf42060c9c1705b0b81bf4f20d1acb4db7d2ffb0",
+    "darwin-x64-137": "sha256:df57424617115dadbf16dd0555e4218579e2a6111a58bb777611dfb7136bd790",
+    "darwin-x64-147": "sha256:926321157d928eb0d7ee3107d716ad1fe0e11f3853d161f3dbd082056880cf1b",
+    "linux-arm64-127": "sha256:c9a0d24fbcacb40ef061d6897cb3b7d578fc8779536b119e4590c53637fd2917",
+    "linux-arm64-137": "sha256:c9648ecd6274a83d017a8dd26ecde437451ec4f00771abe13c11d70dd99c2f6e",
+    "linux-arm64-147": "sha256:355121e50949fbe584be171ce35444dd8806f6a1c11be4699cc031ff2656e9c1",
+    "linux-musl-arm64-127": "sha256:422e753b5029e9dd92345fe899f99e78d3073023d4ed49d3649465acbd420ba5",
+    "linux-musl-arm64-137": "sha256:bc917c2446c854cd26db40d9930a871a1bcb45397a7416fde70900248d285706",
+    "linux-musl-arm64-147": "sha256:c64ce8f87c315fbb1f6ba16a06cd89a7f66e41b44f20617939a4051810606fff",
+    "linux-musl-x64-127": "sha256:f3e0185ab37ba242d1a3ad4ef1fa68e9433f2d7108f0fd664609f01db30d2d10",
+    "linux-musl-x64-137": "sha256:145317775ebaf7c38c6f06ef7e0803268a076393d87320588922412136d2c645",
+    "linux-musl-x64-147": "sha256:65ab09cb85cffd6c537be6e41aa660778b1b542ca366ab0a60215db7218cb659",
+    "linux-x64-127": "sha256:becba036278c083fe861509d203ccce2e41ff5d3a817ae65a66c557d835b9857",
+    "linux-x64-137": "sha256:9b5b82c2b3e2af0ae7598890a9183381a4f1c25d2e6990f08edb041a4dbe32c8",
+    "linux-x64-147": "sha256:ac8a1e012095401b88cd596c869503108f57d2f55913c71a6d36c6460aab28f2",
+    "win32-arm64-127": "sha256:5e666447b1d8ef08ef42ebcd9225d6dda3090842542b1160bfe35c4c5d533374",
+    "win32-arm64-137": "sha256:e6b0d4c1f57d49f22869aa6963786594f7981bba2e71644945d64dfa6fb4a666",
+    "win32-arm64-147": "sha256:cb2ac339677eeabc32995be20ee22b972ac14ce24b62d68cf6976f07787517d9",
+    "win32-x64-127": "sha256:de8a827d8044113eb9152968f75e5205985474444870d4244bd2afdc188f30ea",
+    "win32-x64-137": "sha256:1db913df59eafd481654a327ff6ea88a1bb669c3043bad4cb0d940516ad3d41b",
+    "win32-x64-147": "sha256:fbbab2cb58e4e3de7486998449e4df2e68f0b79bc954a028e6e629795989903a"
   }
 }

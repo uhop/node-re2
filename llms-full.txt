@@ -18,7 +18,7 @@
 npm install re2
 ```
 
-Prebuilt native binaries are downloaded automatically. Falls back to building from source via node-gyp if no prebuilt is available.
+Prebuilt native binaries are downloaded automatically and verified against SHA-256 hashes pinned in re2's `package.json` (`artifactHashes`). Falls back to building from source via node-gyp if no prebuilt is available or verification fails. Set `RE2_DOWNLOAD_FORCE_BUILD` to a non-empty value to always build from source.
 
 Both paths run in re2's install script. Under npm 12+ defaults (July 2026), install scripts require approval in the consuming project's `package.json`: run `npm pkg set allowScripts.re2=true --json` before `npm install re2`, otherwise the install fails with `ESTRICTALLOWSCRIPTS`. npm 11.16+ runs the script but prints a warning until approved.
 

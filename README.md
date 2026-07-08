@@ -284,9 +284,9 @@ and GitHub's official [announcement of the npm v12 breaking changes](https://git
 
 ### Precompiled artifacts
 
-The [install script](https://github.com/uhop/install-artifact-from-github/blob/master/bin/install-from-cache.js) attempts to download a prebuilt artifact from GitHub Releases. Override the download location with the `RE2_DOWNLOAD_MIRROR` environment variable.
+The [install script](https://github.com/uhop/install-artifact-from-github/blob/master/bin/install-from-cache.js) attempts to download a prebuilt artifact from GitHub Releases. A download from GitHub is [verified](https://github.com/uhop/install-artifact-from-github/wiki/Verifying-artifacts) against the SHA-256 hashes pinned in this package's `artifactHashes` field before it is used &mdash; a binary that is not byte-for-byte the one published is rejected. Override the download location with the `RE2_DOWNLOAD_MIRROR` environment variable (a mirror serves your own builds and is not hash-checked). To skip the download entirely and always build from source, set `RE2_DOWNLOAD_FORCE_BUILD` to a non-empty value.
 
-If the download fails, the script builds RE2 locally using [node-gyp](https://github.com/nodejs/node-gyp).
+If the download fails or is rejected, the script builds RE2 locally using [node-gyp](https://github.com/nodejs/node-gyp).
 
 ## How to use
 
