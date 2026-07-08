@@ -20,7 +20,7 @@ It also provides `String`-based regular expression methods. The constructor acce
 It can work with [Node.js Buffers](https://nodejs.org/api/buffer.html) directly, reducing overhead and making processing of long files fast.
 
 The project is a C++ addon built with [nan](https://github.com/nodejs/nan). It cannot be used in web browsers.
-All documentation is in this README and in the [wiki](https://github.com/uhop/node-re2/wiki).
+All documentation is in this README and in the [wiki](https://github.com/uhop/node-re2/wiki) &mdash; browse the [index](https://github.com/uhop/node-re2/wiki/Home), or [search it](https://uhop.github.io/wiki-search/app/?wiki=uhop/node-re2) by name.
 
 ## Why use node-re2?
 

@@ -20,9 +20,11 @@ jobs:
         node-version: [22, 24, 26]
 
     steps:
+      # Fetch only the vendor submodules the build needs — not the wiki, whose
+      # unpushed commits would otherwise fail checkout across the whole matrix.
       - uses: actions/checkout@v7
-        with:
-          submodules: true
+      - name: Check out build submodules
+        run: git submodule update --init vendor/re2 vendor/abseil-cpp
       - name: Setup Node.js ${{matrix.node-version}}
         uses: actions/setup-node@v6
         with:

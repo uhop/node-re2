@@ -7,7 +7,7 @@ Thank you for your interest in contributing!
 This project uses git submodules for vendored dependencies (RE2 and Abseil). Clone recursively:
 
 ```bash
-git clone --recursive git@github.com:uhop/node-re2.git
+git clone --recursive https://github.com/uhop/node-re2.git
 cd node-re2
 npm install
 ```
