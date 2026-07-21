@@ -436,7 +436,7 @@ Tables are baked in at build time from Unicode 17.0. To target a newer Unicode v
 
 ## Release history
 
-- 1.26.1 *Security fix (#272): a `Buffer` subject, pattern, or replacement ending in a truncated multi-byte UTF-8 character no longer reads past the end of the buffer &mdash; for `replace()` and `split()` those stray bytes were copied into the returned `Buffer`. Buffer input only; strings were never affected. Thx, [OvOhao](https://github.com/OvOhao).*
+- 1.26.1 *Security fix (GHSA-j4r3-hg7j-8chg): a `Buffer` subject, pattern, or replacement ending in a truncated multi-byte UTF-8 character no longer reads past the end of the buffer &mdash; for `replace()` and `split()` those stray bytes were copied into the returned `Buffer`. Buffer input only; strings were never affected. Thx, [Ovo](https://github.com/OvOhao).*
 - 1.26.0 *Verified prebuilt downloads. Thx, [ataberk-xyz](https://github.com/ataberk-xyz).*
 - 1.25.2 *Two DoS security fixes: a global `match()` with an empty-matchable pattern (`a*`, `(?:)`, &hellip;) no longer loops forever exhausting memory (GHSA-6hxr-mr5r-9836), and an out-of-range `lastIndex` on a non-ASCII subject no longer reads past the buffer and crashes (GHSA-ff84-5f28-78qj). Both now match the built-in engine. Thx, [ataberk-xyz](https://github.com/ataberk-xyz).*
 - 1.25.1 *Security fix (GHSA-8hcv-x26h-mcgp): a global `replace()` using an output-amplifying template (`$'` or `` $` ``) on very large input could exceed V8's maximum string length and abort the whole process. It now throws a catchable `RangeError`, matching the built-in engine. Thx, [ataberk-xyz](https://github.com/ataberk-xyz).*
