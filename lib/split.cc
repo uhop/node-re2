@@ -49,7 +49,7 @@ NAN_METHOD(WrappedRE2::Split)
 		}
 		else
 		{
-			size_t sym_size = getUtf8CharSize(str.data[byteIndex]);
+			size_t sym_size = getUtf8CharSize(str.data[byteIndex], str.size - byteIndex);
 			pieces.push_back(re2::StringPiece(str.data + byteIndex, sym_size));
 			byteIndex += sym_size;
 		}

@@ -313,7 +313,7 @@ bool translateRegExp(const char *data, size_t size, bool multiline, std::vector<
 					continue;
 				default:
 					result += "\\";
-					size_t sym_size = getUtf8CharSize(ch);
+					size_t sym_size = getUtf8CharSize(ch, size - (i + 1));
 					result.append(data + i + 1, sym_size);
 					i += sym_size + 1;
 					continue;
@@ -345,7 +345,7 @@ bool translateRegExp(const char *data, size_t size, bool multiline, std::vector<
 		{
 			inCharClass = false;
 		}
-		size_t sym_size = getUtf8CharSize(ch);
+		size_t sym_size = getUtf8CharSize(ch, size - i);
 		result.append(data + i, sym_size);
 		i += sym_size;
 	}
@@ -390,7 +390,7 @@ std::string escapeRegExp(const char *data, size_t size)
 		{
 			prevBackSlashes = 0;
 		}
-		size_t sym_size = getUtf8CharSize(ch);
+		size_t sym_size = getUtf8CharSize(ch, size - i);
 		result.append(data + i, sym_size);
 		i += sym_size;
 	}

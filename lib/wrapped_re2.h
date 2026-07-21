@@ -232,6 +232,15 @@ inline size_t getUtf8CharSize(char ch)
 	return ((0xE5000000 >> ((ch >> 3) & 0x1E)) & 3) + 1;
 }
 
+// Buffer input is never re-encoded, so a lead byte can promise more continuation
+// bytes than the input actually holds; use this form wherever the result indexes
+// the buffer, or the read runs past the end (GHSA/#272).
+inline size_t getUtf8CharSize(char ch, size_t remaining)
+{
+	size_t size = getUtf8CharSize(ch);
+	return size < remaining ? size : remaining;
+}
+
 // V8 13.4 introduced Utf8LengthV2 / WriteUtf8V2; V8 14.6 removed the bare
 // Utf8Length / WriteUtf8. On older V8 (Node 22) only the bare forms exist.
 #if defined(V8_MAJOR_VERSION) && (V8_MAJOR_VERSION > 13 || \

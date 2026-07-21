@@ -203,7 +203,7 @@ inline std::string replace(
 			++i;
 			continue;
 		}
-		size_t sym_size = getUtf8CharSize(ch);
+		size_t sym_size = getUtf8CharSize(ch, size - i);
 		result.append(data + i, sym_size);
 		i += sym_size;
 	}
@@ -262,7 +262,7 @@ static Nan::Maybe<std::string> replace(
 		}
 		else if ((size_t)offset < size)
 		{
-			auto sym_size = getUtf8CharSize(data[offset]);
+			auto sym_size = getUtf8CharSize(data[offset], size - (size_t)offset);
 			result.append(data + offset, sym_size);
 			byteIndex = offset + sym_size;
 		}
@@ -449,7 +449,7 @@ static Nan::Maybe<std::string> replace(
 		}
 		else if ((size_t)offset < size)
 		{
-			auto sym_size = getUtf8CharSize(data[offset]);
+			auto sym_size = getUtf8CharSize(data[offset], size - (size_t)offset);
 			result.append(data + offset, sym_size);
 			byteIndex = offset + sym_size;
 		}
