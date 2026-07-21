@@ -177,6 +177,7 @@ const StrVal &WrappedRE2::prepareArgument(const v8::Local<v8::Value> &arg, bool 
 		lastString.Reset(arg);
 
 		auto argSize = node::Buffer::Length(arg);
+		// isAscii stays false: every consumer branches on isBuffer first, so computing it would be a dead O(n) scan.
 		lastStringValue.reset(arg, argSize, argSize, startFrom, true);
 
 		return lastStringValue;
