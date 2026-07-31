@@ -1,5 +1,6 @@
 const {test} = require('tape-six');
 const RE2 = require('../re2.js');
+const {Buffer} = require('node:buffer');
 
 test('CJS require', t => {
   t.ok(RE2, 'RE2 is loaded');

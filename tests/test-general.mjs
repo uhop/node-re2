@@ -1,5 +1,6 @@
 import test from 'tape-six';
 import {default as RE2} from '../re2.js';
+import {Buffer} from 'node:buffer';
 
 // utilities
 

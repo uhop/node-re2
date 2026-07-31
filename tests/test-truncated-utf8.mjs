@@ -1,5 +1,6 @@
 import test from 'tape-six';
 import {RE2} from '../re2.js';
+import {Buffer} from 'node:buffer';
 
 // Buffer input is passed to C++ verbatim (only strings are re-encoded), so a
 // multi-byte lead byte at the very end promises continuation bytes the buffer

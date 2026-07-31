@@ -1,5 +1,6 @@
 import test from 'tape-six';
 import {RE2} from '../re2.js';
+import {Buffer} from 'node:buffer';
 
 test('test set basics', t => {
   const set = new RE2.Set(['foo', 'bar'], 'im');

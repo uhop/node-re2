@@ -1,5 +1,6 @@
 import test from 'tape-six';
 import {RE2} from '../re2.js';
+import {Buffer} from 'node:buffer';
 
 // The ASCII fast path: when an input string is pure ASCII, byte offsets equal
 // UTF-16 offsets, so the C++ side skips the UTF-8 -> UTF-16 scan. These tests
