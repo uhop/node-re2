@@ -1,9 +1,12 @@
 /// <reference types="node" />
 
 declare module 're2' {
-  interface RE2BufferExecArray {
+  type RE2BinaryInput =
+    Buffer | ArrayBufferView | ArrayBuffer | SharedArrayBuffer;
+
+  interface RE2BufferExecArray<T extends RE2BinaryInput = Buffer> {
     index: number;
-    input: Buffer;
+    input: T;
     0: Buffer;
     groups?: {
       [key: string]: Buffer;
@@ -11,9 +14,9 @@ declare module 're2' {
     indices?: RegExpIndicesArray;
   }
 
-  interface RE2BufferMatchArray {
+  interface RE2BufferMatchArray<T extends RE2BinaryInput = Buffer> {
     index?: number;
-    input?: Buffer;
+    input?: T;
     0: Buffer;
     groups?: {
       [key: string]: Buffer;
@@ -23,25 +26,28 @@ declare module 're2' {
   interface RE2 extends RegExp {
     readonly internalSource: string;
     exec(str: string): RegExpExecArray | null;
-    exec(str: Buffer): RE2BufferExecArray | null;
+    exec<T extends RE2BinaryInput>(str: T): RE2BufferExecArray<T> | null;
 
     match(str: string): RegExpMatchArray | null;
-    match(str: Buffer): RE2BufferMatchArray | null;
+    match<T extends RE2BinaryInput>(str: T): RE2BufferMatchArray<T> | null;
 
-    test(str: string | Buffer): boolean;
+    test(str: string | RE2BinaryInput): boolean;
 
-    replace<K extends String | Buffer>(
-      str: K,
-      replaceValue: string | Buffer
-    ): K;
-    replace<K extends String | Buffer>(
-      str: K,
-      replacer: (substring: string, ...args: any[]) => string | Buffer
-    ): K;
+    replace(str: string, replaceValue: string | RE2BinaryInput): string;
+    replace(str: RE2BinaryInput, replaceValue: string | RE2BinaryInput): Buffer;
+    replace(
+      str: string,
+      replacer: (substring: string, ...args: any[]) => string | RE2BinaryInput
+    ): string;
+    replace(
+      str: RE2BinaryInput,
+      replacer: (substring: string, ...args: any[]) => string | RE2BinaryInput
+    ): Buffer;
 
-    search(str: string | Buffer): number;
+    search(str: string | RE2BinaryInput): number;
 
-    split<K extends String | Buffer>(str: K, limit?: number): K[];
+    split(str: string, limit?: number): string[];
+    split(str: RE2BinaryInput, limit?: number): Buffer[];
   }
 
   interface RE2SetOptions {
@@ -57,35 +63,38 @@ declare module 're2' {
     readonly anchor: 'unanchored' | 'start' | 'both';
     readonly maxMem: number;
 
-    match(str: string | Buffer): number[];
-    test(str: string | Buffer): boolean;
+    match(str: string | RE2BinaryInput): number[];
+    test(str: string | RE2BinaryInput): boolean;
     toString(): string;
   }
 
   interface RE2SetConstructor {
     new (
-      patterns: Iterable<Buffer | RegExp | RE2 | string>,
-      flagsOrOptions?: string | Buffer | RE2SetOptions,
+      patterns: Iterable<RE2BinaryInput | RegExp | RE2 | string>,
+      flagsOrOptions?: string | RE2BinaryInput | RE2SetOptions,
       options?: RE2SetOptions
     ): RE2Set;
     (
-      patterns: Iterable<Buffer | RegExp | RE2 | string>,
-      flagsOrOptions?: string | Buffer | RE2SetOptions,
+      patterns: Iterable<RE2BinaryInput | RegExp | RE2 | string>,
+      flagsOrOptions?: string | RE2BinaryInput | RE2SetOptions,
       options?: RE2SetOptions
     ): RE2Set;
     readonly prototype: RE2Set;
   }
 
   interface RE2Constructor extends RegExpConstructor {
-    new (pattern: Buffer | RegExp | RE2 | string): RE2;
-    new (pattern: Buffer | string, flags?: string | Buffer): RE2;
-    (pattern: Buffer | RegExp | RE2 | string): RE2;
-    (pattern: Buffer | string, flags?: string | Buffer): RE2;
+    new (pattern: RE2BinaryInput | RegExp | RE2 | string): RE2;
+    new (
+      pattern: RE2BinaryInput | string,
+      flags?: string | RE2BinaryInput
+    ): RE2;
+    (pattern: RE2BinaryInput | RegExp | RE2 | string): RE2;
+    (pattern: RE2BinaryInput | string, flags?: string | RE2BinaryInput): RE2;
     readonly prototype: RE2;
 
     unicodeWarningLevel: 'nothing' | 'warnOnce' | 'warn' | 'throw';
     getUtf8Length(value: string): number;
-    getUtf16Length(value: Buffer): number;
+    getUtf16Length(value: RE2BinaryInput): number;
 
     Set: RE2SetConstructor;
     RE2: RE2Constructor;

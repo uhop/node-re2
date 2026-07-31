@@ -1,11 +1,11 @@
 # node-re2
 
-> Node.js bindings for RE2: a fast, safe alternative to backtracking regular expression engines. Drop-in RegExp replacement that prevents ReDoS (Regular Expression Denial of Service). Works with strings and Buffers. C++ native addon built with node-gyp and nan.
+> Node.js bindings for RE2: a fast, safe alternative to backtracking regular expression engines. Drop-in RegExp replacement that prevents ReDoS (Regular Expression Denial of Service). Works with strings and binary input (Buffer, TypedArray, DataView, ArrayBuffer, SharedArrayBuffer). C++ native addon built with node-gyp and nan.
 
 - Drop-in replacement for RegExp with linear-time matching guarantee
 - Prevents ReDoS by disallowing backreferences and lookahead assertions
 - Full Unicode mode (always on)
-- Buffer support for high-performance binary/UTF-8 processing
+- Binary input support (Buffer, TypedArray, DataView, ArrayBuffer, SharedArrayBuffer) for high-performance UTF-8 processing
 - Named capture groups
 - Symbol-based methods (Symbol.match, Symbol.search, Symbol.replace, Symbol.split, Symbol.matchAll)
 - RE2.Set for multi-pattern matching
@@ -57,7 +57,7 @@ Pattern can be:
 - **String with flags**: `new RE2('\\d+', 'gi')`
 - **RegExp**: `new RE2(/ab*/ig)` — copies pattern and flags.
 - **RE2**: `new RE2(existingRE2)` — copies pattern and flags.
-- **Buffer**: `new RE2(Buffer.from('pattern'))` — pattern from UTF-8 buffer.
+- **Binary object**: `new RE2(Buffer.from('pattern'))` — pattern from UTF-8 bytes; any `TypedArray`, `DataView`, `ArrayBuffer`, or `SharedArrayBuffer` works too.
 
 Supported flags:
 - `g` — global (find all matches)
@@ -214,7 +214,7 @@ re.split('a1b2c');              // ['a', 'b', 'c']
 
 ## Buffer support
 
-All methods accept Node.js Buffers (UTF-8) instead of strings. When given Buffer input, they return Buffer output.
+All methods accept binary input (UTF-8 bytes) instead of strings: `Buffer`, any `TypedArray` (e.g., `Uint8Array`), `DataView`, `ArrayBuffer`, and `SharedArrayBuffer`. Views are read at their byte offset and length. When given binary input, methods return Buffer output.
 
 ```js
 const re = new RE2('матч', 'g');
@@ -222,12 +222,17 @@ const buf = Buffer.from('тест матч тест');
 const result = re.exec(buf);
 // result[0] is a Buffer containing 'матч' in UTF-8
 // result.index is in bytes (not characters)
+
+re.lastIndex = 0;
+re.exec(new TextEncoder().encode('тест матч тест')); // Uint8Array works the same way
 ```
 
 Differences from string mode:
 - All offsets and lengths are in **bytes**, not characters.
-- Results contain Buffers instead of strings.
+- Results contain Buffers instead of strings — for every binary input type (`Buffer` is a `Uint8Array` subclass, so results satisfy `Uint8Array` consumers).
 - Use `buf.toString()` to convert results back to strings.
+- Patterns, flags, and `replace()` replacement values can be binary objects too.
+- Writing to a `SharedArrayBuffer` concurrently while it is being matched yields unspecified match results (reads stay in bounds).
 
 ### useBuffers on replacer functions
 
@@ -251,8 +256,8 @@ Multi-pattern matching — compile many patterns into a single automaton and tes
 new RE2.Set(patterns[, flagsOrOptions][, options])
 ```
 
-- `patterns` — any iterable of strings, Buffers, RegExp, or RE2 instances.
-- `flagsOrOptions` — optional string/Buffer with flags (apply to all patterns), or options object.
+- `patterns` — any iterable of strings, binary objects (Buffer, TypedArray, DataView, ArrayBuffer, SharedArrayBuffer), RegExp, or RE2 instances.
+- `flagsOrOptions` — optional string/binary object with flags (apply to all patterns), or options object.
 - `options.anchor` — `'unanchored'` (default), `'start'`, or `'both'`.
 - `options.maxMem` — DFA memory budget in bytes (positive integer). Default 8 MiB; raise it when `new RE2.Set(...)` throws `"RE2.Set could not be compiled."` because the union DFA blew the budget.
 
@@ -476,6 +481,9 @@ const result: RegExpExecArray | null = re.exec('test 123');
 
 // Buffer overloads
 const bufResult: RE2BufferExecArray | null = re.exec(Buffer.from('test 123'));
+
+// any binary input (RE2BinaryInput = Buffer | ArrayBufferView | ArrayBuffer | SharedArrayBuffer)
+const u8Result = re.exec(new TextEncoder().encode('test 123')); // RE2BufferExecArray<Uint8Array> | null
 
 // RE2.Set
 const set: RE2Set = new RE2.Set(['a', 'b'], 'i');

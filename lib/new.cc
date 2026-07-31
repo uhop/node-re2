@@ -82,10 +82,14 @@ NAN_METHOD(WrappedRE2::New)
 			writeUtf8(s, isolate, data, buffer.size());
 			buffer[size] = '\0';
 		}
-		else if (node::Buffer::HasInstance(info[1]))
+		else
 		{
-			size = node::Buffer::Length(info[1]);
-			data = node::Buffer::Data(info[1]);
+			auto bin = getBinaryData(info[1]);
+			if (bin.isBinary)
+			{
+				size = bin.size;
+				data = bin.data;
+			}
 		}
 		for (size_t i = 0; i < size; ++i)
 		{
@@ -120,10 +124,12 @@ NAN_METHOD(WrappedRE2::New)
 
 	bool needConversion = true;
 
-	if (node::Buffer::HasInstance(info[0]))
+	auto binPattern = getBinaryData(info[0]);
+
+	if (binPattern.isBinary)
 	{
-		size = node::Buffer::Length(info[0]);
-		data = node::Buffer::Data(info[0]);
+		size = binPattern.size;
+		data = binPattern.data;
 
 		source = escapeRegExp(data, size);
 	}
@@ -203,7 +209,7 @@ NAN_METHOD(WrappedRE2::New)
 
 	if (!data)
 	{
-		return Nan::ThrowTypeError("Expected string, Buffer, RegExp, or RE2 as the 1st argument.");
+		return Nan::ThrowTypeError("Expected string, Buffer, TypedArray, DataView, ArrayBuffer, SharedArrayBuffer, RegExp, or RE2 as the 1st argument.");
 	}
 
 	if (!unicode)

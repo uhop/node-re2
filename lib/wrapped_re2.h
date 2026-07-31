@@ -19,7 +19,7 @@ struct StrVal
 	operator re2::StringPiece() const { return re2::StringPiece(data, size); }
 
 	void setIndex(size_t newIndex = 0);
-	void reset(const v8::Local<v8::Value> &arg, size_t size, size_t length, size_t newIndex = 0, bool buffer = false, bool ascii = false);
+	void reset(char *dataPtr, size_t size, size_t length, size_t newIndex = 0, bool buffer = false, bool ascii = false);
 
 	void clear()
 	{
@@ -28,6 +28,63 @@ struct StrVal
 		data = nullptr;
 	}
 };
+
+struct BinaryData
+{
+	char *data;
+	size_t size;
+	bool isBinary;
+};
+
+// #233: bare (Shared)ArrayBuffers used to fall through to ToString() and match
+// "[object ArrayBuffer]"; views only worked because Buffer's C++ API takes any
+// ArrayBufferView — this makes the accepted set deliberate.
+inline BinaryData getBinaryData(const v8::Local<v8::Value> &arg)
+{
+	char *data = nullptr;
+	size_t size = 0;
+	if (node::Buffer::HasInstance(arg))
+	{
+		data = node::Buffer::Data(arg);
+		size = node::Buffer::Length(arg);
+	}
+	else if (arg->IsArrayBufferView())
+	{
+		auto view = arg.As<v8::ArrayBufferView>();
+		data = static_cast<char *>(view->Buffer()->Data()) + view->ByteOffset();
+		size = view->ByteLength();
+	}
+	else if (arg->IsArrayBuffer())
+	{
+		auto buffer = arg.As<v8::ArrayBuffer>();
+		data = static_cast<char *>(buffer->Data());
+		size = buffer->ByteLength();
+	}
+	else if (arg->IsSharedArrayBuffer())
+	{
+		auto buffer = arg.As<v8::SharedArrayBuffer>();
+		data = static_cast<char *>(buffer->Data());
+		size = buffer->ByteLength();
+	}
+	else
+	{
+		return {nullptr, 0, false};
+	}
+	if (!data)
+	{
+		// empty or detached backing store; a non-null pointer keeps
+		// "binary but empty" distinguishable from "not binary"
+		static char empty[1] = {'\0'};
+		data = empty;
+		size = 0;
+	}
+	return {data, size, true};
+}
+
+inline bool isBinaryValue(const v8::Local<v8::Value> &arg)
+{
+	return arg->IsArrayBufferView() || arg->IsArrayBuffer() || arg->IsSharedArrayBuffer();
+}
 
 class WrappedRE2 : public Nan::ObjectWrap
 {

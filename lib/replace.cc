@@ -377,9 +377,10 @@ inline Nan::Maybe<std::string> replace(
 
 	auto result = maybeResult.ToLocalChecked();
 
-	if (node::Buffer::HasInstance(result))
+	auto bin = getBinaryData(result);
+	if (bin.isBinary)
 	{
-		return Nan::Just(std::string(node::Buffer::Data(result), node::Buffer::Length(result)));
+		return Nan::Just(std::string(bin.data, bin.size));
 	}
 
 	auto t = result->ToString(Nan::GetCurrentContext());
@@ -536,21 +537,24 @@ NAN_METHOD(WrappedRE2::Replace)
 	}
 	else
 	{
-		v8::Local<v8::Object> replacer;
-		if (node::Buffer::HasInstance(info[1]))
+		const char *data;
+		size_t size;
+
+		auto bin = getBinaryData(info[1]);
+		if (bin.isBinary)
 		{
-			replacer = info[1].As<v8::Object>();
+			data = bin.data;
+			size = bin.size;
 		}
 		else
 		{
 			auto t = info[1]->ToString(Nan::GetCurrentContext());
 			if (t.IsEmpty())
 				return; // throws an exception
-			replacer = node::Buffer::New(v8::Isolate::GetCurrent(), t.ToLocalChecked()).ToLocalChecked();
+			auto replacer = node::Buffer::New(v8::Isolate::GetCurrent(), t.ToLocalChecked()).ToLocalChecked();
+			data = node::Buffer::Data(replacer);
+			size = node::Buffer::Length(replacer);
 		}
-
-		auto data = node::Buffer::Data(replacer);
-		auto size = node::Buffer::Length(replacer);
 
 		const auto replaced = replace(re2, replacee, data, size);
 		if (replaced.IsNothing())

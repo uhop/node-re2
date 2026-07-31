@@ -17,7 +17,7 @@ See `RE2.unicodeWarningLevel` below for details.
 `RE2` emulates standard `RegExp`, making it a practical drop-in replacement in most cases.
 It also provides `String`-based regular expression methods. The constructor accepts `RegExp` directly, honoring all properties.
 
-It can work with [Node.js Buffers](https://nodejs.org/api/buffer.html) directly, reducing overhead and making processing of long files fast.
+It can work with binary data directly &mdash; [Node.js Buffers](https://nodejs.org/api/buffer.html), typed arrays, `DataView`, `ArrayBuffer`, `SharedArrayBuffer` &mdash; reducing overhead and making processing of long files fast.
 
 The project is a C++ addon built with [nan](https://github.com/nodejs/nan). It cannot be used in web browsers.
 All documentation is in this README and in the [wiki](https://github.com/uhop/node-re2/wiki) &mdash; browse the [index](https://github.com/uhop/node-re2/wiki/Home), or [search it](https://uhop.github.io/wiki-search/app/?wiki=uhop/node-re2) by name.
@@ -121,7 +121,9 @@ These methods are also available as well-known symbol-based methods for transpar
 
 ### `Buffer` support
 
-Most methods accept Buffers instead of strings for direct UTF-8 processing:
+Most methods accept binary objects instead of strings for direct UTF-8 processing:
+`Buffer`, any `TypedArray` (e.g., `Uint8Array`), `DataView`, `ArrayBuffer`, and `SharedArrayBuffer`
+are all read as raw UTF-8 bytes (views at their byte offset and length):
 
 * `re2.exec(buf)`
 * `re2.test(buf)`
@@ -130,14 +132,19 @@ Most methods accept Buffers instead of strings for direct UTF-8 processing:
 * `re2.split(buf[, limit])`
 * `re2.replace(buf, replacer)`
 
+Patterns, flags, and `replace()` replacement values can be binary objects too.
+
 Differences from string-based versions:
 
-* All buffers are assumed to be encoded as [UTF-8](https://en.wikipedia.org/wiki/UTF-8)
+* All binary input is assumed to be encoded as [UTF-8](https://en.wikipedia.org/wiki/UTF-8)
   (ASCII is a proper subset of UTF-8).
-* Results are `Buffer` objects, even in composite objects. Convert with
+* Results are `Buffer` objects for any binary input, even in composite objects. Convert with
   [`buf.toString()`](https://nodejs.org/api/buffer.html#buffer_buf_tostring_encoding_start_end).
+  (`Buffer` is a `Uint8Array` subclass, so the results satisfy consumers expecting `Uint8Array`.)
 * All offsets and lengths are in bytes, not characters (each UTF-8 character occupies 1–4 bytes).
   This lets you slice buffers directly without costly character-to-byte recalculations.
+* Writing to a `SharedArrayBuffer` concurrently while it is being matched yields unspecified
+  match results (reads are always kept in bounds).
 
 When `re2.replace()` is used with a replacer function, the replacer receives string arguments and character offsets by default. Set `useBuffers` to `true` on the function to receive byte offsets instead:
 
@@ -169,8 +176,8 @@ Use `RE2.Set` when the same string must be tested against many patterns. It buil
 While `test()` can be simulated by combining patterns with `|`, `match()` returns which patterns matched &mdash; something a single regular expression cannot do.
 
 * `new RE2.Set(patterns[, flagsOrOptions][, options])`
-  * `patterns` is any iterable of strings, `Buffer`s, `RegExp`, or `RE2` instances; flags (if provided) apply to the whole set.
-  * `flagsOrOptions` can be a string/`Buffer` with standard flags (`i`, `m`, `s`, `u`, `g`, `y`, `d`).
+  * `patterns` is any iterable of strings, binary objects (`Buffer`, `TypedArray`, `DataView`, `ArrayBuffer`, `SharedArrayBuffer`), `RegExp`, or `RE2` instances; flags (if provided) apply to the whole set.
+  * `flagsOrOptions` can be a string or binary object with standard flags (`i`, `m`, `s`, `u`, `g`, `y`, `d`).
   * `options.anchor` can be `'unanchored'` (default), `'start'`, or `'both'`.
   * `options.maxMem` is the DFA memory budget in bytes (positive integer). Default is 8 MiB &mdash; raise it to compile sets that would otherwise fail with `"RE2.Set could not be compiled."`.
 * `set.test(str)` returns `true` if any pattern matches and `false` otherwise.

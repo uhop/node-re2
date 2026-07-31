@@ -91,7 +91,7 @@ node-re2/
 - **Keep `re2.js` and `re2.d.ts` in sync.** All public API exposed from `re2.js` must be typed in `re2.d.ts`.
 - **The addon must build on all supported platforms:** Linux (x64, arm64, Alpine), macOS (x64, arm64), Windows (x64, arm64).
 - **RE2 is always Unicode-mode.** The `u` flag is always added implicitly.
-- **Buffer support is a first-class feature.** All methods that accept strings must also accept Buffers, returning Buffers when given Buffer input.
+- **Binary input is a first-class feature.** All methods that accept strings must also accept binary objects — `Buffer`, any `TypedArray`, `DataView`, `ArrayBuffer`, `SharedArrayBuffer` — read as UTF-8 bytes, returning Buffers for binary input.
 
 ## Architecture
 

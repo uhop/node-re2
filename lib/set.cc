@@ -41,14 +41,15 @@ static bool parseFlags(const v8::Local<v8::Value> &arg, SetFlags &flags)
 		buffer[buffer.size() - 1] = '\0';
 		data = &buffer[0];
 	}
-	else if (node::Buffer::HasInstance(arg))
-	{
-		size = node::Buffer::Length(arg);
-		data = node::Buffer::Data(arg);
-	}
 	else
 	{
-		return false;
+		auto bin = getBinaryData(arg);
+		if (!bin.isBinary)
+		{
+			return false;
+		}
+		size = bin.size;
+		data = bin.data;
 	}
 
 	for (size_t i = 0; i < size; ++i)
@@ -325,10 +326,10 @@ static bool parseMaxMem(const v8::Local<v8::Value> &arg, int64_t &maxMem, bool &
 
 static bool fillInput(const v8::Local<v8::Value> &arg, StrVal &str, v8::Local<v8::Object> &keepAlive)
 {
-	if (node::Buffer::HasInstance(arg))
+	auto bin = getBinaryData(arg);
+	if (bin.isBinary)
 	{
-		auto size = node::Buffer::Length(arg);
-		str.reset(arg, size, size, 0, true);
+		str.reset(bin.data, bin.size, bin.size, 0, true);
 		return true;
 	}
 
@@ -343,7 +344,7 @@ static bool fillInput(const v8::Local<v8::Value> &arg, StrVal &str, v8::Local<v8
 	auto len = utf8Length(s, isolate);
 	auto buffer = node::Buffer::New(isolate, s).ToLocalChecked();
 	keepAlive = buffer;
-	str.reset(buffer, node::Buffer::Length(buffer), len, 0);
+	str.reset(node::Buffer::Data(buffer), node::Buffer::Length(buffer), len, 0);
 	return true;
 }
 
@@ -417,7 +418,7 @@ NAN_METHOD(WrappedRE2Set::New)
 	v8::Local<v8::Value> optionsArg;
 	if (info.Length() > 1)
 	{
-		if (info[1]->IsObject() && !info[1]->IsString() && !node::Buffer::HasInstance(info[1]))
+		if (info[1]->IsObject() && !info[1]->IsString() && !isBinaryValue(info[1]))
 		{
 			optionsArg = info[1];
 		}
@@ -561,10 +562,12 @@ NAN_METHOD(WrappedRE2Set::New)
 		size_t size = 0;
 		std::string source;
 
-		if (node::Buffer::HasInstance(value))
+		auto bin = getBinaryData(value);
+
+		if (bin.isBinary)
 		{
-			size = node::Buffer::Length(value);
-			data = node::Buffer::Data(value);
+			size = bin.size;
+			data = bin.data;
 			source = escapeRegExp(data, size);
 		}
 		else if (value->IsRegExp())
@@ -608,7 +611,7 @@ NAN_METHOD(WrappedRE2Set::New)
 			auto obj = maybeObj.ToLocalChecked();
 			if (!WrappedRE2::HasInstance(obj))
 			{
-				return Nan::ThrowTypeError("Expected a string, Buffer, RegExp, or RE2 instance in the pattern list.");
+				return Nan::ThrowTypeError("Expected a string, Buffer, TypedArray, DataView, ArrayBuffer, SharedArrayBuffer, RegExp, or RE2 instance in the pattern list.");
 			}
 
 			auto re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(obj);
@@ -618,7 +621,7 @@ NAN_METHOD(WrappedRE2Set::New)
 		}
 		else
 		{
-			return Nan::ThrowTypeError("Expected a string, Buffer, RegExp, or RE2 instance in the pattern list.");
+			return Nan::ThrowTypeError("Expected a string, Buffer, TypedArray, DataView, ArrayBuffer, SharedArrayBuffer, RegExp, or RE2 instance in the pattern list.");
 		}
 
 		if (translateRegExp(data, size, flags.multiline, buffer))

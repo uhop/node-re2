@@ -85,12 +85,13 @@ JavaScript RegExp features are translated to RE2 equivalents:
 
 ### Buffer support
 
-All methods accept both strings and Node.js Buffers:
+All methods accept strings and binary objects (`Buffer`, any `TypedArray`, `DataView`, `ArrayBuffer`, `SharedArrayBuffer`):
 
-- Buffer inputs are assumed UTF-8 encoded.
-- Buffer inputs produce Buffer outputs (in composite result objects too).
-- Offsets and lengths are in bytes (not characters) when using Buffers.
+- Binary inputs are assumed UTF-8 encoded; views are read at their byte offset and length.
+- Binary inputs produce Buffer outputs (in composite result objects too).
+- Offsets and lengths are in bytes (not characters) for binary input.
 - The `useBuffers` property on replacer functions controls offset reporting in `replace()`.
+- `getBinaryData()` in `lib/wrapped_re2.h` is the single classifier/extractor every input site uses.
 
 ### RE2.Set (set.cc)
 

@@ -1,6 +1,6 @@
 # node-re2
 
-> Node.js bindings for RE2: a fast, safe alternative to backtracking regular expression engines. Drop-in RegExp replacement that prevents ReDoS. Works with strings and Buffers.
+> Node.js bindings for RE2: a fast, safe alternative to backtracking regular expression engines. Drop-in RegExp replacement that prevents ReDoS. Works with strings and binary input (Buffer, TypedArray, DataView, ArrayBuffer, SharedArrayBuffer).
 
 ## Install
 
@@ -78,13 +78,16 @@ Array.from('abc'.matchAll(re));
 
 ### Buffer support
 
-All methods accept Buffers (UTF-8) instead of strings. Buffer input produces Buffer output. Offsets are in bytes.
+All methods accept binary input (UTF-8 bytes) instead of strings: `Buffer`, any `TypedArray`, `DataView`, `ArrayBuffer`, `SharedArrayBuffer`. Binary input produces Buffer output (`Buffer` is a `Uint8Array` subclass). Offsets are in bytes. Patterns, flags, and replacement values can be binary too.
 
 ```js
 const re = new RE2('матч', 'g');
 const buf = Buffer.from('тест матч тест');
 const result = re.exec(buf);
 // result[0] is a Buffer
+
+re.lastIndex = 0;
+re.exec(new TextEncoder().encode('тест матч тест')); // Uint8Array works the same way
 ```
 
 ### RE2.Set

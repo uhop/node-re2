@@ -110,6 +110,36 @@ function test_splitTypes() {
   assertType<Buffer[]>(re.split(Buffer.from('a,b,c'), 2));
 }
 
+function test_binaryInputTypes() {
+  const re = new RE2('abc', 'g');
+  const u8 = new TextEncoder().encode('xabcx');
+  const dv = new DataView(u8.buffer);
+  const ab = new ArrayBuffer(8);
+  const sab = new SharedArrayBuffer(8);
+
+  const result = re.exec(u8);
+  if (!result) {
+    throw 'Unexpected Result';
+  }
+  assertType<number>(result.index);
+  assertType<Uint8Array>(result.input);
+  assertType<Buffer>(result[0]);
+
+  assertType<boolean>(re.test(dv));
+  assertType<boolean>(re.test(ab));
+  assertType<boolean>(re.test(sab));
+  assertType<number>(re.search(u8));
+  assertType<Buffer>(re.replace(u8, 'def'));
+  assertType<Buffer>(re.replace(ab, u8));
+  assertType<Buffer[]>(re.split(dv));
+  assertType<number>(RE2.getUtf16Length(u8));
+
+  const re2 = new RE2(u8, dv);
+  assertType<RE2>(re2);
+  const set = new RE2.Set([u8, 'a'], dv);
+  assertType<number[]>(set.match(ab));
+}
+
 function test_toStringType() {
   const re = new RE2('abc', 'gi');
   assertType<string>(re.toString());
@@ -162,6 +192,7 @@ test_testTypes();
 test_searchTypes();
 test_replaceTypes();
 test_splitTypes();
+test_binaryInputTypes();
 test_toStringType();
 test_staticMembers();
 test_setTypes();

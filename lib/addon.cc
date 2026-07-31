@@ -45,10 +45,10 @@ static NAN_METHOD(GetUtf8Length)
 
 static NAN_METHOD(GetUtf16Length)
 {
-	if (node::Buffer::HasInstance(info[0]))
+	auto bin = getBinaryData(info[0]);
+	if (bin.isBinary)
 	{
-		const auto *s = node::Buffer::Data(info[0]);
-		info.GetReturnValue().Set(static_cast<int>(getUtf16Length(s, s + node::Buffer::Length(info[0]))));
+		info.GetReturnValue().Set(static_cast<int>(getUtf16Length(bin.data, bin.data + bin.size)));
 		return;
 	}
 	info.GetReturnValue().Set(-1);
@@ -161,7 +161,9 @@ const StrVal &WrappedRE2::prepareArgument(const v8::Local<v8::Value> &arg, bool 
 		lastCache.ClearWeak();
 	}
 
-	if (lastString == arg && !node::Buffer::HasInstance(arg) && !lastCache.IsEmpty())
+	auto bin = getBinaryData(arg);
+
+	if (lastString == arg && !bin.isBinary && !lastCache.IsEmpty())
 	{
 		// we have a properly cached string
 		lastStringValue.setIndex(startFrom);
@@ -170,15 +172,14 @@ const StrVal &WrappedRE2::prepareArgument(const v8::Local<v8::Value> &arg, bool 
 
 	dropCache();
 
-	if (node::Buffer::HasInstance(arg))
+	if (bin.isBinary)
 	{
-		// no need to cache buffers
+		// no need to cache binary input
 
 		lastString.Reset(arg);
 
-		auto argSize = node::Buffer::Length(arg);
 		// isAscii stays false: every consumer branches on isBuffer first, so computing it would be a dead O(n) scan.
-		lastStringValue.reset(arg, argSize, argSize, startFrom, true);
+		lastStringValue.reset(bin.data, bin.size, bin.size, startFrom, true);
 
 		return lastStringValue;
 	}
@@ -210,7 +211,7 @@ const StrVal &WrappedRE2::prepareArgument(const v8::Local<v8::Value> &arg, bool 
 	lastCache.Reset(buffer);
 
 	auto argSize = node::Buffer::Length(buffer);
-	lastStringValue.reset(buffer, argSize, argLength, startFrom, false, isAscii);
+	lastStringValue.reset(node::Buffer::Data(buffer), argSize, argLength, startFrom, false, isAscii);
 
 	return lastStringValue;
 };
@@ -270,13 +271,13 @@ void StrVal::setIndex(size_t newIndex)
 
 static char null_buffer[] = {'\0'};
 
-void StrVal::reset(const v8::Local<v8::Value> &arg, size_t argSize, size_t argLength, size_t newIndex, bool buffer, bool ascii)
+void StrVal::reset(char *dataPtr, size_t argSize, size_t argLength, size_t newIndex, bool buffer, bool ascii)
 {
 	clear();
 	isBuffer = buffer;
 	isAscii = ascii;
 	size = argSize;
 	length = argLength;
-	data = size ? node::Buffer::Data(arg) : null_buffer;
+	data = size ? dataPtr : null_buffer;
 	setIndex(newIndex);
 }
