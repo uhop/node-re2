@@ -295,6 +295,8 @@ The [install script](https://github.com/uhop/install-artifact-from-github/blob/m
 
 If the download fails or is rejected, the script builds RE2 locally using [node-gyp](https://github.com/nodejs/node-gyp).
 
+Installing from git instead of npm (e.g. `npm install uhop/node-re2#X.Y.Z`; opt-in via `--allow-git` under npm 12) always builds from source: `artifactHashes` is stamped into `package.json` at publish time, so a checkout has no hashes for its own release's binaries and the download is rejected. The npm package is the verified artifact.
+
 ## How to use
 
 It is used just like `RegExp`.
