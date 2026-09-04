@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@types/node": "^26.1.2",
-    "@unicode/unicode-17.0.0": "^1.6.17",
+    "@unicode/unicode-17.0.0": "^2.0.2",
     "nano-benchmark": "^1.2.0",
     "prettier": "^3.9.6",
     "tape-six": "^1.16.2",
