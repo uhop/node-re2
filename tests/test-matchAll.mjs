@@ -1,4 +1,5 @@
 import test from 'tape-six';
+import {Buffer} from 'node:buffer';
 import {RE2} from '../re2.js';
 
 // tests
@@ -77,5 +78,31 @@ test('test matchAll empty match', t => {
   t.equal(result.length, str.length + 1);
   for (let i = 0; i < result.length; ++i) {
     t.equal(result[i][0], '');
+  }
+});
+
+test('test matchAll empty match steps over surrogate pairs', t => {
+  const str = '😀a😀';
+  const indices = Array.from(str.matchAll(new RE2('b*', 'g')), m => m.index);
+  const expected = Array.from(str.matchAll(/b*/gu), m => m.index);
+
+  t.deepEqual(indices, expected);
+  t.deepEqual(indices, [0, 2, 3, 5]);
+});
+
+test('test matchAll converts a non-string argument to a string', t => {
+  const buffer = Buffer.from('a1b😀');
+  const result = Array.from(new RE2('\\d*', 'g')[Symbol.matchAll](buffer));
+  const expected = Array.from(
+    RegExp.prototype[Symbol.matchAll].call(/\d*/gu, buffer)
+  );
+
+  t.deepEqual(
+    result.map(m => [m.index, m[0]]),
+    expected.map(m => [m.index, m[0]])
+  );
+  for (const m of result) {
+    t.equal(typeof m[0], 'string');
+    t.equal(m.input, 'a1b😀');
   }
 });

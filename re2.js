@@ -27,12 +27,14 @@ RE2.prototype[Symbol.matchAll] = function* (str) {
       'String.prototype.matchAll() is called with a non-global RE2 argument'
     );
 
+  str = String(str);
   const re = new RE2(this);
   re.lastIndex = this.lastIndex;
   for (;;) {
     const result = re.exec(str);
     if (!result) break;
-    if (result[0] === '') ++re.lastIndex;
+    if (!result[0])
+      re.lastIndex += str.codePointAt(re.lastIndex) > 0xffff ? 2 : 1;
     yield result;
   }
 };
