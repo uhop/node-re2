@@ -289,10 +289,8 @@ bool translateRegExp(const char *data, size_t size, bool multiline, std::vector<
 								result += data[i + 1];
 								if (unicodeClasses.find(name) != unicodeClasses.end()) {
 									name = unicodeClasses[name];
-								} else if (name.size() > 7 && !strncmp(name.c_str(), "Script=", 7)) {
-									name = name.substr(7);
-								} else if (name.size() > 3 && !strncmp(name.c_str(), "sc=", 3)) {
-									name = name.substr(3);
+								} else if (stripPrefix(name, "Script=", stripped) || stripPrefix(name, "sc=", stripped)) {
+									name = stripped;
 								}
 								if (name.size() == 1) {
 									result += name;

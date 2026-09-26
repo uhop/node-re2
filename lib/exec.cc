@@ -18,7 +18,9 @@ NAN_METHOD(WrappedRE2::Exec)
 	StrVal& str = prep;
 	if (str.isBad) return; // throws an exception
 
-	if (re2->global || re2->sticky)
+	const bool globalOrSticky = re2->global || re2->sticky;
+
+	if (globalOrSticky)
 	{
 		if (!str.isValidIndex)
 		{
@@ -34,7 +36,7 @@ NAN_METHOD(WrappedRE2::Exec)
 
 	if (!re2->regexp.Match(str, str.byteIndex, str.size, re2->sticky ? re2::RE2::ANCHOR_START : re2::RE2::UNANCHORED, &groups[0], groups.size()))
 	{
-		if (re2->global || re2->sticky)
+		if (globalOrSticky)
 		{
 			re2->lastIndex = 0;
 		}
@@ -45,7 +47,7 @@ NAN_METHOD(WrappedRE2::Exec)
 	// form a result
 
 	auto result = Nan::New<v8::Array>(), indices = Nan::New<v8::Array>();
-	int indexOffset = re2->global || re2->sticky ? re2->lastIndex : 0;
+	int indexOffset = globalOrSticky ? re2->lastIndex : 0;
 
 	if (str.isBuffer)
 	{
@@ -112,7 +114,7 @@ NAN_METHOD(WrappedRE2::Exec)
 								  static_cast<int>(toUtf16Index(str.isAscii, str.data + str.byteIndex, groups[0].data()))));
 	}
 
-	if (re2->global || re2->sticky)
+	if (globalOrSticky)
 	{
 		re2->lastIndex +=
 			str.isBuffer ? groups[0].data() - str.data + groups[0].size() - str.byteIndex : toUtf16Index(str.isAscii, str.data + str.byteIndex, groups[0].data() + groups[0].size());

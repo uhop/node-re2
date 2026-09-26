@@ -85,6 +85,7 @@ NAN_METHOD(WrappedRE2::Match)
 
 	// form a result
 
+	const bool needIndices = !re2->global && re2->hasIndices;
 	auto result = Nan::New<v8::Array>(), indices = Nan::New<v8::Array>();
 
 	if (str.isBuffer)
@@ -96,7 +97,7 @@ NAN_METHOD(WrappedRE2::Match)
 			if (data)
 			{
 				Nan::Set(result, i, Nan::CopyBuffer(data, item.size()).ToLocalChecked());
-				if (!re2->global && re2->hasIndices)
+				if (needIndices)
 				{
 					auto pair = Nan::New<v8::Array>();
 					auto offset = data - str.data - byteIndex;
@@ -109,7 +110,7 @@ NAN_METHOD(WrappedRE2::Match)
 			else
 			{
 				Nan::Set(result, i, Nan::Undefined());
-				if (!re2->global && re2->hasIndices)
+				if (needIndices)
 					Nan::Set(indices, i, Nan::Undefined());
 			}
 		}
@@ -128,7 +129,7 @@ NAN_METHOD(WrappedRE2::Match)
 			if (data)
 			{
 				Nan::Set(result, i, Nan::New(data, item.size()).ToLocalChecked());
-				if (!re2->global && re2->hasIndices)
+				if (needIndices)
 				{
 					auto pair = Nan::New<v8::Array>();
 					auto offset = toUtf16Index(str.isAscii, str.data + byteIndex, data);
@@ -141,7 +142,7 @@ NAN_METHOD(WrappedRE2::Match)
 			else
 			{
 				Nan::Set(result, i, Nan::Undefined());
-				if (!re2->global && re2->hasIndices)
+				if (needIndices)
 				{
 					Nan::Set(indices, i, Nan::Undefined());
 				}
