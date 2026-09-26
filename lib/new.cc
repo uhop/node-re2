@@ -165,7 +165,7 @@ NAN_METHOD(WrappedRE2::New)
 	{
 		WrappedRE2 *re2 = nullptr;
 		auto object = info[0]->ToObject(context).ToLocalChecked();
-		if (!object.IsEmpty() && object->InternalFieldCount() > 0)
+		if (!object.IsEmpty() && WrappedRE2::HasInstance(object))
 		{
 			re2 = Nan::ObjectWrap::Unwrap<WrappedRE2>(object);
 		}
