@@ -99,6 +99,24 @@ test('general inst errors', t => {
   } catch (e) {
     t.ok(e instanceof TypeError);
   }
+
+  try {
+    const re = new RE2(new RE2.Set(['abc', 'def'], 'u'));
+    t.fail(); // shouldn't be here
+  } catch (e) {
+    t.ok(e instanceof TypeError);
+  }
+
+  const {port1, port2} = new MessageChannel();
+  try {
+    const re = new RE2(port1);
+    t.fail(); // shouldn't be here
+  } catch (e) {
+    t.ok(e instanceof TypeError);
+  } finally {
+    port1.close();
+    port2.close();
+  }
 });
 
 test('general in', t => {
