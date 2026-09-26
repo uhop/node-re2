@@ -1,6 +1,6 @@
 {
   "name": "re2",
-  "version": "1.26.1",
+  "version": "1.27.0",
   "description": "Bindings for RE2: fast, safe alternative to backtracking regular expression engines.",
   "homepage": "https://github.com/uhop/node-re2",
   "bugs": "https://github.com/uhop/node-re2/issues",
@@ -17,16 +17,16 @@
     "vendor"
   ],
   "dependencies": {
-    "install-artifact-from-github": "^1.7.0",
-    "nan": "^2.28.0",
-    "node-gyp": "^13.0.1"
+    "install-artifact-from-github": "^1.8.1",
+    "nan": "^2.29.0",
+    "node-gyp": "^13.0.2"
   },
   "devDependencies": {
-    "@types/node": "^26.1.2",
-    "@unicode/unicode-17.0.0": "^2.0.2",
+    "@types/node": "^26.6.3",
+    "@unicode/unicode-17.0.0": "^2.0.7",
     "nano-benchmark": "^1.2.0",
-    "prettier": "^3.9.6",
-    "tape-six": "^1.16.2",
+    "prettier": "^3.9.9",
+    "tape-six": "^1.16.4",
     "tape-six-proc": "^1.3.1",
     "typescript": "^7.0.2"
   },
@@ -73,30 +73,5 @@
       "/tests/test-*.*ts"
     ]
   },
-  "artifactHashes": {
-    "darwin-arm64-127": "sha256:704e94698aa3dd3548d50a347ef4cfb80f7170d061f3afb0659ca38f7b638cfb",
-    "darwin-arm64-137": "sha256:009c625301fef69a97637bf020e5b5be1c08daff390282d591d59c3d3b36da95",
-    "darwin-arm64-147": "sha256:2ea66f80276df9c545a8c0ee828edc6aa498398a9d451de79ef15e3e9ed31943",
-    "darwin-x64-127": "sha256:a2e5b2e8d53a4ac86ed9e7ef508be6150a0cc37bfe496a0dda52fae4efa3bf4b",
-    "darwin-x64-137": "sha256:2f54b250ca0874e1f35cd4479c378fe9defc00bac67675a5f24b0bacb07367e6",
-    "darwin-x64-147": "sha256:cf573387b4f05950d9484fb7696a23a755cf8d18f5d076870c5e73db94718807",
-    "linux-arm64-127": "sha256:3e4cdb0f619ac2e65ddbfac737313fc1983e4b6ddb430d35ee2766c2145d8850",
-    "linux-arm64-137": "sha256:53abb406bc10558bad2b0bd3c1b3ab30ee4390bf10037effe38844eda1b7aae2",
-    "linux-arm64-147": "sha256:209cc39769a08f0fff7e689ba3b46b0a69f1d634b04ee2427873c43bbc11c39d",
-    "linux-musl-arm64-127": "sha256:d0de1dcaab3cd20478f6848997e31f503ec2bf57bb304d1a98cacdf8c1ecbfb7",
-    "linux-musl-arm64-137": "sha256:ee64f1391712d8583711981f2098feb9b9fdc9dcd5cbfe98e43a5f2a57465bf2",
-    "linux-musl-arm64-147": "sha256:ea61d8029f9ec79b2e75b32095e217d1a1744db872b77631229936b0e36d5c62",
-    "linux-musl-x64-127": "sha256:70b2f7c350d31ec2ad360c39a2588ba70b743fb9be8e4271c5b72d9a1fb29914",
-    "linux-musl-x64-137": "sha256:734b08b934060a7a6550db222e5887e21ecf8f0acd0566e30611ffd065d517c1",
-    "linux-musl-x64-147": "sha256:0e4f208f1c4c50b2c9b6fc6d7de6b8a05d05ec476c1e953a367318ad6c7b20a8",
-    "linux-x64-127": "sha256:16172453d3bbb18fa598d7978dff82f9d7afb35e9976c82d8d5194a23abc706d",
-    "linux-x64-137": "sha256:4ce5672c82f5876652e1b35461df4529e085d307f3f840009a17e88c700eb094",
-    "linux-x64-147": "sha256:5f4dc40978c44d75c83c2bcec3ad4eb7a72ebc2986f49eee5bc43792060a959a",
-    "win32-arm64-127": "sha256:22ec1e32dc0c34f25dbaf3818cef2e69e536fcbac58d58f99dfb454057a6500b",
-    "win32-arm64-137": "sha256:a0b86fa1511c52539cb495c3bae9588068e40642b4bc286b78b7846255db174d",
-    "win32-arm64-147": "sha256:93cfc3ccfc673acd48aee89835065cb0a35198a353abcaa2feec0a45f83a50a1",
-    "win32-x64-127": "sha256:fe2570c73830062cfe72624444b021eb6eb3911b35736a2b4ad8a66edd035b5e",
-    "win32-x64-137": "sha256:2b6e2205a0fec4eedfe116ac577c34bc2f0f9ba2d17cf4d5e3e9f07004216134",
-    "win32-x64-147": "sha256:05f04cae766a5ae374f555a89d1168fd7a70efd50c8d8e160bf9356329da263b"
-  }
+  "artifactHashes": {}
 }

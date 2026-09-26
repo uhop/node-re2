@@ -445,6 +445,7 @@ Tables are baked in at build time from Unicode 17.0. To target a newer Unicode v
 
 ## Release history
 
+- 1.27.0 *Binary input beyond `Buffer`: typed arrays, `DataView`, `ArrayBuffer`, and `SharedArrayBuffer` (#233). Passing a non-`RE2` native object to the constructor throws a `TypeError` instead of crashing (thx, [theosotr](https://github.com/theosotr)).*
 - 1.26.1 *Security fix (GHSA-j4r3-hg7j-8chg): a `Buffer` subject, pattern, or replacement ending in a truncated multi-byte UTF-8 character no longer reads past the end of the buffer &mdash; for `replace()` and `split()` those stray bytes were copied into the returned `Buffer`. Buffer input only; strings were never affected. Thx, [Ovo](https://github.com/OvOhao).*
 - 1.26.0 *Verified prebuilt downloads. Thx, [ataberk-xyz](https://github.com/ataberk-xyz).*
 - 1.25.2 *Two DoS security fixes: a global `match()` with an empty-matchable pattern (`a*`, `(?:)`, &hellip;) no longer loops forever exhausting memory (GHSA-6hxr-mr5r-9836), and an out-of-range `lastIndex` on a non-ASCII subject no longer reads past the buffer and crashes (GHSA-ff84-5f28-78qj). Both now match the built-in engine. Thx, [ataberk-xyz](https://github.com/ataberk-xyz).*
