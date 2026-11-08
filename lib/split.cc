@@ -35,39 +35,45 @@ NAN_METHOD(WrappedRE2::Split)
 
 	// actual work
 
+	if (!str.size)
+	{
+		if (!re2->regexp.Match(str, 0, 0, RE2::UNANCHORED, nullptr, 0))
+		{
+			Nan::Set(result, 0, info[0]);
+		}
+		info.GetReturnValue().Set(result);
+		return;
+	}
+
 	std::vector<re2::StringPiece> groups(re2->regexp.NumberOfCapturingGroups() + 1), pieces;
 	const auto &match = groups[0];
-	size_t byteIndex = 0;
+	size_t pieceStart = 0, searchFrom = 0;
 
-	while (byteIndex < str.size && re2->regexp.Match(str, byteIndex, str.size, RE2::UNANCHORED, &groups[0], groups.size()))
+	// ECMAScript SplitMatcher: an unanchored search stands in for its sticky probes
+	while (searchFrom < str.size && re2->regexp.Match(str, searchFrom, str.size, RE2::UNANCHORED, &groups[0], groups.size()))
 	{
-		if (match.size())
+		const size_t matchStart = match.data() - str.data, matchEnd = matchStart + match.size();
+		if (matchStart == str.size)
 		{
-			pieces.push_back(re2::StringPiece(str.data + byteIndex, match.data() - str.data - byteIndex));
-			byteIndex = match.data() - str.data + match.size();
-			pieces.insert(pieces.end(), groups.begin() + 1, groups.end());
+			break;
 		}
-		else
+		searchFrom = match.size() ? matchEnd : matchStart + getUtf8CharSize(str.data[matchStart], str.size - matchStart);
+		// RE2 searches bytes, so \B can match between the bytes of one character
+		if (matchEnd == pieceStart || (!match.size() && (str.data[matchStart] & 0xC0) == 0x80))
 		{
-			size_t sym_size = getUtf8CharSize(str.data[byteIndex], str.size - byteIndex);
-			pieces.push_back(re2::StringPiece(str.data + byteIndex, sym_size));
-			byteIndex += sym_size;
+			continue;
 		}
+		pieces.push_back(re2::StringPiece(str.data + pieceStart, matchStart - pieceStart));
+		pieces.insert(pieces.end(), groups.begin() + 1, groups.end());
+		pieceStart = matchEnd;
 		if (pieces.size() >= limit)
 		{
 			break;
 		}
 	}
-	if (pieces.size() < limit && (byteIndex < str.size || (byteIndex == str.size && match.size())))
+	if (pieces.size() < limit)
 	{
-		pieces.push_back(re2::StringPiece(str.data + byteIndex, str.size - byteIndex));
-	}
-
-	if (pieces.empty())
-	{
-		Nan::Set(result, 0, info[0]);
-		info.GetReturnValue().Set(result);
-		return;
+		pieces.push_back(re2::StringPiece(str.data + pieceStart, str.size - pieceStart));
 	}
 
 	// form a result

@@ -134,6 +134,8 @@ are all read as raw UTF-8 bytes (views at their byte offset and length):
 
 Patterns, flags, and `replace()` replacement values can be binary objects too.
 
+`replace()` throws a `RangeError` when its result is too long: a string result over V8's maximum string length in UTF-8 bytes, or a binary result over the larger of that length and twice the input size.
+
 Differences from string-based versions:
 
 * All binary input is assumed to be encoded as [UTF-8](https://en.wikipedia.org/wiki/UTF-8)

@@ -232,6 +232,7 @@ Differences from string mode:
 - Results contain Buffers instead of strings — for every binary input type (`Buffer` is a `Uint8Array` subclass, so results satisfy `Uint8Array` consumers).
 - Use `buf.toString()` to convert results back to strings.
 - Patterns, flags, and `replace()` replacement values can be binary objects too.
+- `replace()` throws a `RangeError` when its result is too long: a string result over V8's maximum string length in UTF-8 bytes, or a binary result over the larger of that length and twice the input size.
 - Writing to a `SharedArrayBuffer` concurrently while it is being matched yields unspecified match results (reads stay in bounds).
 
 ### useBuffers on replacer functions

@@ -242,6 +242,65 @@ test('test split alternation groups', t => {
   t.equal(bufResult[5].toString(), 'b');
 });
 
+// Zero-width matches
+
+test('test split zero-width matches like the built-in engine', t => {
+  const cases = [
+    ['  a', '\\b'],
+    ['abc', '$', 'm'],
+    ['abc', '^', 'm'],
+    ['a\nb', '^', 'm'],
+    ['a\nb', '$', 'm'],
+    ['foo bar', '\\B'],
+    ['abc', '(a)?'],
+    ['abc', '(a)|'],
+    ['abc', ''],
+    ['😀a😀', ''],
+    ['😀 a', '\\b'],
+    ['', 'a*'],
+    ['', ''],
+    ['', 'x']
+  ];
+  for (const [text, source, flags = ''] of cases) {
+    t.deepEqual(
+      new RE2(source, flags).split(text),
+      text.split(new RegExp(source, flags + 'u')),
+      JSON.stringify(text) + ' on /' + source + '/' + flags
+    );
+  }
+});
+
+test('test split uses a distant zero-width match', t => {
+  const text = '中'.repeat(50000);
+  const result = new RE2('\\b').split(text + 'a');
+  t.equal(result.length, 2);
+  t.ok(result[0] === text);
+  t.equal(result[1], 'a');
+});
+
+test('test split never divides a multi-byte character', t => {
+  t.deepEqual(new RE2('\\B').split('aab😀'), ['a', 'a', 'b😀']);
+  t.deepEqual(new RE2('\\B').split('b中é'), ['b中', 'é']);
+  t.deepEqual(verifyBuffer(new RE2('\\B').split(Buffer.from('aab😀')), t), [
+    'a',
+    'a',
+    'b😀'
+  ]);
+});
+
+test('test split zero-width matches in a buffer', t => {
+  const result = new RE2('\\b').split(Buffer.from('中文 a'));
+  t.deepEqual(verifyBuffer(result, t), ['中文 ', 'a']);
+});
+
+test('test split zero-width match before a truncated character', t => {
+  const result = new RE2('').split(Buffer.from([0x61, 0xe4]));
+  t.deepEqual(
+    result.map(x => [...x]),
+    [[0x61], [0xe4]]
+  );
+});
+
 // Sticky tests
 
 test('test split sticky', t => {

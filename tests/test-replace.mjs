@@ -1,6 +1,10 @@
 import test from 'tape-six';
 import {RE2} from '../re2.js';
 import {Buffer} from 'node:buffer';
+import {spawnSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
+
+const re2Path = fileURLToPath(new URL('../re2.js', import.meta.url));
 
 // tests
 
@@ -350,4 +354,95 @@ test('test replace group cases', t => {
 
 test('test replace empty replacement', t => {
   t.equal('ac', 'abc'.replace(RE2('b'), ''));
+});
+
+// Amplified results
+
+const rangeErrorOf = fn => {
+  try {
+    fn();
+  } catch (error) {
+    return error instanceof RangeError;
+  }
+  return false;
+};
+
+test('test replace amplified template throws RangeError', t => {
+  const re = new RE2('a', 'g');
+  t.ok(rangeErrorOf(() => re.replace('a'.repeat(40000), "$'")));
+  t.ok(rangeErrorOf(() => re.replace('a'.repeat(40000), '$`')));
+  t.ok(rangeErrorOf(() => re.replace(Buffer.alloc(120000, 97), "$'")));
+});
+
+test('test replace amplified function result throws RangeError', t => {
+  const part = 'x'.repeat(1 << 20);
+  const re = new RE2('a', 'g');
+  t.ok(rangeErrorOf(() => re.replace(Buffer.alloc(1024, 97), () => part)));
+});
+
+// ulimit -v limits the address space on Linux; elsewhere it is absent or ignored
+(process.platform === 'linux' ? test : test.skip)(
+  'test replace rejects an amplified result before allocating it',
+  t => {
+    const script = `
+      const RE2 = require(${JSON.stringify(re2Path)});
+      const attempt = (source, subject) => {
+        try {
+          new RE2(source, 'g').replace(subject, "$'");
+          return 'returned';
+        } catch (error) {
+          return error.name;
+        }
+      };
+      console.log(
+        attempt('a', 'a'.repeat(40000)),
+        attempt('é', 'é'.repeat(40000)),
+        attempt('a', Buffer.alloc(120000, 97))
+      );
+    `;
+    const child = spawnSync(
+      'sh',
+      [
+        '-c',
+        'ulimit -c 0; ulimit -v 1500000; exec "$@"',
+        'sh',
+        process.execPath,
+        '-e',
+        script
+      ],
+      {encoding: 'utf8'}
+    );
+    t.equal(child.status, 0, child.stderr);
+    t.equal(child.stdout.trim(), 'RangeError RangeError RangeError');
+  }
+);
+
+test('test replace with a size pass matches the built-in engine', t => {
+  const texts = [
+    'b'.repeat(40000) + 'a' + 'c'.repeat(10),
+    'é'.repeat(40000) + 'a' + '😀'.repeat(10)
+  ];
+  for (const text of texts) {
+    for (const template of ["$'", '$`', "[$&$']", "$$'", "$'$`é😀"]) {
+      t.equal(
+        new RE2('a', 'g').replace(text, template),
+        text.replace(/a/gu, template),
+        template
+      );
+    }
+  }
+});
+
+test('test replace with a size pass updates lastIndex once', t => {
+  const text = 'b'.repeat(40000) + 'aa';
+
+  const re = new RE2('a', 'y');
+  const native = /a/uy;
+  re.lastIndex = native.lastIndex = 40000;
+  t.equal(re.replace(text, "$'"), text.replace(native, "$'"));
+  t.equal(re.lastIndex, native.lastIndex);
+
+  re.lastIndex = native.lastIndex = 3;
+  t.equal(re.replace(text, "$'"), text.replace(native, "$'"));
+  t.equal(re.lastIndex, native.lastIndex);
 });

@@ -86,14 +86,71 @@ inline int getMaxSubmatch(
 	return maxSubmatch;
 }
 
-inline std::string replace(
+// V8 refuses UTF-8 input over kMaxLength bytes, even if its UTF-16 length would fit.
+// A Buffer has no practical limit: twice the subject keeps large inputs working.
+inline size_t getResultLimit(const StrVal &replacee)
+{
+	const size_t limit = v8::String::kMaxLength;
+	return replacee.isBuffer ? std::max(limit, replacee.size * 2) : limit;
+}
+
+class StringSink
+{
+public:
+	static constexpr bool isDryRun = false;
+
+	explicit StringSink(std::string &text) : text(text) {}
+
+	void append(char ch) { text += ch; }
+	void append(const re2::StringPiece &piece) { text.append(piece.data(), piece.size()); }
+	bool isFull() const { return false; }
+
+private:
+	std::string &text;
+};
+
+class SizeSink
+{
+public:
+	static constexpr bool isDryRun = true;
+
+	explicit SizeSink(const StrVal &replacee) : limit(getResultLimit(replacee)) {}
+
+	void append(char) { ++bytes; }
+	void append(const re2::StringPiece &piece) { bytes += piece.size(); }
+	bool isFull() const { return bytes > limit; }
+	size_t getBytes() const { return bytes; }
+
+private:
+	const size_t limit;
+	size_t bytes = 0;
+};
+
+// Only $' and $` can repeat the whole subject for every match.
+static bool canExceedLimit(const StrVal &replacee, const char *replacer, size_t replacer_size)
+{
+	size_t subjectTokens = 0;
+	for (size_t i = 0; i + 1 < replacer_size; ++i)
+	{
+		if (replacer[i] == '$' && (replacer[i + 1] == '\'' || replacer[i + 1] == '`'))
+		{
+			++subjectTokens;
+		}
+	}
+	// double: the product can overflow size_t, and only its magnitude matters
+	const double size = replacee.size, matches = size + 1;
+	return size + matches * (2.0 * replacer_size + subjectTokens * size) > getResultLimit(replacee);
+}
+
+template <typename Sink>
+inline void expandTemplate(
+	Sink &result,
 	const char *data,
 	size_t size,
 	const std::vector<re2::StringPiece> &groups,
 	const re2::StringPiece &str,
 	const std::map<std::string, int> &namedGroups)
 {
-	std::string result;
 	size_t index, index2;
 	const char *nameBegin;
 	const char *nameEnd;
@@ -108,20 +165,20 @@ inline std::string replace(
 				switch (ch)
 				{
 				case '$':
-					result += ch;
+					result.append(ch);
 					i += 2;
 					continue;
 				case '&':
-					result += (std::string)groups[0];
+					result.append(groups[0]);
 					i += 2;
 					continue;
 				case '`':
-					result += std::string(str.data(), groups[0].data() - str.data());
+					result.append(re2::StringPiece(str.data(), groups[0].data() - str.data()));
 					i += 2;
 					continue;
 				case '\'':
-					result += std::string(groups[0].data() + groups[0].size(),
-										  str.data() + str.size() - groups[0].data() - groups[0].size());
+					result.append(re2::StringPiece(groups[0].data() + groups[0].size(),
+												   str.data() + str.size() - groups[0].data() - groups[0].size()));
 					i += 2;
 					continue;
 				case '0':
@@ -144,18 +201,18 @@ inline std::string replace(
 							index2 = index * 10 + (ch - '0');
 							if (index2 && index2 < groups.size())
 							{
-								result += (std::string)groups[index2];
+								result.append(groups[index2]);
 								continue;
 							}
 							else if (index && index < groups.size())
 							{
-								result += (std::string)groups[index];
-								result += ch;
+								result.append(groups[index]);
+								result.append(ch);
 								continue;
 							}
-							result += '$';
-							result += '0' + index;
-							result += ch;
+							result.append('$');
+							result.append(static_cast<char>('0' + index));
+							result.append(ch);
 							continue;
 						}
 						ch = '0' + index;
@@ -163,11 +220,11 @@ inline std::string replace(
 					i += 2;
 					if (index && index < groups.size())
 					{
-						result += (std::string)groups[index];
+						result.append(groups[index]);
 						continue;
 					}
-					result += '$';
-					result += ch;
+					result.append('$');
+					result.append(ch);
 					continue;
 				case '<':
 					if (!namedGroups.empty())
@@ -181,36 +238,37 @@ inline std::string replace(
 							if (group != namedGroups.end())
 							{
 								index = group->second;
-								result += (std::string)groups[index];
+								result.append(groups[index]);
 							}
 							i = nameEnd + 1 - data;
 						}
 						else
 						{
-							result += "$<";
+							result.append("$<");
 							i += 2;
 						}
 					}
 					else
 					{
-						result += "$<";
+						result.append("$<");
 						i += 2;
 					}
 					continue;
 				}
 			}
-			result += '$';
+			result.append('$');
 			++i;
 			continue;
 		}
 		size_t sym_size = getUtf8CharSize(ch, size - i);
-		result.append(data + i, sym_size);
+		result.append(re2::StringPiece(data + i, sym_size));
 		i += sym_size;
 	}
-	return result;
 }
 
-static Nan::Maybe<std::string> replace(
+template <typename Sink>
+static void replaceAll(
+	Sink &result,
 	WrappedRE2 *re2,
 	const StrVal &replacee,
 	const char *replacer,
@@ -226,7 +284,6 @@ static Nan::Maybe<std::string> replace(
 	const auto &match = groups[0];
 
 	size_t byteIndex = 0;
-	std::string result;
 	auto anchor = re2::RE2::UNANCHORED;
 
 	if (re2->sticky)
@@ -238,7 +295,7 @@ static Nan::Maybe<std::string> replace(
 
 	if (byteIndex)
 	{
-		result = std::string(data, byteIndex);
+		result.append(re2::StringPiece(data, byteIndex));
 	}
 
 	bool noMatch = true;
@@ -246,16 +303,20 @@ static Nan::Maybe<std::string> replace(
 	{
 		noMatch = false;
 		auto offset = match.data() - data;
-		if (!re2->global && re2->sticky)
+		if (!Sink::isDryRun && !re2->global && re2->sticky)
 		{
 			re2->lastIndex +=
 				replacee.isBuffer ? offset + match.size() - byteIndex : toUtf16Index(replacee.isAscii, data + byteIndex, match.data() + match.size());
 		}
 		if (match.data() == data || offset > static_cast<long>(byteIndex))
 		{
-			result += std::string(data + byteIndex, offset - byteIndex);
+			result.append(re2::StringPiece(data + byteIndex, offset - byteIndex));
 		}
-		result += replace(replacer, replacer_size, groups, str, namedGroups);
+		expandTemplate(result, replacer, replacer_size, groups, str, namedGroups);
+		if (result.isFull())
+		{
+			return;
+		}
 		if (match.size())
 		{
 			byteIndex = offset + match.size();
@@ -263,7 +324,7 @@ static Nan::Maybe<std::string> replace(
 		else if ((size_t)offset < size)
 		{
 			auto sym_size = getUtf8CharSize(data[offset], size - (size_t)offset);
-			result.append(data + offset, sym_size);
+			result.append(re2::StringPiece(data + offset, sym_size));
 			byteIndex = offset + sym_size;
 		}
 		else
@@ -278,7 +339,12 @@ static Nan::Maybe<std::string> replace(
 	}
 	if (byteIndex < size)
 	{
-		result += std::string(data + byteIndex, size - byteIndex);
+		result.append(re2::StringPiece(data + byteIndex, size - byteIndex));
+	}
+
+	if (Sink::isDryRun)
+	{
+		return;
 	}
 
 	if (re2->global)
@@ -290,8 +356,29 @@ static Nan::Maybe<std::string> replace(
 		if (noMatch)
 			re2->lastIndex = 0;
 	}
+}
 
-	return Nan::Just(result);
+static bool replace(
+	WrappedRE2 *re2,
+	const StrVal &replacee,
+	const char *replacer,
+	size_t replacer_size,
+	std::string &result)
+{
+	if (canExceedLimit(replacee, replacer, replacer_size))
+	{
+		SizeSink size(replacee);
+		replaceAll(size, re2, replacee, replacer, replacer_size);
+		if (size.isFull())
+		{
+			Nan::ThrowRangeError("Invalid string length");
+			return false;
+		}
+		result.reserve(size.getBytes());
+	}
+	StringSink sink(result);
+	replaceAll(sink, re2, replacee, replacer, replacer_size);
+	return true;
 }
 
 inline Nan::Maybe<std::string> replace(
@@ -393,12 +480,13 @@ inline Nan::Maybe<std::string> replace(
 	return Nan::Just(std::string(*s));
 }
 
-static Nan::Maybe<std::string> replace(
+static bool replace(
 	WrappedRE2 *re2,
 	const StrVal &replacee,
 	const Nan::Callback *replacer,
 	const v8::Local<v8::Value> &input,
-	bool useBuffers)
+	bool useBuffers,
+	std::string &result)
 {
 	const re2::StringPiece str = replacee;
 	const char *data = str.data();
@@ -407,8 +495,22 @@ static Nan::Maybe<std::string> replace(
 	std::vector<re2::StringPiece> groups(re2->regexp.NumberOfCapturingGroups() + 1);
 	const auto &match = groups[0];
 
+	SizeSink budget(replacee);
+	const auto append = [&](const re2::StringPiece &piece)
+	{
+		budget.append(piece);
+		if (!budget.isFull())
+		{
+			result.append(piece.data(), piece.size());
+		}
+	};
+	const auto tooLong = []()
+	{
+		Nan::ThrowRangeError("Invalid string length");
+		return false;
+	};
+
 	size_t byteIndex = 0;
-	std::string result;
 	auto anchor = re2::RE2::UNANCHORED;
 
 	if (re2->sticky)
@@ -420,7 +522,7 @@ static Nan::Maybe<std::string> replace(
 
 	if (byteIndex)
 	{
-		result = std::string(data, byteIndex);
+		append(re2::StringPiece(data, byteIndex));
 	}
 
 	const auto &namedGroups = re2->regexp.NamedCapturingGroups();
@@ -436,14 +538,18 @@ static Nan::Maybe<std::string> replace(
 		}
 		if (match.data() == data || offset > static_cast<long>(byteIndex))
 		{
-			result += std::string(data + byteIndex, offset - byteIndex);
+			append(re2::StringPiece(data + byteIndex, offset - byteIndex));
 		}
 		const auto part = replace(replacer, groups, str, input, useBuffers, replacee.isAscii, namedGroups);
 		if (part.IsNothing())
 		{
-			return part;
+			return false;
 		}
-		result += part.FromJust();
+		append(part.FromJust());
+		if (budget.isFull())
+		{
+			return tooLong();
+		}
 		if (match.size())
 		{
 			byteIndex = offset + match.size();
@@ -451,7 +557,7 @@ static Nan::Maybe<std::string> replace(
 		else if ((size_t)offset < size)
 		{
 			auto sym_size = getUtf8CharSize(data[offset], size - (size_t)offset);
-			result.append(data + offset, sym_size);
+			append(re2::StringPiece(data + offset, sym_size));
 			byteIndex = offset + sym_size;
 		}
 		else
@@ -466,7 +572,11 @@ static Nan::Maybe<std::string> replace(
 	}
 	if (byteIndex < size)
 	{
-		result += std::string(data + byteIndex, size - byteIndex);
+		append(re2::StringPiece(data + byteIndex, size - byteIndex));
+	}
+	if (budget.isFull())
+	{
+		return tooLong();
 	}
 
 	if (re2->global)
@@ -481,7 +591,7 @@ static Nan::Maybe<std::string> replace(
 		}
 	}
 
-	return Nan::Just(result);
+	return true;
 }
 
 static bool requiresBuffers(const v8::Local<v8::Function> &f)
@@ -527,13 +637,11 @@ NAN_METHOD(WrappedRE2::Replace)
 	{
 		auto fun = info[1].As<v8::Function>();
 		const std::unique_ptr<const Nan::Callback> cb(new Nan::Callback(fun));
-		const auto replaced = replace(re2, replacee, cb.get(), info[0], requiresBuffers(fun));
-		if (replaced.IsNothing())
+		if (!replace(re2, replacee, cb.get(), info[0], requiresBuffers(fun), result))
 		{
 			info.GetReturnValue().Set(info[0]);
 			return;
 		}
-		result = replaced.FromJust();
 	}
 	else
 	{
@@ -556,13 +664,11 @@ NAN_METHOD(WrappedRE2::Replace)
 			size = node::Buffer::Length(replacer);
 		}
 
-		const auto replaced = replace(re2, replacee, data, size);
-		if (replaced.IsNothing())
+		if (!replace(re2, replacee, data, size, result))
 		{
 			info.GetReturnValue().Set(info[0]);
 			return;
 		}
-		result = replaced.FromJust();
 	}
 
 	if (replacee.isBuffer)
