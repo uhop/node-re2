@@ -58,7 +58,7 @@ Each RegExp method has its own `.cc` file for maintainability:
 | --------------- | ---------------------------------------------------------------- |
 | `addon.cc`      | Node.js module initialization, registers all methods/accessors   |
 | `isolate_data.h` | Per-isolate data struct (`AddonData`) for thread-safe addon state |
-| `wrapped_re2.h` | `WrappedRE2` class: holds `re2::RE2*`, flags, lastIndex, source |
+| `wrapped_re2.h` | `WrappedRE2` class: holds `re2::RE2*`, flags, lastIndex, source; `findMatch()` wraps every search so a `\B` match cannot land inside a character |
 | `new.cc`        | Constructor: parses pattern + flags, translates syntax, creates RE2 instance |
 | `exec.cc`       | `exec()` — find match with capture groups                       |
 | `test.cc`       | `test()` — boolean match check                                  |

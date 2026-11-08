@@ -390,6 +390,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 ## Release history
 
+- 1.27.1 *Two DoS security fixes: `split()` on a zero-width match no longer takes quadratic time (GHSA-7gf8-v4c4-pph7), and an amplifying `replace()` template throws a `RangeError` before allocating its result (GHSA-x77q-8rq8-rq6v). `\B` no longer matches inside a multi-byte character. Thx, [AmirWilayah](https://github.com/AmirWilayah) (ADGepuk Research).*
 - 1.27.0 *Binary input beyond `Buffer`: typed arrays, `DataView`, `ArrayBuffer`, and `SharedArrayBuffer` (#233). Passing a non-`RE2` native object to the constructor throws a `TypeError` instead of crashing (thx, [theosotr](https://github.com/theosotr)).*
 - 1.26.1 *Security fix (GHSA-j4r3-hg7j-8chg): a `Buffer` subject, pattern, or replacement ending in a truncated multi-byte UTF-8 character no longer reads past the end of the buffer &mdash; for `replace()` and `split()` those stray bytes were copied into the returned `Buffer`. Buffer input only; strings were never affected. Thx, [Ovo](https://github.com/OvOhao).*
 - 1.26.0 *Verified prebuilt downloads. Thx, [ataberk-xyz](https://github.com/ataberk-xyz).*
