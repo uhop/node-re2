@@ -12,7 +12,7 @@ To learn more about RE2, start with [Regular Expression Matching in the Wild](ht
 but it lacks backreferences and lookahead assertions. See below for details.
 
 `RE2` always works in [Unicode mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/unicode) &mdash; character codes are interpreted as Unicode code points, not as binary values of UTF-16.
-See `RE2.unicodeWarningLevel` below for details.
+See [Unicode support](https://github.com/uhop/node-re2/wiki/Unicode-support) for details.
 
 `RE2` emulates standard `RegExp`, making it a practical drop-in replacement in most cases.
 It also provides `String`-based regular expression methods. The constructor accepts `RegExp` directly, honoring all properties.
@@ -211,41 +211,10 @@ To run the bundled benchmark (make sure node-re2 is built first):
 npx nano-bench bench/set-match.mjs
 ```
 
-### Calculate length
+### Other features
 
-Two helpers convert between UTF-8 and UTF-16 sizes:
-
-* `RE2.getUtf8Length(str)` &mdash; byte size needed to encode a string as a UTF-8 buffer.
-* `RE2.getUtf16Length(buf)` &mdash; character count needed to decode a UTF-8 buffer as a string.
-
-### Property: `internalSource`
-
-`source` emulates the standard `RegExp` property and can recreate an identical `RE2` or `RegExp` instance. To inspect the RE2-translated pattern (useful for debugging), use the read-only `internalSource` property.
-
-### Unicode warning level
-
-`RE2` always works in Unicode mode. In most cases this is either invisible or preferred. For applications that need tight control, the static property `RE2.unicodeWarningLevel` governs what happens when a non-Unicode regular expression is created.
-
-If a regular expression lacks the `u` flag, it is added silently by default:
-
-```js
-const x = /./;
-x.flags; // ''
-const y = new RE2(x);
-y.flags; // 'u'
-```
-
-Values of `RE2.unicodeWarningLevel`:
-
-* `'nothing'` (default) &mdash; silently add `u`.
-* `'warnOnce'` &mdash; warn once, then silently add `u`. Assigning this value resets the one-time flag.
-* `'warn'` &mdash; warn every time, still add `u`.
-* `'throw'` &mdash; throw `SyntaxError`.
-* Any other value is silently ignored, leaving the previous value unchanged.
-
-Warnings and exceptions help audit an application for stray non-Unicode regular expressions.
-
-`RE2.unicodeWarningLevel` is global. Be careful in multi-threaded environments &mdash; it is shared across threads.
+* [Length helpers and `internalSource`](https://github.com/uhop/node-re2/wiki/Helpers) &mdash; convert between UTF-8 and UTF-16 sizes, and inspect the RE2-translated pattern.
+* [`RE2.unicodeWarningLevel`](https://github.com/uhop/node-re2/wiki/Unicode-support#unicode-warning-level) &mdash; decide what happens when a non-Unicode regular expression is created.
 
 ## How to install
 
@@ -417,31 +386,7 @@ console.log('re2_res : ' + re2_res); // prints: re2_res : abc,a,b,c
 
 ### Unicode
 
-`RE2` always works in Unicode mode. See `RE2.unicodeWarningLevel` above for details.
-
-#### Unicode classes `\p{...}` and `\P{...}`
-
-node-re2 follows [MDN's Unicode character class escape reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Unicode_character_class_escape) &mdash; the same set of property escapes that JavaScript's native `RegExp` accepts with the `u` flag.
-
-Supported categories:
-
-- **General_Category** &mdash; both short names (e.g., `\p{L}`, `\p{Lu}`) and long names (e.g., `\p{Letter}`, `\p{Uppercase_Letter}`). The `gc=` and `General_Category=` prefixes also work: `\p{gc=Letter}`, `\p{General_Category=Letter}`.
-- **Script** &mdash; e.g., `\p{Script=Latin}`, `\p{sc=Cyrillic}`. ISO 15924 four-letter codes are accepted as well: `\p{sc=Latn}`.
-- **Script_Extensions** &mdash; e.g., `\p{Script_Extensions=Hani}`, `\p{scx=Latn}`. Matches characters whose Script_Extensions list includes the named script (a superset of `Script=`).
-- **Binary properties** &mdash; the full ECMAScript set of binary properties, including:
-  - `Alphabetic`, `ASCII`, `ASCII_Hex_Digit`, `Hex_Digit`, `White_Space`, `Math`, `Dash`, `Diacritic`, `Quotation_Mark`, `Bidi_Mirrored`, `Bidi_Control`, `Default_Ignorable_Code_Point`
-  - `Lowercase`, `Uppercase`, `Cased`, `Case_Ignorable`, `Changes_When_Lowercased`, `Changes_When_Uppercased`, `Changes_When_Casefolded`, `Changes_When_Casemapped`, `Changes_When_Titlecased`, `Changes_When_NFKC_Casefolded`
-  - `ID_Start`, `ID_Continue`, `XID_Start`, `XID_Continue`, `Pattern_Syntax`, `Pattern_White_Space`
-  - `Emoji`, `Emoji_Presentation`, `Emoji_Modifier`, `Emoji_Modifier_Base`, `Emoji_Component`, `Extended_Pictographic`, `Regional_Indicator`
-  - `Grapheme_Base`, `Grapheme_Extend`, `Extender`, `Variation_Selector`, `Join_Control`, `Logical_Order_Exception`, `Sentence_Terminal`, `Terminal_Punctuation`, `Soft_Dotted`, `Radical`, `Unified_Ideograph`, `Ideographic`, `IDS_Binary_Operator`, `IDS_Trinary_Operator`, `Noncharacter_Code_Point`, `Deprecated`, `Any`, `Assigned`
-
-  Short aliases listed in [PropertyAliases.txt](https://www.unicode.org/Public/UCD/latest/ucd/PropertyAliases.txt) are accepted alongside the canonical names: `\p{Alpha}` ≡ `\p{Alphabetic}`, `\p{Hex}` ≡ `\p{Hex_Digit}`, `\p{Lower}` ≡ `\p{Lowercase}`, etc.
-
-The negated form `\P{...}` and use inside character classes (`[\p{L}\p{Emoji}]`, `[^\p{ASCII}]`) work for every category.
-
-**Not supported:** *Properties of Strings* (`\p{Basic_Emoji}`, `\p{RGI_Emoji}`, etc.). These match multi-codepoint sequences and require the `v` flag, which RE2 does not model.
-
-Tables are baked in at build time from Unicode 17.0. To target a newer Unicode version, bump `@unicode/unicode-XX.X.X` in `devDependencies` and run `node scripts/gen-unicode-properties.mjs`.
+`RE2` always works in Unicode mode. `\p{...}` and `\P{...}` accept the same property escapes as the built-in `RegExp` with the `u` flag, except *Properties of Strings*. For details, see [Unicode support](https://github.com/uhop/node-re2/wiki/Unicode-support).
 
 ## Release history
 
