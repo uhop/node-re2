@@ -532,10 +532,9 @@ NAN_METHOD(WrappedRE2Set::New)
 			printDeprecationWarning(setDeprecationMessage);
 			break;
 		case WrappedRE2::WARN_ONCE:
-			if (!WrappedRE2::alreadyWarnedAboutUnicode)
+			if (!WrappedRE2::alreadyWarnedAboutUnicode.exchange(true))
 			{
 				printDeprecationWarning(setDeprecationMessage);
-				WrappedRE2::alreadyWarnedAboutUnicode = true;
 			}
 			break;
 		default:

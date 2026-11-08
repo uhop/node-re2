@@ -222,10 +222,9 @@ NAN_METHOD(WrappedRE2::New)
 			printDeprecationWarning(deprecationMessage);
 			break;
 		case WARN_ONCE:
-			if (!alreadyWarnedAboutUnicode)
+			if (!alreadyWarnedAboutUnicode.exchange(true))
 			{
 				printDeprecationWarning(deprecationMessage);
-				alreadyWarnedAboutUnicode = true;
 			}
 			break;
 		default:
