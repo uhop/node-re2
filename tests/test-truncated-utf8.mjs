@@ -54,6 +54,25 @@ test('split: truncated trailing lead byte does not over-read', t => {
   }
 });
 
+test('match: truncated trailing lead byte keeps the final empty match', t => {
+  const inputs = [
+    ...truncated.map(([name, lead]) => [name, [0x41, lead]]),
+    ['1 of 3 continuations', [0x41, 0xf0, 0x9f]],
+    ['2 of 3 continuations', [0x41, 0xf0, 0x9f, 0x98]],
+    ['well-formed', [0x41, 0xc3, 0xa9]]
+  ];
+  for (const [name, bytes] of inputs) {
+    const input = Buffer.from(bytes);
+    const replaced = new RE2('', 'g').replace(input, '-');
+    t.equal(new RE2('', 'g').match(input).length, 3, name);
+    t.equal(
+      [...replaced].filter(b => b === 0x2d).length,
+      3,
+      `${name} (replace)`
+    );
+  }
+});
+
 test('partially truncated 4-byte sequence does not over-read', t => {
   // 0xF0 promises 3 continuations; supply only 1 and 2.
   for (const tail of [

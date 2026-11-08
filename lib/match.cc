@@ -53,7 +53,7 @@ NAN_METHOD(WrappedRE2::Match)
 			else
 			{
 				// zero-width match: advance one code point or the loop never terminates
-				byteIndex = offset + (offset < str.size ? getUtf8CharSize(str.data[offset]) : 1);
+				byteIndex = offset + (offset < str.size ? getUtf8CharSize(str.data[offset], str.size - offset) : 1);
 			}
 		}
 
