@@ -134,8 +134,6 @@ are all read as raw UTF-8 bytes (views at their byte offset and length):
 
 Patterns, flags, and `replace()` replacement values can be binary objects too.
 
-`replace()` throws a `RangeError` when its result is too long: a string result over V8's maximum string length in UTF-8 bytes, or a binary result over the larger of that length and twice the input size.
-
 Differences from string-based versions:
 
 * All binary input is assumed to be encoded as [UTF-8](https://en.wikipedia.org/wiki/UTF-8)
@@ -192,8 +190,6 @@ While `test()` can be simulated by combining patterns with `|`, `match()` return
   * `set.maxMem` (number) &mdash; effective DFA memory budget in bytes
 
 It is based on [RE2::Set](https://github.com/google/re2/blob/main/re2/set.h).
-
-A set search reports which patterns matched but not where, so in the default `'unanchored'` mode a `\B` in a pattern can match between the bytes of a multi-byte character. For example, `new RE2.Set(['\\B']).test('b中c')` returns `true`, while `/\B/u.test('b中c')` returns `false`. To test such a pattern, use an individual `RE2` object.
 
 Example:
 
@@ -398,7 +394,7 @@ matched groups (`\1`, `\2`, etc.). Example:
 
 ### Mismatched behavior
 
-`RE2` and the built-in engine may disagree in edge cases. Verify your regular expressions before switching. They should work in the vast majority of cases.
+`RE2` and the built-in engine may disagree in edge cases. Verify your regular expressions before switching. They should work in the vast majority of cases. For limits and differences you rarely meet, see [Edge cases](https://github.com/uhop/node-re2/wiki/Edge-cases).
 
 Example:
 

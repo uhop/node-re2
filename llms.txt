@@ -107,7 +107,6 @@ set.sources;              // ['^/users/\\d+$', '^/posts/\\d+$']
 - `set.test(str)` — returns `true` if any pattern matches.
 - `set.match(str)` — returns array of matching pattern indices.
 - Properties: `size`, `source`, `sources`, `flags`, `anchor`, `maxMem`.
-- Limit: in the default `'unanchored'` mode, a `\B` in a pattern can match between the bytes of a multi-byte character, because a set search reports no positions. `new RE2.Set(['\\B']).test('b中c')` returns `true`. Use an individual `RE2` object for such a pattern.
 
 ### Static helpers
 
