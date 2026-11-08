@@ -42,7 +42,7 @@ NAN_METHOD(WrappedRE2::Match)
 			anchor = re2::RE2::ANCHOR_START;
 		}
 
-		while (re2->regexp.Match(str, byteIndex, str.size, anchor, &match, 1))
+		while (re2->findMatch(str, byteIndex, str.size, anchor, &match, 1))
 		{
 			groups.push_back(match);
 			size_t offset = match.data() - str.data;
@@ -74,7 +74,7 @@ NAN_METHOD(WrappedRE2::Match)
 		}
 
 		groups.resize(re2->regexp.NumberOfCapturingGroups() + 1);
-		if (!re2->regexp.Match(str, byteIndex, str.size, anchor, &groups[0], groups.size()))
+		if (!re2->findMatch(str, byteIndex, str.size, anchor, &groups[0], groups.size()))
 		{
 			if (re2->sticky)
 				re2->lastIndex = 0;

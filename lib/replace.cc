@@ -299,7 +299,7 @@ static void replaceAll(
 	}
 
 	bool noMatch = true;
-	while (byteIndex <= size && re2->regexp.Match(str, byteIndex, size, anchor, &groups[0], groups.size()))
+	while (byteIndex <= size && re2->findMatch(str, byteIndex, size, anchor, &groups[0], groups.size()))
 	{
 		noMatch = false;
 		auto offset = match.data() - data;
@@ -528,7 +528,7 @@ static bool replace(
 	const auto &namedGroups = re2->regexp.NamedCapturingGroups();
 
 	bool noMatch = true;
-	while (byteIndex <= size && re2->regexp.Match(str, byteIndex, size, anchor, &groups[0], groups.size()))
+	while (byteIndex <= size && re2->findMatch(str, byteIndex, size, anchor, &groups[0], groups.size()))
 	{
 		noMatch = false;
 		auto offset = match.data() - data;

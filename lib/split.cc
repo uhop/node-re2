@@ -37,7 +37,7 @@ NAN_METHOD(WrappedRE2::Split)
 
 	if (!str.size)
 	{
-		if (!re2->regexp.Match(str, 0, 0, RE2::UNANCHORED, nullptr, 0))
+		if (!re2->findMatch(str, 0, 0, RE2::UNANCHORED, nullptr, 0))
 		{
 			Nan::Set(result, 0, info[0]);
 		}
@@ -50,7 +50,7 @@ NAN_METHOD(WrappedRE2::Split)
 	size_t pieceStart = 0, searchFrom = 0;
 
 	// ECMAScript SplitMatcher: an unanchored search stands in for its sticky probes
-	while (searchFrom < str.size && re2->regexp.Match(str, searchFrom, str.size, RE2::UNANCHORED, &groups[0], groups.size()))
+	while (searchFrom < str.size && re2->findMatch(str, searchFrom, str.size, RE2::UNANCHORED, &groups[0], groups.size()))
 	{
 		const size_t matchStart = match.data() - str.data, matchEnd = matchStart + match.size();
 		if (matchStart == str.size)
@@ -58,8 +58,7 @@ NAN_METHOD(WrappedRE2::Split)
 			break;
 		}
 		searchFrom = match.size() ? matchEnd : matchStart + getUtf8CharSize(str.data[matchStart], str.size - matchStart);
-		// RE2 searches bytes, so \B can match between the bytes of one character
-		if (matchEnd == pieceStart || (!match.size() && (str.data[matchStart] & 0xC0) == 0x80))
+		if (matchEnd == pieceStart)
 		{
 			continue;
 		}

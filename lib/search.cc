@@ -23,7 +23,7 @@ NAN_METHOD(WrappedRE2::Search)
 
 	re2::StringPiece match;
 
-	if (re2->regexp.Match(str, 0, str.size, re2->sticky ? re2::RE2::ANCHOR_START : re2::RE2::UNANCHORED, &match, 1))
+	if (re2->findMatch(str, 0, str.size, re2->sticky ? re2::RE2::ANCHOR_START : re2::RE2::UNANCHORED, &match, 1))
 	{
 		info.GetReturnValue().Set(static_cast<int>(str.isBuffer ? match.data() - str.data : toUtf16Index(str.isAscii, str.data, match.data())));
 		return;

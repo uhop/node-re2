@@ -20,7 +20,7 @@ NAN_METHOD(WrappedRE2::Test)
 
 	if (!re2->global && !re2->sticky)
 	{
-		info.GetReturnValue().Set(re2->regexp.Match(str, 0, str.size, re2::RE2::UNANCHORED, NULL, 0));
+		info.GetReturnValue().Set(re2->findMatch(str, 0, str.size, re2::RE2::UNANCHORED, NULL, 0));
 		return;
 	}
 
@@ -34,7 +34,7 @@ NAN_METHOD(WrappedRE2::Test)
 	// actual work
 
 	re2::StringPiece match;
-	if (re2->regexp.Match(str, str.byteIndex, str.size, re2->sticky ? re2::RE2::ANCHOR_START : re2::RE2::UNANCHORED, &match, 1))
+	if (re2->findMatch(str, str.byteIndex, str.size, re2->sticky ? re2::RE2::ANCHOR_START : re2::RE2::UNANCHORED, &match, 1))
 	{
 		re2->lastIndex +=
 			str.isBuffer ? match.data() - str.data + match.size() - str.byteIndex : toUtf16Index(str.isAscii, str.data + str.byteIndex, match.data() + match.size());

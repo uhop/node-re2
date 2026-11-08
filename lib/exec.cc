@@ -34,7 +34,7 @@ NAN_METHOD(WrappedRE2::Exec)
 
 	std::vector<re2::StringPiece> groups(re2->regexp.NumberOfCapturingGroups() + 1);
 
-	if (!re2->regexp.Match(str, str.byteIndex, str.size, re2->sticky ? re2::RE2::ANCHOR_START : re2::RE2::UNANCHORED, &groups[0], groups.size()))
+	if (!re2->findMatch(str, str.byteIndex, str.size, re2->sticky ? re2::RE2::ANCHOR_START : re2::RE2::UNANCHORED, &groups[0], groups.size()))
 	{
 		if (globalOrSticky)
 		{

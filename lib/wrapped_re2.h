@@ -106,7 +106,8 @@ private:
 						 dotAll(s),
 						 sticky(y),
 						 hasIndices(d),
-						 lastIndex(0) {}
+						 lastIndex(0),
+						 hasNonWordBoundary(pattern.find("\\B") != re2::StringPiece::npos) {}
 
 	static NAN_METHOD(New);
 	static NAN_METHOD(ToString);
@@ -170,6 +171,28 @@ public:
 	bool sticky;
 	bool hasIndices;
 	size_t lastIndex;
+	bool hasNonWordBoundary; // an escaped backslash can set it too: only a slower search
+
+	// RE2 searches bytes, so \B can match between the bytes of one character.
+	bool findMatch(const re2::StringPiece &text, size_t start, size_t end, re2::RE2::Anchor anchor, re2::StringPiece *groups, int count) const
+	{
+		if (!hasNonWordBoundary || anchor != re2::RE2::UNANCHORED)
+		{
+			return regexp.Match(text, start, end, anchor, groups, count);
+		}
+		re2::StringPiece first;
+		const auto match = count ? groups : &first;
+		while (start <= end && regexp.Match(text, start, end, anchor, match, count ? count : 1))
+		{
+			const size_t position = match->data() - text.data();
+			if (match->size() || position == end || (text[position] & 0xC0) != 0x80)
+			{
+				return true;
+			}
+			start = position + 1;
+		}
+		return false;
+	}
 
 	friend struct PrepareLastString;
 
