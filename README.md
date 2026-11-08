@@ -193,6 +193,8 @@ While `test()` can be simulated by combining patterns with `|`, `match()` return
 
 It is based on [RE2::Set](https://github.com/google/re2/blob/main/re2/set.h).
 
+A set search reports which patterns matched but not where, so in the default `'unanchored'` mode a `\B` in a pattern can match between the bytes of a multi-byte character. For example, `new RE2.Set(['\\B']).test('b中c')` returns `true`, while `/\B/u.test('b中c')` returns `false`. To test such a pattern, use an individual `RE2` object.
+
 Example:
 
 ```js

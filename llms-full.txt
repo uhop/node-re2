@@ -262,6 +262,8 @@ new RE2.Set(patterns[, flagsOrOptions][, options])
 - `options.anchor` — `'unanchored'` (default), `'start'`, or `'both'`.
 - `options.maxMem` — DFA memory budget in bytes (positive integer). Default 8 MiB; raise it when `new RE2.Set(...)` throws `"RE2.Set could not be compiled."` because the union DFA blew the budget.
 
+Limit: a set search reports which patterns matched but not where, so in the default `'unanchored'` mode a `\B` in a pattern can match between the bytes of a multi-byte character. `new RE2.Set(['\\B']).test('b中c')` returns `true`, while `/\B/u.test('b中c')` returns `false`. Use an individual `RE2` object for such a pattern.
+
 ```js
 const set = new RE2.Set([
   '^/users/\\d+$',
