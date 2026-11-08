@@ -301,6 +301,122 @@ test('test split zero-width match before a truncated character', t => {
   );
 });
 
+// Limit coercion: expected values come from ECMA-262 RegExp.prototype[%Symbol.split%] and ToUint32
+
+test('test split converts its limit with ToUint32', t => {
+  const all = ['a', 'b', 'c'],
+    one = ['a'],
+    two = ['a', 'b'];
+  const cases = [
+    [undefined, all],
+    [0, []],
+    [-0, []],
+    [NaN, []],
+    [null, []],
+    [false, []],
+    ['', []],
+    ['x', []],
+    [{}, []],
+    [Infinity, []],
+    [-Infinity, []],
+    [2 ** 32, []],
+    [1, one],
+    [true, one],
+    [1.9, one],
+    [2 ** 32 + 1, one],
+    [-(2 ** 32) + 1, one],
+    ['2', two],
+    [[2], two],
+    [{valueOf: () => 2}, two],
+    [3, all],
+    [4, all],
+    [-1, all],
+    [2 ** 32 - 1, all]
+  ];
+  cases.forEach(([limit, expected], index) => {
+    t.deepEqual(new RE2(',').split('a,b,c', limit), expected, 'case ' + index);
+    t.deepEqual(
+      'a,b,c'.split(/,/u, limit),
+      expected,
+      'built-in, case ' + index
+    );
+  });
+});
+
+test('test split with a limit of 0 searches nothing', t => {
+  t.deepEqual(new RE2('x').split('', 0), []);
+  t.deepEqual(new RE2('').split('', 0), []);
+  t.deepEqual(new RE2(',').split(Buffer.from('a,b'), 0), []);
+  t.deepEqual('a,b'.split(new RE2(','), 0), []);
+});
+
+test('test split limit on a binary subject', t => {
+  const result = new RE2(',').split(Buffer.from('a,b,c'), '2');
+  t.deepEqual(verifyBuffer(result, t), ['a', 'b']);
+});
+
+test('test split passes on limit conversion errors', t => {
+  const re = new RE2(',');
+
+  try {
+    re.split('a,b', {
+      valueOf() {
+        throw 'corner';
+      }
+    });
+    t.fail('expected an exception');
+  } catch (error) {
+    t.equal(error, 'corner');
+  }
+
+  for (const limit of [1n, Symbol.for('re2.test')]) {
+    try {
+      re.split('a,b', limit);
+      t.fail('expected a TypeError');
+    } catch (error) {
+      t.ok(error instanceof TypeError);
+    }
+  }
+});
+
+test('test split converts the subject before the limit', t => {
+  const order = [];
+  const result = new RE2(',').split(
+    {
+      toString() {
+        order.push('subject');
+        return 'a,b';
+      }
+    },
+    {
+      valueOf() {
+        order.push('limit');
+        return 1;
+      }
+    }
+  );
+  t.deepEqual(order, ['subject', 'limit']);
+  t.deepEqual(result, ['a']);
+});
+
+test('test split survives a limit that uses the same object', t => {
+  const re = new RE2(',');
+  const result = re.split('a,b', {
+    valueOf() {
+      re.exec('z,z,z');
+      return 1;
+    }
+  });
+  t.deepEqual(result, ['a']);
+});
+
+test('test split returns a converted subject', t => {
+  t.deepEqual(new RE2('x').split(123), ['123']);
+  t.deepEqual(new RE2('2').split(123), ['1', '3']);
+  t.deepEqual(new RE2('x').split(''), ['']);
+  t.deepEqual(new RE2('x').split([]), ['']);
+});
+
 // Sticky tests
 
 test('test split sticky', t => {

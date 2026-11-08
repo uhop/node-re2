@@ -19,19 +19,31 @@ NAN_METHOD(WrappedRE2::Split)
 		return;
 	}
 
-	PrepareLastString prep(re2, info[0]);
-	StrVal& str = prep;
-	if (str.isBad) return; // throws an exception
-
-	size_t limit = std::numeric_limits<size_t>::max();
-	if (info.Length() > 1 && info[1]->IsNumber())
+	// ECMA-262 order. The limit's conversion can run JS, so it precedes the subject's cache.
+	auto subject = info[0];
+	if (!isBinaryValue(subject))
 	{
-		size_t lim = info[1]->NumberValue(Nan::GetCurrentContext()).FromMaybe(0);
-		if (lim > 0)
+		auto text = subject->ToString(Nan::GetCurrentContext());
+		if (text.IsEmpty()) return; // throws an exception
+		subject = text.ToLocalChecked();
+	}
+
+	size_t limit = std::numeric_limits<uint32_t>::max();
+	if (info.Length() > 1 && !info[1]->IsUndefined())
+	{
+		auto converted = info[1]->Uint32Value(Nan::GetCurrentContext());
+		if (converted.IsNothing()) return; // throws an exception
+		limit = converted.FromJust();
+		if (!limit)
 		{
-			limit = lim;
+			info.GetReturnValue().Set(result);
+			return;
 		}
 	}
+
+	PrepareLastString prep(re2, subject);
+	StrVal& str = prep;
+	if (str.isBad) return; // throws an exception
 
 	// actual work
 
@@ -39,7 +51,7 @@ NAN_METHOD(WrappedRE2::Split)
 	{
 		if (!re2->findMatch(str, 0, 0, RE2::UNANCHORED, nullptr, 0))
 		{
-			Nan::Set(result, 0, info[0]);
+			Nan::Set(result, 0, subject);
 		}
 		info.GetReturnValue().Set(result);
 		return;
