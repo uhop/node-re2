@@ -91,6 +91,7 @@ node-re2/
 - **Keep `re2.js` and `re2.d.ts` in sync.** All public API exposed from `re2.js` must be typed in `re2.d.ts`.
 - **The addon must build on all supported platforms:** Linux (x64, arm64, Alpine), macOS (x64, arm64), Windows (x64, arm64).
 - **RE2 is always Unicode-mode.** The `u` flag is always added implicitly.
+- **Threat model: untrusted text, developer-written patterns.** node-re2 promises linear-time matching of untrusted text against patterns the developer writes; untrusted patterns are out of scope, since compiling one can exhaust memory. A security report that needs an attacker-supplied pattern is out of scope.
 - **Binary input is a first-class feature.** All methods that accept strings must also accept binary objects — `Buffer`, any `TypedArray`, `DataView`, `ArrayBuffer`, `SharedArrayBuffer` — read as UTF-8 bytes, returning Buffers for binary input.
 
 ## Architecture

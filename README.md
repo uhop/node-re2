@@ -43,6 +43,12 @@ To run the bundled benchmark (make sure node-re2 is built first):
 npx nano-bench bench/bad-pattern.mjs
 ```
 
+### Threat model
+
+node-re2 is designed to match untrusted text, such as user input or data from the network, against patterns that you write. Matching time grows linearly with the length of the text, whatever the text contains.
+
+node-re2 makes no promise for untrusted patterns. A pattern decides how much memory and time it takes to compile, and a long pattern full of Unicode property classes can exhaust the memory of the process. For more information, see [Memory cost of Unicode classes](https://github.com/uhop/node-re2/wiki/Unicode-support#memory-cost-of-unicode-classes) in the wiki. If your application compiles patterns that its users supply, treat them as untrusted input and limit their size before you build them.
+
 ## Standard features
 
 `RE2` objects are created just like `RegExp`:

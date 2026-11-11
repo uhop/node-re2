@@ -27,6 +27,8 @@ console.log(result[1]); // "Bb"
 
 The built-in Node.js RegExp engine can run in exponential time with vulnerable patterns (ReDoS). RE2 guarantees linear-time matching by disallowing backreferences and lookahead assertions.
 
+Threat model: node-re2 matches untrusted text against patterns the developer writes. Untrusted patterns are out of scope: a pattern decides how much memory it takes to compile, and a long one can exhaust the process.
+
 ## API
 
 ### Construction

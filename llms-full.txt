@@ -4,6 +4,7 @@
 
 - Drop-in replacement for RegExp with linear-time matching guarantee
 - Prevents ReDoS by disallowing backreferences and lookahead assertions
+- Threat model: untrusted text matched against patterns the developer writes; untrusted patterns are out of scope (compiling one can exhaust memory)
 - Full Unicode mode (always on)
 - Binary input support (Buffer, TypedArray, DataView, ArrayBuffer, SharedArrayBuffer) for high-performance UTF-8 processing
 - Named capture groups
@@ -459,17 +460,19 @@ findRoute('/api/v2/foo'); // 2
 findRoute('/unknown');    // -1
 ```
 
-### Validate user-supplied patterns safely
+### Compile a user-supplied pattern
+
+Untrusted patterns are outside node-re2's threat model: a long pattern can exhaust memory while it compiles. Limit the size of a user-supplied pattern before you build it.
 
 ```js
 const RE2 = require('re2');
 
-function safeMatch(input, pattern, flags) {
+function compileUserPattern(pattern, flags, maxLength) {
+  if (pattern.length > maxLength) return null;
   try {
-    const re = new RE2(pattern, flags);
-    return re.test(input);
-  } catch (e) {
-    return false; // invalid pattern
+    return new RE2(pattern, flags);
+  } catch {
+    return null; // invalid pattern
   }
 }
 ```
