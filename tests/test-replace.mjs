@@ -446,3 +446,58 @@ test('test replace with a size pass updates lastIndex once', t => {
   t.equal(re.replace(text, "$'"), text.replace(native, "$'"));
   t.equal(re.lastIndex, native.lastIndex);
 });
+
+// Function replacer offsets
+
+const offsetsOf = (re, text, useBuffers) => {
+  const offsets = [];
+  const replacer = (...args) => {
+    offsets.push(args[args.length - 2]);
+    return '';
+  };
+  replacer.useBuffers = useBuffers;
+  re[Symbol.replace](text, replacer);
+  return offsets;
+};
+
+test('test replace function offsets match the built-in engine', t => {
+  const texts = ['é<a>&😀中<', '😀😀a😀', 'ИВАН и пЁтр', 'abc', ''];
+  const sources = ['', '[<>&]', '(.)', '\\b', '😀|中'];
+  for (const text of texts) {
+    for (const source of sources) {
+      for (const flags of ['', 'g', 'y', 'gy']) {
+        t.deepEqual(
+          offsetsOf(new RE2(source, flags), text),
+          offsetsOf(new RegExp(source, flags + 'u'), text),
+          JSON.stringify(text) + ' on /' + source + '/' + flags
+        );
+      }
+    }
+  }
+});
+
+test('test replace function offsets after a sticky start', t => {
+  const text = 'éé<é<😀<';
+  const re = new RE2('<', 'y');
+  const native = /</uy;
+  for (const start of [2, 4, 7]) {
+    re.lastIndex = native.lastIndex = start;
+    t.deepEqual(offsetsOf(re, text), offsetsOf(native, text), String(start));
+  }
+});
+
+test('test replace function offsets on a buffer are character offsets', t => {
+  const text = 'é<a>&😀中<';
+  t.deepEqual(
+    offsetsOf(new RE2('[<>&]', 'g'), Buffer.from(text)),
+    offsetsOf(/[<>&]/gu, text)
+  );
+});
+
+test('test replace function byte offsets with useBuffers', t => {
+  const text = 'é<a>&😀中<';
+  const expected = offsetsOf(/[<>&]/gu, text).map(index =>
+    Buffer.byteLength(text.slice(0, index))
+  );
+  t.deepEqual(offsetsOf(new RE2('[<>&]', 'g'), text, true), expected);
+});

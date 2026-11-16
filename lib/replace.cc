@@ -384,10 +384,9 @@ static bool replace(
 inline Nan::Maybe<std::string> replace(
 	const Nan::Callback *replacer,
 	const std::vector<re2::StringPiece> &groups,
-	const re2::StringPiece &str,
+	size_t position,
 	const v8::Local<v8::Value> &input,
 	bool useBuffers,
-	bool isAscii,
 	const std::map<std::string, int> &namedGroups)
 {
 	std::vector<v8::Local<v8::Value>> argv;
@@ -415,7 +414,6 @@ inline Nan::Maybe<std::string> replace(
 				argv.push_back(Nan::Undefined());
 			}
 		}
-		argv.push_back(Nan::New(static_cast<int>(groups[0].data() - str.data())));
 	}
 	else
 	{
@@ -438,8 +436,8 @@ inline Nan::Maybe<std::string> replace(
 				argv.push_back(Nan::Undefined());
 			}
 		}
-		argv.push_back(Nan::New(static_cast<int>(toUtf16Index(isAscii, str.data(), groups[0].data()))));
 	}
+	argv.push_back(Nan::New(static_cast<int>(position)));
 	argv.push_back(input);
 
 	if (!namedGroups.empty())
@@ -527,11 +525,20 @@ static bool replace(
 
 	const auto &namedGroups = re2->regexp.NamedCapturingGroups();
 
+	// one walk for all matches: a walk from the start per match is quadratic (GHSA-8c7q)
+	size_t utf16Index = 0;
+	const char *utf16Walk = data;
+	const bool byteOffsets = useBuffers || replacee.isAscii;
+
 	bool noMatch = true;
 	while (byteIndex <= size && re2->findMatch(str, byteIndex, size, anchor, &groups[0], groups.size()))
 	{
 		noMatch = false;
 		auto offset = match.data() - data;
+		if (!byteOffsets)
+		{
+			utf16Index += advanceUtf16(utf16Walk, match.data());
+		}
 		if (!re2->global && re2->sticky)
 		{
 			re2->lastIndex += replacee.isBuffer ? offset + match.size() - byteIndex : toUtf16Index(replacee.isAscii, data + byteIndex, match.data() + match.size());
@@ -540,7 +547,7 @@ static bool replace(
 		{
 			append(re2::StringPiece(data + byteIndex, offset - byteIndex));
 		}
-		const auto part = replace(replacer, groups, str, input, useBuffers, replacee.isAscii, namedGroups);
+		const auto part = replace(replacer, groups, byteOffsets ? static_cast<size_t>(offset) : utf16Index, input, useBuffers, namedGroups);
 		if (part.IsNothing())
 		{
 			return false;
