@@ -171,6 +171,34 @@ test('test match has indices', t => {
   t.deepEqual(str2.match(re), re.exec(str2));
 });
 
+test('test match has indices after a sticky start', t => {
+  for (const [text, start] of [
+    ['xxab', 2],
+    ['éé😀ab', 4],
+    ['ab', 0]
+  ]) {
+    const re = new RE2('a(b)', 'yd'),
+      native = /a(b)/duy;
+    re.lastIndex = native.lastIndex = start;
+    const result = text.match(re),
+      expected = text.match(native);
+    t.equal(result.index, expected.index, text);
+    t.deepEqual([...result.indices], [...expected.indices], text);
+  }
+
+  for (const text of ['xxab', 'éé<ab']) {
+    const re = new RE2('a(b)', 'yd'),
+      buffer = Buffer.from(text),
+      start = buffer.indexOf('a');
+    re.lastIndex = start;
+    const result = re.match(buffer);
+    re.lastIndex = start;
+    const expected = re.exec(buffer);
+    t.equal(result.index, expected.index, text);
+    t.deepEqual([...result.indices], [...expected.indices], text);
+  }
+});
+
 test('test match has indices global', t => {
   const re = new RE2('(?<zzz>a)', 'dg'),
     result = 'abca'.match(re);

@@ -86,6 +86,7 @@ NAN_METHOD(WrappedRE2::Match)
 	// form a result
 
 	const bool needIndices = !re2->global && re2->hasIndices;
+	const size_t indexOffset = re2->sticky ? re2->lastIndex : 0;
 	auto result = Nan::New<v8::Array>(), indices = Nan::New<v8::Array>();
 
 	if (str.isBuffer)
@@ -100,7 +101,7 @@ NAN_METHOD(WrappedRE2::Match)
 				if (needIndices)
 				{
 					auto pair = Nan::New<v8::Array>();
-					auto offset = data - str.data - byteIndex;
+					auto offset = indexOffset + (data - str.data - byteIndex);
 					auto length = item.size();
 					Nan::Set(pair, 0, Nan::New<v8::Integer>(static_cast<int>(offset)));
 					Nan::Set(pair, 1, Nan::New<v8::Integer>(static_cast<int>(offset + length)));
@@ -132,7 +133,7 @@ NAN_METHOD(WrappedRE2::Match)
 				if (needIndices)
 				{
 					auto pair = Nan::New<v8::Array>();
-					auto offset = toUtf16Index(str.isAscii, str.data + byteIndex, data);
+					auto offset = indexOffset + toUtf16Index(str.isAscii, str.data + byteIndex, data);
 					auto length = toUtf16Index(str.isAscii, data, data + item.size());
 					Nan::Set(pair, 0, Nan::New<v8::Integer>(static_cast<int>(offset)));
 					Nan::Set(pair, 1, Nan::New<v8::Integer>(static_cast<int>(offset + length)));
