@@ -229,50 +229,40 @@ struct PrepareLastString
 
 // utilities
 
-inline size_t getUtf16Length(const char *from, const char *to)
+// leaves `from` on the first character start at or past `to`, so a later call resumes the same walk
+inline size_t advanceUtf16(const char *&from, const char *to)
 {
 	size_t n = 0;
-	while (from != to)
+	while (from < to)
 	{
 		unsigned ch = *from & 0xFF;
-		if (ch < 0xF0)
+		if (ch < 0x80)
 		{
-			if (ch < 0x80)
-			{
-				++from;
-			}
-			else
-			{
-				if (ch < 0xE0)
-				{
-					from += 2;
-					if (from == to + 1)
-					{
-						++n;
-						break;
-					}
-				}
-				else
-				{
-					from += 3;
-					if (from > to && from < to + 3)
-					{
-						++n;
-						break;
-					}
-				}
-			}
+			++from;
+			++n;
+		}
+		else if (ch < 0xE0)
+		{
+			from += 2;
+			++n;
+		}
+		else if (ch < 0xF0)
+		{
+			from += 3;
 			++n;
 		}
 		else
 		{
 			from += 4;
 			n += 2;
-			if (from > to && from < to + 4)
-				break;
 		}
 	}
 	return n;
+}
+
+inline size_t getUtf16Length(const char *from, const char *to)
+{
+	return advanceUtf16(from, to);
 }
 
 // ASCII (and buffer) offsets are byte-identical to UTF-16 offsets, so the
