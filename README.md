@@ -371,6 +371,8 @@ matched groups (`\1`, `\2`, etc.). Example:
 
 `RE2` and the built-in engine may disagree in edge cases. Verify your regular expressions before switching. They should work in the vast majority of cases. For limits and differences you rarely meet, see [Edge cases](https://github.com/uhop/node-re2/wiki/Edge-cases).
 
+Text with Windows line endings (`\r\n`) gives different results: with the `m` flag, `^` and `$` treat only `\n` as a line break, and `.` matches `\r`. For details, see [Differences that come from RE2 syntax](https://github.com/uhop/node-re2/wiki/Edge-cases#differences-that-come-from-re2-syntax).
+
 Example:
 
 ```js
