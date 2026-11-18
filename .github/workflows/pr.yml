@@ -1,0 +1,21 @@
+name: Pull request checks
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    branches: ['master']
+
+jobs:
+  checks:
+    name: Style and type checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: latest
+      # lint and ts-check need no addon: skip the install script's native build
+      - run: npm ci --ignore-scripts
+      - run: npm run lint
+      - run: npm run ts-check
