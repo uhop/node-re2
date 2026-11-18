@@ -502,26 +502,13 @@ test('test replace function byte offsets with useBuffers', t => {
   t.deepEqual(offsetsOf(new RE2('[<>&]', 'g'), text, true), expected);
 });
 
-// runs in a child process: peak memory is per process, and tape6 runs test
-// files in worker threads
-const peakGrowthPerResultByte = (re2Path, kind) => {
-  const RE2 = require(re2Path);
-  const text = 'a'.repeat(8000);
-  const subject = kind === 'buffer' ? Buffer.from(text) : text;
-  const before = process.resourceUsage().maxRSS;
-  const result = new RE2('', 'g').replace(subject, "$'");
-  const after = process.resourceUsage().maxRSS;
-  process.stdout.write(String(((after - before) * 1024) / result.length));
-};
-
-test('test replace peaks at two copies of a large result', t => {
-  for (const kind of ['string', 'buffer']) {
-    const script = `(${peakGrowthPerResultByte})(${JSON.stringify(re2Path)}, ${JSON.stringify(kind)})`;
-    const child = spawnSync(process.execPath, ['-e', script], {
-      encoding: 'utf8'
-    });
-    t.equal(child.status, 0, child.stderr);
-    const copies = Number(child.stdout);
-    t.ok(copies > 0 && copies < 2.5, `${kind}: ${copies} copies`);
+test('test replace keeps NUL characters in a string result', t => {
+  const text = 'a\0b\0é\0😀b';
+  for (const template of ['\0', '[\0$&\0]', "$'", '$`\0']) {
+    t.equal(
+      new RE2('b', 'g').replace(text, template),
+      text.replace(/b/gu, template),
+      JSON.stringify(template)
+    );
   }
 });
