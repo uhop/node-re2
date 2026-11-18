@@ -36,3 +36,5 @@ jobs:
           npm i
           npm run build --if-present
           npm test
+      - name: Run the multi-environment test
+        run: npm run test:multi-env

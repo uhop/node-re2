@@ -32,6 +32,7 @@ lib/                      # C++ source code (native addon)
 scripts/
 └── verify-build.js       # Quick smoke test for the built addon
 tests/                    # Test files (test-*.mjs using tape-six)
+└── multi-env/            # Embedder harness and its test (npm run test:multi-env)
 ts-tests/                 # TypeScript type-checking tests
 └── test-types.ts         # Verifies type declarations compile correctly
 bench/                    # Benchmarks
@@ -141,6 +142,7 @@ re2.js ──→ build/Release/re2.node (compiled C++ addon)
 - **Run all**: `npm test` (worker threads via `tape6 --flags FO`)
 - **Run sequential**: `npm run test:seq`
 - **Run multi-process**: `npm run test:proc`
+- **Run multi-environment**: `npm run test:multi-env` (embedder harness, Node.js 26.11+; outside `npm test`, run by `tests.yml` only)
 - **Run single file**: `node tests/test-<name>.mjs`
 - **TypeScript check**: `npm run ts-check`
 - **Lint**: `npm run lint` (Prettier check)

@@ -33,6 +33,7 @@
     "test": "tape6 --flags FO",
     "test:seq": "tape6-seq --flags FO",
     "test:proc": "tape6-proc --flags FO",
+    "test:multi-env": "node tests/multi-env/test-multi-env.mjs",
     "save-to-github": "save-to-github-cache --artifact build/Release/re2.node",
     "prepublishOnly": "hash-github-cache --write",
     "install": "install-from-cache --artifact build/Release/re2.node --host-var RE2_DOWNLOAD_MIRROR --skip-path-var RE2_DOWNLOAD_SKIP_PATH --skip-ver-var RE2_DOWNLOAD_SKIP_VER --force-build-var RE2_DOWNLOAD_FORCE_BUILD || node-gyp -j max rebuild",

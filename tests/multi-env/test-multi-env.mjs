@@ -5,17 +5,17 @@ import {fileURLToPath} from 'node:url';
 
 // An embedder, such as Electron, can run more than one Node.js environment in
 // one isolate, and free each environment when it ends. The harness in
-// multi-env/ does the same. It needs Node.js 26.11 or later.
+// multi_env.cc does the same. It needs Node.js 26.11 or later.
 
 // utilities
 
 const [major = 0, minor = 0] = process.versions.node.split('.').map(Number);
 const supported = major > 26 || (major === 26 && minor >= 11);
 
-const re2Path = fileURLToPath(new URL('../re2.js', import.meta.url));
-const harnessDir = fileURLToPath(new URL('./multi-env/', import.meta.url));
+const re2Path = fileURLToPath(new URL('../../re2.js', import.meta.url));
+const harnessDir = fileURLToPath(new URL('./', import.meta.url));
 const harnessPath = fileURLToPath(
-  new URL('./multi-env/build/Release/multi_env.node', import.meta.url)
+  new URL('./build/Release/multi_env.node', import.meta.url)
 );
 const ENVIRONMENTS = 5;
 

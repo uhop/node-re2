@@ -27,6 +27,7 @@ If the native addon fails to download a prebuilt artifact, it builds locally via
 - **Test:** `npm test` (runs `tape6 --flags FO`, worker threads)
 - **Test (sequential):** `npm run test:seq`
 - **Test (multi-process):** `npm run test:proc`
+- **Test (multi-environment):** `npm run test:multi-env` (builds an embedder harness, needs Node.js 26.11+; outside `npm test`, so CI runs it in `tests.yml` only, never in `build.yml`)
 - **Test (single file):** `node tests/test-<name>.mjs`
 - **TypeScript check:** `npm run ts-check`
 - **Lint:** `npm run lint` (Prettier check)
@@ -64,6 +65,7 @@ node-re2/
 ├── scripts/
 │   └── verify-build.js   # Quick smoke test for the built addon
 ├── tests/                # Test files (test-*.mjs using tape-six)
+│   └── multi-env/        # Embedder harness and its test (npm run test:multi-env)
 ├── ts-tests/             # TypeScript type-checking tests
 │   └── test-types.ts     # Verifies type declarations compile correctly
 ├── bench/                # Benchmarks

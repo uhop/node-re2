@@ -1,4 +1,4 @@
-// A harness for tests/test-multi-env.mjs. It runs JavaScript in a new Node.js
+// A harness for test-multi-env.mjs. It runs JavaScript in a new Node.js
 // environment in the current isolate, and then frees the environment, as an
 // embedder such as Electron does. It needs Node.js 26.11 or later.
 
