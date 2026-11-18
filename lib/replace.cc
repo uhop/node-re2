@@ -690,7 +690,9 @@ NAN_METHOD(WrappedRE2::Replace)
 		return;
 	}
 	// over-max-length result -> empty MaybeLocal; ToLocalChecked() would abort()
-	auto text = Nan::New(result);
+	// Nan::New(std::string) copies its argument by value; the sinks cap size at
+	// v8::String::kMaxLength, an int
+	auto text = Nan::New(result.data(), static_cast<int>(result.size()));
 	if (text.IsEmpty())
 	{
 		Nan::ThrowRangeError("Invalid string length");
