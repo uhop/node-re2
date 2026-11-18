@@ -60,7 +60,7 @@ const countLeakedContexts = source => {
         gc();
         await new Promise(resolve => setImmediate(resolve));
       }
-      console.log(countContexts() - before);
+      process.stdout.write(String(countContexts() - before));
     })();
   `;
   const child = spawnSync(process.execPath, ['--expose-gc', '-e', script], {
